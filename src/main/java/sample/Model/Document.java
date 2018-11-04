@@ -6,13 +6,6 @@ public class Document {
     private String title;
     private String content;
 
-    public Document(String id, String date, String title, String content) {
-        this.id = id;
-        this.date = date;
-        this.title = title;
-        this.content = content;
-    }
-
     public String getId() {
         return id;
     }
@@ -43,5 +36,13 @@ public class Document {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public void print(){
+        System.out.println("id "+ id );
+        System.out.println("title "+title);
+        System.out.println("date "+date);
+        System.out.println("Text " +content);
+        System.out.println("-------------------------------------------------");
     }
 }

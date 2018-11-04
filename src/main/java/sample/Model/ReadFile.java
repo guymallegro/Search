@@ -4,38 +4,24 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
 import java.util.Scanner;
 
 public class ReadFile {
+    public static Model model;
 
-    public void readFile(String path) throws IOException {
-        File currentFile = new File(path);
-        String[] allFiles = currentFile.list();
-
-        FileInputStream inputStream = null;
-        Scanner sc = null;
-        try {
-            inputStream = new FileInputStream(path);
-            sc = new Scanner(inputStream, "UTF-8");
-            while (sc.hasNextLine()) {
-                String line = sc.nextLine();
-                // System.out.println(line);
-            }
-            // note that Scanner suppresses exceptions
-            if (sc.ioException() != null) {
-                throw sc.ioException();
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (inputStream != null) {
-                inputStream.close();
-            }
-            if (sc != null) {
-                sc.close();
-            }
+    public static void readFile(String path) throws IOException {
+        File currentDirectory = new File(path);
+        String[] allDirectories = currentDirectory.list();
+        for (String directory : allDirectories) {
+            File currentFile = new File(path + directory);
+            String[] allFiles = currentFile.list();
+            List<String> lines = Files.readAllLines(Paths.get(path + directory + "//" + allFiles[0]), StandardCharsets.UTF_8);
+            model.processFile(lines);
+            break;
         }
     }
 }
