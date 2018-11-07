@@ -5,17 +5,12 @@ import sample.Model.ReadFile;
 
 import java.io.IOException;
 
-import static sample.Model.ReadFile.readFile;
-
 public class Controller {
     Model model;
-    private String path="C:\\Users\\ספיר רצון\\Desktop\\corpus\\";
+    private String path="/home/guy/Desktop/corpus/";
 
     public Controller() throws IOException {
         model = new Model();
-        ReadFile.model=model;
-        model.readFiles(path);
-        ReadFile.readFile(path);
     }
 
 
@@ -28,4 +23,8 @@ public class Controller {
     }
 
 
+    public void readFiles() {
+        model.readFiles(path);
+
+    }
 }

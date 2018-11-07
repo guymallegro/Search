@@ -8,6 +8,7 @@ import javafx.stage.Stage;
 import sample.Controller.Controller;
 
 public class Main extends Application {
+    private Controller controller;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -15,6 +16,8 @@ public class Main extends Application {
         primaryStage.setTitle("Hello World");
         primaryStage.setScene(new Scene(root, 300, 275));
         primaryStage.show();
+        controller = new Controller();
+        controller.readFiles();
 
     }
 
