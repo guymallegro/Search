@@ -36,7 +36,7 @@ public class ReadFile {
 
     public HashSet<String> readStopWords() {
         HashSet<String> stopWords = new HashSet<>();
-        File file = new File("/home/guy/Desktop/stop_words");
+        File file = new File("C:\\Users\\ספיר רצון\\Desktop\\stop_words");
         try {
             Scanner scanner = new Scanner(file);
             while (scanner.hasNextLine()) {

@@ -7,6 +7,7 @@ import java.util.concurrent.ExecutionException;
 
 public class Parse {
     HashMap<String, String> termsTable;
+    Stemmer stemmer;
 
 
     HashSet<String> stopWords;
@@ -15,6 +16,7 @@ public class Parse {
     public Parse(Model model) {
         termsTable = new HashMap<>();
         this.model = model;
+        stemmer = new Stemmer();
     }
 
     public void processFile(List<String> data) {
@@ -53,16 +55,18 @@ public class Parse {
                     String[] tokens = document.getContent().split(" ");
                     for (String token : tokens) {
                         if (!isStopWord(token)){
-
+                            System.out.println("original: " + token);
+                            stemmer.setTerm(cleanString(token));
+                            stemmer.stem();
+                            String ans = stemmer.getTerm();
+                            System.out.println("after stemming: " + stemmer.getTerm());
                         }
-
                     }
                 }
             }
         } catch (Exception e) {
             System.out.println("process");
         }
-
     }
 
     private boolean isStopWord(String word) {
@@ -77,7 +81,24 @@ public class Parse {
 
 
         }
+    }
 
+    private String cleanString(String str) {
+        if (str.length() == 0)
+            return "";
+        int ascii = (int)str.charAt(0);
+        while (! ((ascii > 48 && ascii < 57) || (ascii> 65 && ascii < 90) ||
+                (ascii > 97 && ascii < 122))) {
+            str = str.substring(1);
+            ascii = (int)str.charAt(0);
+        }
+        ascii = (int) str.charAt(str.length() - 1);
+        while (! ((ascii > 48 && ascii < 57) || (ascii> 65 && ascii < 90) ||
+                (ascii > 97 && ascii < 122))) {
+            str = str.substring(0, str.length() - 1);
+            ascii = (int) str.charAt(str.length() - 1);
+        }
+        return str;
     }
 
     private String removeTag(String line) {
