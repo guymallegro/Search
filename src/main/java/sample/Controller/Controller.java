@@ -7,7 +7,7 @@ import java.io.IOException;
 
 public class Controller {
     Model model;
-    private String path="/home/guy/Desktop/corpus/";
+    private String path="C:\\Users\\ספיר רצון\\Desktop\\corpus\\";
 
     public Controller() throws IOException {
         model = new Model();
