@@ -6,6 +6,8 @@ import java.util.List;
 
 public class Parse {
     HashMap<String, String> termsTable;
+
+
     HashSet<String> stopWords;
     Model model;
 
@@ -30,7 +32,7 @@ public class Parse {
                 } else if (line.equals("</DOC>")) {
                     model.addDocument(currentDocument);
                     text = "";
-                    currentDocument.print();
+                    // currentDocument.print();
                 } else if (line.equals("<TEXT>")) {
                     insideText = true;
                 } else if (line.contains("<TI>")) {
@@ -43,6 +45,28 @@ public class Parse {
         }
     }
 
+    public void processText() {
+        String resultText="";
+        for (Document document : model.getDocuments()) {
+            String[] tokens = document.getContent().split(" ");
+            for (String token:tokens) {
+                if(!isStopWord(token)){
+
+                }
+
+            }
+
+        }
+
+
+    }
+
+    private boolean isStopWord(String word) {
+        if (stopWords.contains(word))
+            return true;
+        return false;
+    }
+
     public void parsing(Document document) {
         String[] tokens = document.getContent().split(" ");
         for (String token : tokens) {
@@ -53,8 +77,12 @@ public class Parse {
     }
 
     private String removeTag(String line) {
+        if (line.contains("<T"))
+            System.out.println(line);
         return line.replaceAll("\\<.*?\\>", "");
     }
 
-
+    public void setStopWords(HashSet<String> stopWords) {
+        this.stopWords = stopWords;
+    }
 }
