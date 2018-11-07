@@ -19,20 +19,18 @@ public class Model {
 
     public void readFiles(String path) {
         try {
-            fileReader.readFile(path);
             parse.setStopWords(fileReader.readStopWords());
-
+            fileReader.readFile(path);
         } catch (Exception exception) {
-            System.out.println("Exception");
-            System.out.println(exception.getMessage());
+            System.out.println("Exception: ");
+            System.out.println(exception);
         }
     }
 
     public void processFile(List<String> data) {
         parse.processFile(data);
         parse.processText();
-        System.out.println(data.size());
-
+        //documents.clear();
     }
 
     public void addDocument(Document document) {

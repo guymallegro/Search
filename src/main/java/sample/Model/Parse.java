@@ -51,7 +51,9 @@ public class Parse {
             String[] tokens = document.getContent().split(" ");
             for (String token:tokens) {
                 if(!isStopWord(token)){
-
+                }
+                else{
+                    //System.out.println("Stop word");
                 }
 
             }

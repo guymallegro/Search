@@ -19,26 +19,32 @@ public class ReadFile {
         this.model = model;
     }
 
-    public void readFile(String path) throws IOException {
-        File currentDirectory = new File(path);
-        String[] allDirectories = currentDirectory.list();
-        for (String directory : allDirectories) {
-            File currentFile = new File(path + directory);
-            String allFiles = Objects.requireNonNull(currentFile.list())[0];
-            List<String> lines = Files.readAllLines(Paths.get(path + directory + "/" + allFiles), StandardCharsets.UTF_8);
-            model.processFile(lines);
+    public void readFile(String path){
+        try {
+            File currentDirectory = new File(path);
+            String[] allDirectories = currentDirectory.list();
+            for (String directory : allDirectories) {
+                File currentFile = new File(path + directory);
+                System.out.println("CUrrent " + directory);
+                String allFiles = Objects.requireNonNull(currentFile.list())[0];
+                List<String> lines = Files.readAllLines(Paths.get(path + directory + "/" + allFiles), StandardCharsets.UTF_8);
+                model.processFile(lines);
+            }
+        }catch (Exception e){
+            System.out.println("Failed at file ");
         }
     }
 
     public HashSet<String> readStopWords() {
         HashSet<String> stopWords = new HashSet<>();
-        File file = new File("stop_words.txt");
+        File file = new File("/home/guy/Desktop/stop_words");
         try {
             Scanner scanner = new Scanner(file);
             while (scanner.hasNextLine()) {
                 stopWords.add(scanner.nextLine());
             }
         } catch (FileNotFoundException e) {
+            System.out.println(e);
         }
         return stopWords;
     }
