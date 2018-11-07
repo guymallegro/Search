@@ -30,7 +30,7 @@ public class Model {
     public void processFile(List<String> data) {
         parse.processFile(data);
         parse.processText();
-        //documents.clear();
+        documents.clear();
     }
 
     public void addDocument(Document document) {

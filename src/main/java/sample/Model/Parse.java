@@ -3,6 +3,7 @@ package sample.Model;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class Parse {
     HashMap<String, String> termsTable;
@@ -32,7 +33,6 @@ public class Parse {
                 } else if (line.equals("</DOC>")) {
                     model.addDocument(currentDocument);
                     text = "";
-                    // currentDocument.print();
                 } else if (line.equals("<TEXT>")) {
                     insideText = true;
                 } else if (line.contains("<TI>")) {
@@ -46,20 +46,22 @@ public class Parse {
     }
 
     public void processText() {
-        String resultText="";
-        for (Document document : model.getDocuments()) {
-            String[] tokens = document.getContent().split(" ");
-            for (String token:tokens) {
-                if(!isStopWord(token)){
-                }
-                else{
-                    //System.out.println("Stop word");
-                }
+        try {
+            String resultText = "";
+            for (Document document : model.getDocuments()) {
+                if (document.getContent() != null) {
+                    String[] tokens = document.getContent().split(" ");
+                    for (String token : tokens) {
+                        if (!isStopWord(token)){
 
+                        }
+
+                    }
+                }
             }
-
+        } catch (Exception e) {
+            System.out.println("process");
         }
-
 
     }
 
@@ -79,8 +81,6 @@ public class Parse {
     }
 
     private String removeTag(String line) {
-        if (line.contains("<T"))
-            System.out.println(line);
         return line.replaceAll("\\<.*?\\>", "");
     }
 

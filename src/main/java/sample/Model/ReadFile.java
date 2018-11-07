@@ -8,7 +8,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Scanner;
 
 public class ReadFile {
@@ -26,12 +25,12 @@ public class ReadFile {
             for (String directory : allDirectories) {
                 File currentFile = new File(path + directory);
                 System.out.println("CUrrent " + directory);
-                String allFiles = Objects.requireNonNull(currentFile.list())[0];
-                List<String> lines = Files.readAllLines(Paths.get(path + directory + "/" + allFiles), StandardCharsets.UTF_8);
+                String allFiles = currentFile.list()[0];
+                List<String> lines = Files.readAllLines(Paths.get(path + directory + "/" + allFiles), StandardCharsets.ISO_8859_1);
                 model.processFile(lines);
             }
         }catch (Exception e){
-            System.out.println("Failed at file ");
+            System.out.println(e);
         }
     }
 
