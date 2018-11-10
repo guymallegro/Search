@@ -10,7 +10,7 @@ class Parse {
     private Model model;
     private DocumentTerms currentDocumentTerms;
     private HashMap<String, String> numbers;
-    private HashSet<String> percents;
+    private HashMap<String,String> percents;
     private HashSet<String> money;
     private HashSet<String> date;
     private HashMap<String, Term> allTerms;
@@ -19,6 +19,7 @@ class Parse {
         this.model = model;
         stemmer = new Stemmer();
         numbers = new HashMap<>();
+        percents = new HashMap<>();
         allTerms = new HashMap<>();
         initRules();
     }
@@ -41,7 +42,11 @@ class Parse {
                 tokens[i] = parseNumbers(tokens[i]);
                 if (numbers.containsKey(tokens[i])) {
                     phrase += numbers.get(tokens[i]);
-                } else {
+                }
+                else if(percents.containsKey(tokens[i])){
+                    phrase += percents.get(tokens[i]);
+                }
+                else {
                     addTerm(phrase);
                     phrase = tokens[i];
                 }
@@ -51,7 +56,7 @@ class Parse {
     }
 
     private String parseNumbers(String token) {
-        if (token.length() > 0 && Character.isDigit(token.charAt(0)) && Character.isDigit(token.charAt(token.length() - 1)) && token.length() > 3) {
+        if (token.length() > 3 && Character.isDigit(token.charAt(0)) && Character.isDigit(token.charAt(token.length() - 1)) && !token.contains("%")) {
             Boolean split = false;
             String toAdd = "";
             token = token.replaceAll(",", "");
@@ -60,6 +65,8 @@ class Parse {
                 String[] tempStrings = token.split("\\.");
                 token = tempStrings[0];
                 toAdd = tempStrings[1];
+                if(Integer.parseInt(token) < 1000)
+                    return token+"."+toAdd;
             }
             StringBuilder ans = new StringBuilder(token);
             switch (ans.length()) {
@@ -122,7 +129,7 @@ class Parse {
         }
         ascii = (int) str.charAt(str.length() - 1);
         while (!((ascii >= 48 && ascii <= 57) || (ascii >= 65 && ascii <= 90) ||
-                (ascii >= 97 && ascii <= 122) || str.length() == 1)) {
+                (ascii >= 97 && ascii <= 122) || str.length() == 1 || ascii == 37)) {
             str = str.substring(0, str.length() - 1);
             ascii = (int) str.charAt(str.length() - 1);
         }
@@ -142,5 +149,7 @@ class Parse {
         numbers.put("Million", "M");
         numbers.put("Billion", "B");
         numbers.put("Trillion", "T");
+        percents.put("percent", "%");
+        percents.put("percentag", "%");
     }
 }
