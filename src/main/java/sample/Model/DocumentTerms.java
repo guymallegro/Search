@@ -5,7 +5,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class DocumentTerms {
-
     private String id;
     private HashMap<Term, Integer> titleTerms;
     private HashMap<Term, Integer> dateTerms;

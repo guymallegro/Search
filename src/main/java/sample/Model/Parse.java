@@ -36,10 +36,9 @@ class Parse {
                     }
                 }
             }
-            String phrase = tokens[0];
-            for (int i = 1; i < tokens.length; i++) {
+            String phrase = "";
+            for (int i = 0; i < tokens.length; i++) {
                 tokens[i] = parseNumbers(tokens[i]);
-
                 if (numbers.containsKey(tokens[i])) {
                     phrase += numbers.get(tokens[i]);
                 } else {
@@ -53,7 +52,15 @@ class Parse {
 
     private String parseNumbers(String token) {
         if (token.length() > 0 && Character.isDigit(token.charAt(0)) && Character.isDigit(token.charAt(token.length() - 1)) && token.length() > 3) {
+            Boolean split = false;
+            String toAdd = "";
             token = token.replaceAll(",", "");
+            if (token.contains(".")) {
+                split = true;
+                String[] tempStrings = token.split("\\.");
+                token = tempStrings[0];
+                toAdd = tempStrings[1];
+            }
             StringBuilder ans = new StringBuilder(token);
             switch (ans.length()) {
                 case 4:
@@ -72,9 +79,11 @@ class Parse {
                     ans.insert(3, ".");
                     break;
             }
-            if (ans.length() < 8)
+            if (split)
+                ans.insert(ans.length(), toAdd);
+            if (ans.length() - toAdd.length() < 8)
                 ans.insert(ans.length(), "K");
-            else if (ans.length() < 11)
+            else if (ans.length() - toAdd.length() < 11)
                 ans.insert(ans.length(), "M");
             else
                 ans.insert(ans.length(), "T");
@@ -84,15 +93,16 @@ class Parse {
     }
 
     private void addTerm(String term) {
-        if (!allTerms.containsKey(term)) {
-            Term newTerm = new Term(term);
-            allTerms.put(term, newTerm);
-            currentDocumentTerms.addTermToText(newTerm);
-        } else {
-            allTerms.get(term).increaseAmount();
-            currentDocumentTerms.addTermToText(allTerms.get(term));
+        if (term.length() > 0) {
+            if (!allTerms.containsKey(term)) {
+                Term newTerm = new Term(term);
+                allTerms.put(term, newTerm);
+                currentDocumentTerms.addTermToText(newTerm);
+            } else {
+                allTerms.get(term).increaseAmount();
+                currentDocumentTerms.addTermToText(allTerms.get(term));
+            }
         }
-
     }
 
     private boolean isStopWord(String word) {
