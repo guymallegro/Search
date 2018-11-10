@@ -6,11 +6,11 @@ public class Document {
     private String title;
     private String content;
 
-    public String getId() {
+    String getId() {
         return id;
     }
 
-    public void setId(String id) {
+    void setId(String id) {
         this.id = id;
     }
 
@@ -18,7 +18,7 @@ public class Document {
         return date;
     }
 
-    public void setDate(String date) {
+    void setDate(String date) {
         this.date = date;
     }
 
@@ -26,23 +26,23 @@ public class Document {
         return title;
     }
 
-    public void setTitle(String title) {
+    void setTitle(String title) {
         this.title = title;
     }
 
-    public String getContent() {
+    String getContent() {
         return content;
     }
 
-    public void setContent(String content) {
+    void setContent(String content) {
         this.content = content;
     }
 
-    public void print(){
-        System.out.println("id "+ id );
-        System.out.println("title "+title);
-        System.out.println("date "+date);
-        System.out.println("Text " +content);
+    public void print() {
+        System.out.println("id " + id);
+        System.out.println("title " + title);
+        System.out.println("date " + date);
+        System.out.println("Text " + content);
         System.out.println("-------------------------------------------------");
     }
 }

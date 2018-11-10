@@ -18,32 +18,33 @@ public class ReadFile {
         this.model = model;
     }
 
-    public void readFile(String path){
+    public List<String> readFile(String path){
         try {
             File currentDirectory = new File(path);
             String[] allDirectories = currentDirectory.list();
             for (String directory : allDirectories) {
                 File currentFile = new File(path + directory);
-                System.out.println("CUrrent " + directory);
+                System.out.println("Current file " + directory);
                 String allFiles = currentFile.list()[0];
                 List<String> lines = Files.readAllLines(Paths.get(path + directory + "/" + allFiles), StandardCharsets.ISO_8859_1);
-                model.processFile(lines);
+                return lines;
             }
         }catch (Exception e){
-            System.out.println(e);
+            System.out.println("Cannot open the file: " +path);
         }
+        return null;
     }
 
-    public HashSet<String> readStopWords() {
+    public HashSet<String> readStopWords(String path) {
         HashSet<String> stopWords = new HashSet<>();
-        File file = new File("C:\\Users\\ספיר רצון\\Desktop\\stop_words");
+        File file = new File(path);
         try {
             Scanner scanner = new Scanner(file);
             while (scanner.hasNextLine()) {
                 stopWords.add(scanner.nextLine());
             }
         } catch (FileNotFoundException e) {
-            System.out.println(e);
+            System.out.println("Cannot open the file: " +path);
         }
         return stopWords;
     }

@@ -6,25 +6,16 @@ import sample.Model.ReadFile;
 import java.io.IOException;
 
 public class Controller {
-    Model model;
-    private String path="C:\\Users\\ספיר רצון\\Desktop\\corpus\\";
+    private Model model;
+    private String filesPath="C:\\Users\\Guy Shuster\\Desktop\\temp\\corpus\\"; // @TODO Needs to be set by UI
+    private String stopWordsPath=".\\src\\main\\resources\\stop_words"; // @TODO Needs to be set by UI
 
-    public Controller() throws IOException {
+    public Controller(){
         model = new Model();
     }
 
-
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-
     public void readFiles() {
-        model.readFiles(path);
+        model.readFiles(filesPath,stopWordsPath);
 
     }
 }
