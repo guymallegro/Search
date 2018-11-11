@@ -56,7 +56,7 @@ class Parse {
     }
 
     private String parseNumbers(String token) {
-        if (token.length() > 3 && Character.isDigit(token.charAt(0)) && Character.isDigit(token.charAt(token.length() - 1)) && !token.contains("%")) {
+        if (token.length() > 3 && token.matches("[0-9]+")) {
             Boolean split = false;
             String toAdd = "";
             token = token.replaceAll(",", "");
