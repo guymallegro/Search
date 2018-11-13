@@ -10,6 +10,10 @@ public class Model {
     private HashSet<DocumentTerms> documentsTerms;
     private Parse parse;
     private ReadFile fileReader;
+    private DocumentTerms currentDocumentTerms;
+    private Document currentDocument;
+    private String text;
+    private boolean insideText;
 
     public Model() {
         documents = new ArrayList<>();
@@ -19,26 +23,34 @@ public class Model {
     }
 
     public void readFiles(String filesPath, String stopWordsPath) {
+        long tStart = System.currentTimeMillis();
         parse.setStopWords(fileReader.readStopWords(stopWordsPath));
-        processFile(fileReader.readFile(filesPath));
+        fileReader.readFile(filesPath);
+        System.out.println("--------------------------------------");
+        System.out.println("-----------------Complete-------------");
+        long tEnd = System.currentTimeMillis();
+        long tDelta = tEnd - tStart;
+        double elapsedSeconds = tDelta / 1000.0;
+        System.out.println("Time it took: "+elapsedSeconds +" seconds");
     }
 
     public void processFile(List<String> data) {
         createDocuments(data);
         for (Document document : documents) {
-            DocumentTerms currentDocumentTerms = new DocumentTerms(document.getId());
+            currentDocumentTerms = new DocumentTerms(document.getId());
             parse.setCurrentDocumentTerms(currentDocumentTerms);
             parse.parseDocument(document);
             documentsTerms.add(currentDocumentTerms);
-            currentDocumentTerms.print();
+            //currentDocumentTerms.print();
         }
         documents.clear();
+        documentsTerms.clear();
     }
 
     private void createDocuments(List<String> data) {
-        Document currentDocument = null;
-        String text = "";
-        boolean insideText = false;
+        currentDocument = null;
+        text = "";
+        insideText = false;
         for (String line : data) {
             if (!line.equals(""))
                 if (line.equals("</TEXT>")) {

@@ -18,7 +18,6 @@ public class Main extends Application {
         primaryStage.show();
         controller = new Controller();
         controller.readFiles();
-
     }
 
 

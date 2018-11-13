@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 class Parse {
-    private Stemmer stemmer;
     private boolean doStemming = true; //@TODO Needs to be set by UI
+    private Stemmer stemmer;
     private HashSet<String> stopWords;
     private Model model;
     private DocumentTerms currentDocumentTerms;
@@ -14,6 +14,13 @@ class Parse {
     private HashSet<String> money;
     private HashSet<String> date;
     private HashMap<String, Term> allTerms;
+    private StringBuilder result;
+    private Term newTerm;
+    private String phrase;
+    private String[] tokens;
+    private String toAdd;
+    private boolean split;
+    private String[] tempStrings;
 
     Parse(Model model) {
         this.model = model;
@@ -26,7 +33,7 @@ class Parse {
 
     void parseDocument(Document document) {
         if (document.getContent() != null) {
-            String[] tokens = document.getContent().split(" ");
+            tokens = document.getContent().split(" ");
             for (int i = 0; i < tokens.length; i++) {
                 if (!isStopWord(tokens[i]) && tokens[i] != "") {
                     tokens[i] = cleanString(tokens[i]);
@@ -37,7 +44,7 @@ class Parse {
                     }
                 }
             }
-            String phrase = "";
+            phrase = "";
             for (int i = 0; i < tokens.length; i++) {
                 tokens[i] = parseNumbers(tokens[i]);
                 if (numbers.containsKey(tokens[i])) {
@@ -57,44 +64,44 @@ class Parse {
 
     private String parseNumbers(String token) {
         if (token.length() > 3 && token.matches("[0-9]+")) {
-            Boolean split = false;
-            String toAdd = "";
+            split = false;
+            toAdd = "";
             token = token.replaceAll(",", "");
             if (token.contains(".")) {
                 split = true;
-                String[] tempStrings = token.split("\\.");
+                tempStrings = token.split("\\.");
                 token = tempStrings[0];
                 toAdd = tempStrings[1];
                 if(Integer.parseInt(token) < 1000)
                     return token+"."+toAdd;
             }
-            StringBuilder ans = new StringBuilder(token);
-            switch (ans.length()) {
+            result = new StringBuilder(token);
+            switch (result.length()) {
                 case 4:
                 case 7:
                 case 10:
-                    ans.insert(1, ".");
+                    result.insert(1, ".");
                     break;
                 case 5:
                 case 8:
                 case 11:
-                    ans.insert(2, ".");
+                    result.insert(2, ".");
                     break;
                 case 6:
                 case 9:
                 case 12:
-                    ans.insert(3, ".");
+                    result.insert(3, ".");
                     break;
             }
             if (split)
-                ans.insert(ans.length(), toAdd);
-            if (ans.length() - toAdd.length() < 8)
-                ans.insert(ans.length(), "K");
-            else if (ans.length() - toAdd.length() < 11)
-                ans.insert(ans.length(), "M");
+                result.insert(result.length(), toAdd);
+            if (result.length() - toAdd.length() < 8)
+                result.insert(result.length(), "K");
+            else if (result.length() - toAdd.length() < 11)
+                result.insert(result.length(), "M");
             else
-                ans.insert(ans.length(), "T");
-            return ans.toString();
+                result.insert(result.length(), "T");
+            return result.toString();
         }
         return token;
     }
@@ -102,7 +109,7 @@ class Parse {
     private void addTerm(String term) {
         if (term.length() > 0) {
             if (!allTerms.containsKey(term)) {
-                Term newTerm = new Term(term);
+                newTerm = new Term(term);
                 allTerms.put(term, newTerm);
                 currentDocumentTerms.addTermToText(newTerm);
             } else {

@@ -11,28 +11,29 @@ import java.util.List;
 import java.util.Scanner;
 
 public class ReadFile {
-
     private Model model;
+    private File currentFile;
+    private List<String> lines;
+    private String allFiles;
 
     public ReadFile(Model model) {
         this.model = model;
     }
 
-    public List<String> readFile(String path){
+    public void readFile(String path) {
         try {
             File currentDirectory = new File(path);
             String[] allDirectories = currentDirectory.list();
             for (String directory : allDirectories) {
-                File currentFile = new File(path + directory);
+                currentFile = new File(path + directory);
                 System.out.println("Current file " + directory);
-                String allFiles = currentFile.list()[0];
-                List<String> lines = Files.readAllLines(Paths.get(path + directory + "/" + allFiles), StandardCharsets.ISO_8859_1);
-                return lines;
+                allFiles = currentFile.list()[0];
+                lines = Files.readAllLines(Paths.get(path + directory + "/" + allFiles), StandardCharsets.ISO_8859_1);
+                model.processFile(lines);
             }
-        }catch (Exception e){
-            System.out.println("Cannot open the file: " +path);
+        } catch (Exception e) {
+            System.out.println("Cannot open the file: " + path);
         }
-        return null;
     }
 
     public HashSet<String> readStopWords(String path) {
@@ -44,7 +45,7 @@ public class ReadFile {
                 stopWords.add(scanner.nextLine());
             }
         } catch (FileNotFoundException e) {
-            System.out.println("Cannot open the file: " +path);
+            System.out.println("Cannot open the file: " + path);
         }
         return stopWords;
     }
