@@ -10,7 +10,7 @@ class Parse {
     private Model model;
     private DocumentTerms currentDocumentTerms;
     private HashMap<String, String> numbers;
-    private HashMap<String,String> percents;
+    private HashMap<String, String> percents;
     private HashSet<String> money;
     private HashSet<String> date;
     private HashMap<String, Term> allTerms;
@@ -49,9 +49,10 @@ class Parse {
                 tokens[i] = parseNumbers(tokens[i]);
                 if (numbers.containsKey(tokens[i])) {
                     phrase += numbers.get(tokens[i]);
-                }
-                else if(percents.containsKey(tokens[i])){
+                } else if (percents.containsKey(tokens[i])) {
                     phrase += percents.get(tokens[i]);
+                } else if(tokens[i].matches("[0-9]+[/][0-9]+")){
+                    phrase +=" "+tokens[i];
                 }
                 else {
                     addTerm(phrase);
@@ -63,7 +64,7 @@ class Parse {
     }
 
     private String parseNumbers(String token) {
-        if (token.length() > 3 && token.matches("[0-9]+")) {
+        if (token.length() > 3 && token.matches("[0-9,\\.,\\,]+")) {
             split = false;
             toAdd = "";
             token = token.replaceAll(",", "");
@@ -72,8 +73,8 @@ class Parse {
                 tempStrings = token.split("\\.");
                 token = tempStrings[0];
                 toAdd = tempStrings[1];
-                if(Integer.parseInt(token) < 1000)
-                    return token+"."+toAdd;
+                if (Integer.parseInt(token) < 1000)
+                    return token + "." + toAdd;
             }
             result = new StringBuilder(token);
             switch (result.length()) {
@@ -101,6 +102,7 @@ class Parse {
                 result.insert(result.length(), "M");
             else
                 result.insert(result.length(), "T");
+            removeRedundantZeros(result);
             return result.toString();
         }
         return token;
@@ -158,5 +160,15 @@ class Parse {
         numbers.put("Trillion", "T");
         percents.put("percent", "%");
         percents.put("percentag", "%");
+    }
+
+    private void removeRedundantZeros(StringBuilder string){
+        for(int i=string.length()-2;i>0;i--){
+            if(string.charAt(i) =='0'){
+                string.delete(i,i+1);
+            }
+            else
+                break;
+        }
     }
 }
