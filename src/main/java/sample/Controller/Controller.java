@@ -1,14 +1,11 @@
 package sample.Controller;
 
 import sample.Model.Model;
-import sample.Model.ReadFile;
-
-import java.io.IOException;
 
 public class Controller {
     private Model model;
-    private String filesPath="/home/guy/Desktop/Uni/test/"; // @TODO Needs to be set by UI
-    private String stopWordsPath="./src/main/resources/stop_words"; // @TODO Needs to be set by UI
+    private String filesPath="C:\\Users\\ספיר רצון\\Desktop\\test\\"; // @TODO Needs to be set by UI
+    private String stopWordsPath=".\\src\\main\\resources\\stop_words"; // @TODO Needs to be set by UI
 
     public Controller(){
         model = new Model();

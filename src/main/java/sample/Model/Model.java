@@ -41,7 +41,7 @@ public class Model {
             parse.setCurrentDocumentTerms(currentDocumentTerms);
             parse.parseDocument(document);
             documentsTerms.add(currentDocumentTerms);
-            currentDocumentTerms.print();
+            //currentDocumentTerms.print();
         }
         documents.clear();
         documentsTerms.clear();
@@ -82,4 +82,5 @@ public class Model {
     public ArrayList<Document> getDocuments() {
         return documents;
     }
+
 }

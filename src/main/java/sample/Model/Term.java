@@ -7,7 +7,7 @@ public class Term {
 
     public Term(String value) {
         this.value = value;
-        amount = 0;
+        amount = 1;
     }
 
     public void increaseAmount() {
@@ -17,4 +17,8 @@ public class Term {
     public String getValue() {
         return value;
     }
+
+    public int getAmount () {return amount;}
+
+    public void setAmount (int newAmount) {amount = newAmount;}
 }
