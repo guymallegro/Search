@@ -35,6 +35,7 @@ class Parse {
     }
 
     void parseDocument(Document document) {
+        phrase = "";
         if (document.getContent() != null) {
             tokens = splitDocument(document.getContent());
             for (int i = 0; i < tokens.size(); i++) {
@@ -49,48 +50,50 @@ class Parse {
                             System.out.println("Stemmer error for word :" + tokens.get(i));
                         }
                     }
-                }
-            }
-            phrase = "";
-            for (int i = 0; i < tokens.size(); i++) {
-                if (date.containsKey(phrase)) {
-                    if (tokens.get(i).matches("[0-9]+")) {
-                        if (Long.parseLong(tokens.get(i)) > 31)
-                            phrase = tokens.get(i) + "-" + date.get(phrase);
-                        else
-                            phrase = date.get(phrase) + "-" + String.format("%02d", Long.parseLong(tokens.get(i)));
-                        i++;
-                    }
-                } else if (date.containsKey(tokens.get(i)) && phrase.matches("[0-9]+")) {
-                    phrase = date.get(tokens.get(i)) + "-" + String.format("%02d", Long.parseLong(phrase));
-                } else if (i + 1 < tokens.size() && !tokens.get(i + 1).equals("Dollars") && !(tokens.get(i).charAt(0) == '$') && !tokens.get(i + 1).equals("Dollar")) {
-                    tokens.set(i, parseNumbers(tokens.get(i)));
-                }
-
-                if (tokens.size() > i) {
-                    if (numbers.containsKey(tokens.get(i))) {
-                        phrase += numbers.get(tokens.get(i));
-                    } else if (percents.containsKey(tokens.get(i))) {
-                        phrase += percents.get(tokens.get(i));
-                    } else if (tokens.get(i).matches("[0-9]+[/][0-9]+")) {
-                        phrase += " " + tokens.get(i);
-                    } else if (tokens.get(i).equals("Dollars") || tokens.get(i).equals("Dollar")) {
-                        phrase += " Dollars";
-                    } else if (tokens.get(i).charAt(0) == '$') {
-                          tokens.set(i,tokens.get(i).replaceAll(",", ""));
-                        if (Long.parseLong(tokens.get(i).substring(1)) < 1000000) {
-                            addTerm(phrase);
-                            phrase = tokens.get(i).substring(1) + " Dollars";
-                        } else {
+                        if (date.containsKey(phrase)) {
+                            if (tokens.get(i).matches("[0-9]+")) {
+                                if (Long.parseLong(tokens.get(i)) > 31)
+                                    phrase = tokens.get(i) + "-" + date.get(phrase);
+                                else
+                                    phrase = date.get(phrase) + "-" + String.format("%02d", Long.parseLong(tokens.get(i)));
+                                i++;
+                            }
+                        } else if (date.containsKey(tokens.get(i)) && phrase.matches("[0-9]+")) {
+                            phrase = date.get(tokens.get(i)) + "-" + String.format("%02d", Long.parseLong(phrase));
+                        } else if (i + 1 < tokens.size() && !tokens.get(i + 1).equals("Dollars") && !(tokens.get(i).charAt(0) == '$') && !tokens.get(i + 1).equals("Dollar")) {
                             tokens.set(i, parseNumbers(tokens.get(i)));
-                            double number= Double.parseDouble(tokens.get(i))/ Double.parseDouble(money.get(tokens.get(i)));
                         }
-                    } else {
-                        if (!phrase.equals("")) {
-                            addTerm(phrase);
+                        if (tokens.size() > i) {
+                            if (numbers.containsKey(tokens.get(i))) {
+                                phrase += numbers.get(tokens.get(i));
+                            } else if (percents.containsKey(tokens.get(i))) {
+                                phrase += percents.get(tokens.get(i));
+                            } else if (tokens.get(i).matches("[0-9]+[/][0-9]+")) {
+                                phrase += " " + tokens.get(i);
+                            } else if (tokens.get(i).equals("Dollars") || tokens.get(i).equals("Dollar")) {
+                                phrase += " Dollars";
+                            } else if (tokens.get(i).charAt(0) == '$' && tokens.get(i).matches("[$][0-9,/,]+")) {
+                                tokens.set(i,tokens.get(i).replaceAll(",", ""));
+                                tokens.set(i,tokens.get(i).replaceAll("O", "0"));
+                                tokens.set(i,tokens.get(i).replaceAll("l", "1"));
+                                if (tokens.get(i).length() > 1 && Double.parseDouble(tokens.get(i).substring(1)) < 1000000) {
+                                    addTerm(phrase);
+                                    phrase = tokens.get(i).substring(1) + " Dollars";
+                                } else if (tokens.get(i).length() > 1) {
+                                    tokens.set(i, parseNumbers(tokens.get(i).substring(1)));
+                                    double numerator = Double.parseDouble(tokens.get(i).substring(0, tokens.get(i).length() - 1));
+                                    double denominator = Double.parseDouble(money.get(tokens.get(i).substring(tokens.get(i).length() - 1)));
+                                    StringBuilder str = new StringBuilder(Double.toString(numerator / denominator));
+                                    removeRedundantZeros(str);
+                                    phrase = str.toString().substring(0, str.toString().length() - 1) + " M Dollars";
+                                }
+                            } else {
+                                if (!phrase.equals("")) {
+                                    addTerm(phrase);
+                                }
+                                phrase = tokens.get(i);
+                            }
                         }
-                        phrase = tokens.get(i);
-                    }
                 }
             }
             addTerm(phrase);
@@ -230,7 +233,9 @@ class Parse {
         date.put("DECEMBER", "12");
         money.put("million", "1");
         money.put("m", "1");
+        money.put("M", "1");
         money.put("billion", "0.001");
+        money.put("B", "0.001");
         money.put("bn", "0.001");
         money.put("trillion", "0.000001");
         money.put("T", "0.000001");
@@ -240,10 +245,24 @@ class Parse {
         for (int i = string.length() - 2; i > 0; i--) {
             if (string.charAt(i) == '0') {
                 string.delete(i, i + 1);
+            } else if (string.charAt(i) == '.') {
+                string.delete(i, i + 1);
+                break;
             } else
                 break;
         }
     }
+
+//    private void removeRedundantZeros(StringBuilder string) {
+//        int i = string.length() - 1;
+//        while (string.charAt(i) == '0' && !(string.charAt(i) == '.')) {
+//            string.delete(i, i + 1);
+//            i--;
+//        }
+//        if (string.charAt(i) == '.') {
+//            string.delete(i, i + 1);
+//        }
+//    }
 
     private ArrayList<String> splitDocument(String content) {
         ArrayList<String> ans = new ArrayList<>();

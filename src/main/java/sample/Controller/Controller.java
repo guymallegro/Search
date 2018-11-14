@@ -13,6 +13,5 @@ public class Controller {
 
     public void readFiles() {
         model.readFiles(filesPath,stopWordsPath);
-
     }
 }
