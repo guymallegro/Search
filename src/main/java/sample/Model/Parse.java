@@ -1,5 +1,6 @@
 package sample.Model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -11,13 +12,13 @@ class Parse {
     private DocumentTerms currentDocumentTerms;
     private HashMap<String, String> numbers;
     private HashMap<String, String> percents;
-    private HashSet<String> money;
-    private HashSet<String> date;
+    private HashMap<String, String> money;
+    private HashMap<String, String> date;
     private HashMap<String, Term> allTerms;
     private StringBuilder result;
     private Term newTerm;
     private String phrase;
-    private String[] tokens;
+    private ArrayList<String> tokens;
     private String toAdd;
     private boolean split;
     private String[] tempStrings;
@@ -27,36 +28,69 @@ class Parse {
         stemmer = new Stemmer();
         numbers = new HashMap<>();
         percents = new HashMap<>();
+        date = new HashMap<>();
+        money = new HashMap<>();
         allTerms = new HashMap<>();
         initRules();
     }
 
     void parseDocument(Document document) {
         if (document.getContent() != null) {
-            tokens = document.getContent().split(" ");
-            for (int i = 0; i < tokens.length; i++) {
-                if (!isStopWord(tokens[i]) && tokens[i] != "") {
-                    tokens[i] = cleanString(tokens[i]);
+            tokens = splitDocument(document.getContent());
+            for (int i = 0; i < tokens.size(); i++) {
+                if (!isStopWord(tokens.get(i))) {
+                    tokens.set(i, cleanString(tokens.get(i)));
                     if (doStemming) {
-                        stemmer.setTerm(tokens[i]);
-                        stemmer.stem();
-                        tokens[i] = stemmer.getTerm();
+                        try {
+                            stemmer.setTerm(tokens.get(i));
+                            stemmer.stem();
+                            tokens.set(i, stemmer.getTerm());
+                        } catch (Exception e) {
+                            System.out.println("Stemmer error for word :" + tokens.get(i));
+                        }
                     }
                 }
             }
             phrase = "";
-            for (int i = 0; i < tokens.length; i++) {
-                tokens[i] = parseNumbers(tokens[i]);
-                if (numbers.containsKey(tokens[i])) {
-                    phrase += numbers.get(tokens[i]);
-                } else if (percents.containsKey(tokens[i])) {
-                    phrase += percents.get(tokens[i]);
-                } else if(tokens[i].matches("[0-9]+[/][0-9]+")){
-                    phrase +=" "+tokens[i];
+            for (int i = 0; i < tokens.size(); i++) {
+                if (date.containsKey(phrase)) {
+                    if (tokens.get(i).matches("[0-9]+")) {
+                        if (Long.parseLong(tokens.get(i)) > 31)
+                            phrase = tokens.get(i) + "-" + date.get(phrase);
+                        else
+                            phrase = date.get(phrase) + "-" + String.format("%02d", Long.parseLong(tokens.get(i)));
+                        i++;
+                    }
+                } else if (date.containsKey(tokens.get(i)) && phrase.matches("[0-9]+")) {
+                    phrase = date.get(tokens.get(i)) + "-" + String.format("%02d", Long.parseLong(phrase));
+                } else if (i + 1 < tokens.size() && !tokens.get(i + 1).equals("Dollars") && !(tokens.get(i).charAt(0) == '$') && !tokens.get(i + 1).equals("Dollar")) {
+                    tokens.set(i, parseNumbers(tokens.get(i)));
                 }
-                else {
-                    addTerm(phrase);
-                    phrase = tokens[i];
+
+                if (tokens.size() > i) {
+                    if (numbers.containsKey(tokens.get(i))) {
+                        phrase += numbers.get(tokens.get(i));
+                    } else if (percents.containsKey(tokens.get(i))) {
+                        phrase += percents.get(tokens.get(i));
+                    } else if (tokens.get(i).matches("[0-9]+[/][0-9]+")) {
+                        phrase += " " + tokens.get(i);
+                    } else if (tokens.get(i).equals("Dollars") || tokens.get(i).equals("Dollar")) {
+                        phrase += " Dollars";
+                    } else if (tokens.get(i).charAt(0) == '$') {
+                          tokens.set(i,tokens.get(i).replaceAll(",", ""));
+                        if (Long.parseLong(tokens.get(i).substring(1)) < 1000000) {
+                            addTerm(phrase);
+                            phrase = tokens.get(i).substring(1) + " Dollars";
+                        } else {
+                            tokens.set(i, parseNumbers(tokens.get(i)));
+                            double number= Double.parseDouble(tokens.get(i))/ Double.parseDouble(money.get(tokens.get(i)));
+                        }
+                    } else {
+                        if (!phrase.equals("")) {
+                            addTerm(phrase);
+                        }
+                        phrase = tokens.get(i);
+                    }
                 }
             }
             addTerm(phrase);
@@ -73,7 +107,7 @@ class Parse {
                 tempStrings = token.split("\\.");
                 token = tempStrings[0];
                 toAdd = tempStrings[1];
-                if (Integer.parseInt(token) < 1000)
+                if (Long.parseLong(token) < 1000)
                     return token + "." + toAdd;
             }
             result = new StringBuilder(token);
@@ -109,6 +143,7 @@ class Parse {
     }
 
     private void addTerm(String term) {
+        System.out.println(term);
         if (term.length() > 0) {
             if (!allTerms.containsKey(term)) {
                 newTerm = new Term(term);
@@ -128,19 +163,20 @@ class Parse {
     }
 
     private String cleanString(String str) {
-        if (str.length() == 0)
-            return "";
-        int ascii = (int) str.charAt(0);
-        while (!((ascii >= 48 && ascii <= 57) || (ascii >= 65 && ascii <= 90) ||
-                (ascii >= 97 && ascii <= 122) || str.length() == 1)) {
-            str = str.substring(1);
-            ascii = (int) str.charAt(0);
+        char current = str.charAt(0);
+        while (!(Character.isLetter(current) || Character.isDigit(current) || current == '$')) {
+            if (str.length() > 1) {
+                str = str.substring(1);
+                current = str.charAt(0);
+            } else
+                return str;
         }
-        ascii = (int) str.charAt(str.length() - 1);
-        while (!((ascii >= 48 && ascii <= 57) || (ascii >= 65 && ascii <= 90) ||
-                (ascii >= 97 && ascii <= 122) || str.length() == 1 || ascii == 37)) {
-            str = str.substring(0, str.length() - 1);
-            ascii = (int) str.charAt(str.length() - 1);
+        current = str.charAt(str.length() - 1);
+        while (!(Character.isLetter(current) || Character.isDigit(current)) || current == '%') {
+            if (str.length() > 1) {
+                str = str.substring(0, str.length() - 1);
+                current = str.charAt(str.length() - 1);
+            } else return str;
         }
         return str;
     }
@@ -160,15 +196,70 @@ class Parse {
         numbers.put("Trillion", "T");
         percents.put("percent", "%");
         percents.put("percentag", "%");
+        percents.put("percentage", "%");
+        date.put("January", "01");
+        date.put("Januari", "01");
+        date.put("JANUARY", "01");
+        date.put("February", "02");
+        date.put("Februari", "02");
+        date.put("FEBRUARY", "02");
+        date.put("March", "03");
+        date.put("MARCH", "03");
+        date.put("April", "04");
+        date.put("APRIL", "04");
+        date.put("Mai", "05");
+        date.put("May", "05");
+        date.put("MAY", "05");
+        date.put("June", "06");
+        date.put("JUNE", "06");
+        date.put("July", "07");
+        date.put("Juli", "07");
+        date.put("JULY", "07");
+        date.put("August", "08");
+        date.put("AUGUST", "08");
+        date.put("September", "09");
+        date.put("Septemb", "09");
+        date.put("SEPTEMBER", "09");
+        date.put("October", "10");
+        date.put("OCTOBER", "10");
+        date.put("November", "11");
+        date.put("Novemb", "11");
+        date.put("NOVEMBER", "11");
+        date.put("December", "12");
+        date.put("Decemb", "12");
+        date.put("DECEMBER", "12");
+        money.put("million", "1");
+        money.put("m", "1");
+        money.put("billion", "0.001");
+        money.put("bn", "0.001");
+        money.put("trillion", "0.000001");
+        money.put("T", "0.000001");
     }
 
-    private void removeRedundantZeros(StringBuilder string){
-        for(int i=string.length()-2;i>0;i--){
-            if(string.charAt(i) =='0'){
-                string.delete(i,i+1);
-            }
-            else
+    private void removeRedundantZeros(StringBuilder string) {
+        for (int i = string.length() - 2; i > 0; i--) {
+            if (string.charAt(i) == '0') {
+                string.delete(i, i + 1);
+            } else
                 break;
         }
     }
+
+    private ArrayList<String> splitDocument(String content) {
+        ArrayList<String> ans = new ArrayList<>();
+        int i = 0;
+        while (i < content.length()) {
+            String token = "";
+            while (content.length() > i && content.charAt(i) != ' ') {
+                token += content.charAt(i);
+                i++;
+            }
+            if (!token.equals(""))
+                ans.add(token);
+            i++;
+        }
+        return ans;
+    }
+
+
 }

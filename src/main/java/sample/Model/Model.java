@@ -31,17 +31,18 @@ public class Model {
         long tEnd = System.currentTimeMillis();
         long tDelta = tEnd - tStart;
         double elapsedSeconds = tDelta / 1000.0;
-        System.out.println("Time it took: "+elapsedSeconds +" seconds");
+        System.out.println("Time it took: " + elapsedSeconds + " seconds");
     }
 
     public void processFile(List<String> data) {
         createDocuments(data);
         for (Document document : documents) {
+            //System.out.println("Current document :" + document.getId());
             currentDocumentTerms = new DocumentTerms(document.getId());
             parse.setCurrentDocumentTerms(currentDocumentTerms);
             parse.parseDocument(document);
             documentsTerms.add(currentDocumentTerms);
-            currentDocumentTerms.print();
+            //currentDocumentTerms.print();
         }
         documents.clear();
         documentsTerms.clear();
