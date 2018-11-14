@@ -21,19 +21,20 @@ public class ReadFile {
     }
 
     public void readFile(String path) {
-        try {
             File currentDirectory = new File(path);
             String[] allDirectories = currentDirectory.list();
             for (String directory : allDirectories) {
                 currentFile = new File(path + directory);
                 System.out.println("Current file " + directory);
                 allFiles = currentFile.list()[0];
-                lines = Files.readAllLines(Paths.get(path + directory + "/" + allFiles), StandardCharsets.ISO_8859_1);
+                try {
+                    lines = Files.readAllLines(Paths.get(path + directory + "/" + allFiles), StandardCharsets.ISO_8859_1);
+                }
+                catch (Exception e){
+                    System.out.println("Cannot open file: "+path);
+                }
                 model.processFile(lines);
             }
-        } catch (Exception e) {
-            System.out.println("Cannot open the file: " + path);
-        }
     }
 
     public HashSet<String> readStopWords(String path) {
