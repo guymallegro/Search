@@ -15,6 +15,13 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
+//        String ans = "1st";
+//        String ans2 = "1,665";
+//        String ans3 = "$10000000";
+//        boolean a = ans.contains("[a-z]");
+//        boolean ab = ans2.matches("[0-9]+"+"[.]?"+"[0-9]+");
+//        boolean abb = ans3.matches("[$][0-9]+"+"[,]?"+"[0-9]+");
+
         Parent root = FXMLLoader.load(getClass().getResource("/sample.fxml"));
         primaryStage.setTitle("Hello World");
         primaryStage.setScene(new Scene(root, 300, 275));

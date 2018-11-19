@@ -14,6 +14,10 @@ public class Term {
         amount++;
     }
 
+    public void decreaseAmount() {
+        amount--;
+    }
+
     public String getValue() {
         return value;
     }
