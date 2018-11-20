@@ -30,10 +30,9 @@ class Parse {
 
     void parseDocument(Document document) {
         if (document.getContent() != null) {
-            tokens = splitDocument (document.getContent());
+            splitDocument (document.getContent());
             for (int i = 0; i < tokens.size(); i++) {
                 if (!tokens.get(i).equals("") && !isStopWord(tokens.get(i))) {
-                    tokens.set(i, cleanString(tokens.get(i)));
                     if (doStemming) {
                         stemmer.setTerm(tokens.get(i));
                         stemmer.stem();
@@ -55,7 +54,6 @@ class Parse {
                     }
                     else if (date.containsKey(tokens.get(i))){
                         if (i + 1 < tokens.size())  {
-                            tokens.set(i + 1,cleanString(tokens.get(i + 1)));
                             if (tokens.get(i + 1).matches("[0-9]+")) {
                                 if (tokens.get(i + 1).length() == 4)
                                     tokens.set(i, tokens.get(i + 1) + "-" + date.get(tokens.get(i)));
@@ -71,10 +69,10 @@ class Parse {
                             if (Character.isDigit(tokens.get(i + 1).charAt(0)) &&
                                     tokens.get(i + 2).equals("and") &&
                                     Character.isDigit(tokens.get(i + 3).charAt(0))) {
-                                tokens.set(i + 1, tokens.get(i + 1) + "-" + tokens.get(i + 3)); // check if the change update !!!
-                                tokens.remove(i + 3);
-                                tokens.remove(i + 2);
-                                tokens.remove(i);
+                                tokens.set(i, tokens.get(i + 1) + "-" + tokens.get(i + 3));
+                                tokens.set(i + 3, "");
+                                tokens.set(i + 2, "");
+                                tokens.set(i + 1, "");
                             }
                         }
                     }
@@ -115,7 +113,6 @@ class Parse {
             return true;
         }
         else if (i + 1 < tokens.size() && tokens.get(i+1).contains("/")){
-            tokens.set(i + 1, cleanString(tokens.get(i + 1)));
             if (tokens.get(i).matches("[0-9]+") && tokens.get(i + 1).matches("[0-9]+[/][0-9]+")){
                 tokens.set(i + 1, tokens.get(i) + " " + tokens.get(i + 1));
                 checkLittleMoney(i + 1);
@@ -129,7 +126,6 @@ class Parse {
 
     private boolean checkLittleMoney (int i){
         if (i + 1 < tokens.size() && tokens.get(i + 1).contains("Dollar")){
-            tokens.set(i + 1, cleanString(tokens.get(i + 1)));
             if ((tokens.get(i).length() > 6) || (tokens.get(i).contains(",") && tokens.get(i).length() > 7))
                 return false;
             tokens.set(i, tokens.get(i) + " Dollars");
@@ -148,7 +144,6 @@ class Parse {
 
     private boolean checkPercent(int i) {
         if (i + 1 < tokens.size()){
-            tokens.set(i+1, cleanString(tokens.get(i + 1)));
             if (percents.containsKey(tokens.get(i+1))) {
                 tokens.set(i, tokens.get(i) + "%");
                 tokens.set(i + 1, "");
@@ -163,11 +158,10 @@ class Parse {
 
     private boolean checkDate(int i) {
         if (i + 1 < tokens.size()){
-            tokens.set(i + 1, cleanString(tokens.get(i + 1)));
             if (date.containsKey(tokens.get(i + 1))) {
                 tokens.set(i, date.get(tokens.get(i + 1)) + "-" + String.format("%02d", Integer.parseInt(tokens.get(i))));
                 if (i + 2 < tokens.size()) {
-                    tokens.set(i + 2, cleanString(tokens.get(i + 2)));
+                    //tokens.set(i + 2, cleanString(tokens.get(i + 2)));
                     if (tokens.get(i + 2).matches("[0-9][0-9][0-9][0-9]")) {
                         addTerm(tokens.get(i + 2) + "-" + date.get(tokens.get(i + 1)));
                         tokens.set(i + 2, "");
@@ -177,27 +171,14 @@ class Parse {
                 return true;
             }
         }
-//        if (date.containsKey(tokens.get(i))){
-//            if (tokens.get(i+1).length() == 4)
-//                //addTerm(tokens.get(i+1) + "-" + date.get(tokens.get(i)));
-//                tokens.set(i, tokens.get(i+1) + "-" + date.get(tokens.get(i)));
-//            else if (tokens.get(i+1).length() == 0){
-//                return false;
-//            }
-//            else
-//                //addTerm(date.get(tokens.get(i)) + "-" + String.format("%02d", Integer.parseInt(tokens.get(i+1))));
-//                tokens.set(i, date.get(tokens.get(i)) + "-" + String.format("%02d", Integer.parseInt(tokens.get(i+1))));
-//            tokens.set(i + 1, "");
-//            return true;
-//        }
         return false;
     }
 
     private boolean checkMoney(int i) {
         if (i < tokens.size() - 3){
-            tokens.set(i + 3, cleanString(tokens.get(i + 3)));
-            tokens.set(i + 2, cleanString(tokens.get(i + 2)));
-            tokens.set(i + 1, cleanString(tokens.get(i + 1)));
+//            tokens.set(i + 3, cleanString(tokens.get(i + 3)));
+//            tokens.set(i + 2, cleanString(tokens.get(i + 2)));
+//            tokens.set(i + 1, cleanString(tokens.get(i + 1)));
             if (tokens.get(i + 2).equals("U.S.") && ((tokens.get(i + 3).equals("dollars")) || (tokens.get(i + 3).equals("dollar")))){
                 tokens.set(i, '$' + tokens.get(i));
                 tokens.set(i + 2, "");
@@ -205,8 +186,8 @@ class Parse {
             }
         }
         if (i < tokens.size() - 2){
-            tokens.set(i + 2, cleanString(tokens.get(i + 2)));
-            tokens.set(i + 1, cleanString(tokens.get(i + 1)));
+//            tokens.set(i + 2, cleanString(tokens.get(i + 2)));
+//            tokens.set(i + 1, cleanString(tokens.get(i + 1)));
             if (money.containsKey(tokens.get(i + 1)) && (tokens.get(i + 2).equals("Dollars") || tokens.get(i + 2).equals("dollars") ||
                     tokens.get(i + 2).equals("Dollar") || tokens.get(i + 2).equals("dollar"))) {
                 tokens.set(i + 2, "");
@@ -216,7 +197,7 @@ class Parse {
         if (i < tokens.size() - 1){
             //tokens.set(i + 1, cleanString(tokens.get(i + 1)));
             if (tokens.get(i+1).contains("Dollar")) {
-                tokens.set(i + 1, cleanString(tokens.get(i + 1)));
+//                tokens.set(i + 1, cleanString(tokens.get(i + 1)));
                 tokens.set(i, '$' + tokens.get(i));
                 tokens.set(i + 1, "");
             }
@@ -244,15 +225,12 @@ class Parse {
 
     private boolean checkNumber(int i) {
         tokens.set(i, tokens.get(i).replaceAll(",", ""));
-        tokens.set(i, cleanString(tokens.get(i)));
-        if (i + 1 < tokens.size())
-            tokens.set(i + 1, cleanString(tokens.get(i + 1)));
         double num = new BigDecimal(Double.parseDouble(tokens.get(i))).doubleValue();
         if (i + 1 < tokens.size() && numbers.containsKey(tokens.get(i + 1))){
             if (tokens.get(i + 1).equals("Trillion"))
                 num *= 100;
             if (num < 1000){
-                if (num % (double) 1 == 0) { // maybe 0.0?
+                if (num % (double) 1 == 0) {
                     tokens.set(i, Integer.toString((int)num) + numbers.get(tokens.get(i + 1)));
                     tokens.set(i + 1, "");
                     return true;
@@ -358,8 +336,8 @@ class Parse {
         //System.out.println(term + "    Amount: (" + allTerms.get(term).getAmount() + ")");
     }
 
-    private ArrayList<String> splitDocument(String content) {
-        ArrayList <String> ans = new ArrayList<>();
+    private void splitDocument(String content) {
+        tokens = new ArrayList<>();
         int i = 0;
         while (i < content.length()) {
             String token = "";
@@ -367,11 +345,11 @@ class Parse {
                 token += content.charAt(i);
                 i++;
             }
-            if (!token.equals(""))
-                ans.add(token);
+            if (!token.equals("")){
+                tokens.add(cleanString(token));
+            }
             i++;
         }
-        return ans;
     }
 
     void setStopWords(HashSet<String> stopWords) {
