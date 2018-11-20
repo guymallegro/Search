@@ -17,7 +17,10 @@ class Parse {
     private HashMap<String, String> money;
     private HashMap<String, String> date;
     private HashMap<String, Term> allTerms;
-    ArrayList<String> tokens;
+    private String[] tests;
+    private ArrayList<String> tokens;
+    private int currentTest=0;
+    private boolean toTest = false;
 
     Parse(Model model) {
         tokens = new ArrayList<>();
@@ -28,7 +31,10 @@ class Parse {
         date = new HashMap<>();
         money = new HashMap<>();
         initRules();
+        initTests();
     }
+
+
 
     void parseDocument(Document document) {
         if (document.getContent() != null) {
@@ -335,6 +341,21 @@ class Parse {
 
     private void addTerm(String term) {
         if (term.length() > 0) {
+            if(term.equals("NEW-TEST")){
+                toTest=true;
+                return;
+            }
+            if(toTest){
+                if(term.equals(tests[currentTest])){
+                    System.out.println("Successful test : "+term);
+                }
+                else{
+                    System.out.println("FAILED TEST!!! Got : " + term +" , Expected "+ tests[currentTest]);
+                }
+                toTest = false;
+                currentTest++;
+            }
+          //  System.out.println(term);
             if (!allTerms.containsKey(term)) {
                 Term newTerm = new Term(term);
                 allTerms.put(term, newTerm);
@@ -344,7 +365,7 @@ class Parse {
                 currentDocumentTerms.addTermToText(allTerms.get(term));
             }
         }
-        System.out.println(term + "    Amount: (" + allTerms.get(term).getAmount() + ")");
+        //System.out.println(term + "    Amount: (" + allTerms.get(term).getAmount() + ")");
     }
 
     private void splitDocument(String content) {
@@ -460,5 +481,42 @@ class Parse {
 //        date.put ("December", "12");
 //        date.put ("DECEMBER", "12");
 
+    }
+    private void initTests() {
+        tests=new String[40];
+        tests[0]="10.123K";
+        tests[1]="123K";
+        tests[2]="1.01056K";
+        tests[3]="10.123M";
+        tests[4]="55M";
+        tests[5]="10.123B";
+        tests[6]="55B";
+        tests[7]="700B";
+        tests[8]="204";
+        tests[9]="35.66";
+        tests[10]="35 3/4";
+        tests[11]="6%";
+        tests[12]="10.6%";
+        tests[13]="10.6%";
+        tests[14]="1.7320 Dollars";
+        tests[15]="22 3/4 Dollars";
+        tests[16]="450,000 Dollars";
+        tests[17]="1 M Dollars";
+        tests[18]="450 M Dollars";
+        tests[19]="100 M Dollars";
+        tests[20]="20.6 M Dollars";
+        tests[21]="100000 M Dollars";
+        tests[22]="100000 M Dollars";
+        tests[23]="100000 M Dollars";
+        tests[24]="320 M Dollars";
+        tests[25]="1000000 M Dollars";
+        tests[26]="05-14";
+        tests[27]="06-04";
+        tests[28]="1994-05";
+        tests[29]="Value-added";
+        tests[30]="step-by-step";
+        tests[31]="10-part";
+        tests[32]="6-7";
+        tests[33]="between 18 and 24)";
     }
 }
