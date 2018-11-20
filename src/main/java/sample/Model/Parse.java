@@ -4,8 +4,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 class Parse {
     private Stemmer stemmer;
@@ -34,18 +32,18 @@ class Parse {
         initTests();
     }
 
-
     void parseDocument(Document document) {
         if (document.getContent() != null) {
             splitDocument(document.getContent());
             for (int i = 0; i < tokens.size(); i++) {
-                if (!tokens.get(i).equals("") && (!isStopWord(tokens.get(i)) || (tokens.get(i).equals("between") && Character.isDigit(tokens.get(i + 1).charAt(0))))) {
+                if (tokens.get(i).length() > 0 && (!isStopWord(tokens.get(i)) || (tokens.get(i).equals("between") && (i < tokens.size() - 1 && tokens.get(i + 1).length() > 0 && Character.isDigit(tokens.get(i + 1).charAt(0)))))) {
                     if (doStemming) {
                         stemmer.setTerm(tokens.get(i));
                         stemmer.stem();
                         tokens.set(i, stemmer.getTerm());
                     }
                     if (checkRange(i)) {
+                    } else if (containsIllegalSymbols(tokens.get(i))) {
                     } else if (checkFraction(i)) {
                     } else if (checkLittleMoney(i)) {
                     } else if (Character.isDigit(tokens.get(i).charAt(0)) || tokens.get(i).charAt(0) == '$') {
@@ -58,7 +56,7 @@ class Parse {
                     } else if (tokens.get(i).contains("-")) {
                     } else if (date.containsKey(tokens.get(i))) {
                         if (i + 1 < tokens.size()) {
-                            if (tokens.get(i + 1).matches("[0-9]+")) {
+                            if (i < tokens.size()-1 && tokens.get(i + 1).matches("[0-9]+")) {
                                 if (tokens.get(i + 1).length() == 4)
                                     tokens.set(i, tokens.get(i + 1) + "-" + date.get(tokens.get(i)));
                                 else if (tokens.get(i + 1).length() == 0) {
@@ -127,12 +125,14 @@ class Parse {
                 if (tokens.get(i).length() > 7)
                     return false;
             }
-            if (tokens.get(i + 1).contains("million")) {
-                tokens.set(i, tokens.get(i).substring(1) + " M" + " Dollars");
-                return true;
-            } else if (tokens.get(i + 1).contains("billion")) {
-                tokens.set(i, tokens.get(i).substring(1) + "000 M" + " Dollars");
-                return true;
+            if (i < tokens.size() - 1) {
+                if (tokens.get(i + 1).contains("million")) {
+                    tokens.set(i, tokens.get(i).substring(1) + " M" + " Dollars");
+                    return true;
+                } else if (tokens.get(i + 1).contains("billion")) {
+                    tokens.set(i, tokens.get(i).substring(1) + "000 M" + " Dollars");
+                    return true;
+                }
             }
             tokens.set(i, tokens.get(i).substring(1) + " Dollars");
             return true;
@@ -155,6 +155,8 @@ class Parse {
     }
 
     private boolean checkDate(int i) {
+        if (containsCommas(tokens.get(i)))
+            return false;
         if (i + 1 < tokens.size()) {
             if (date.containsKey(tokens.get(i + 1))) {
                 tokens.set(i, date.get(tokens.get(i + 1)) + "-" + String.format("%02d", Integer.parseInt(tokens.get(i))));
@@ -181,8 +183,6 @@ class Parse {
             }
         }
         if (i < tokens.size() - 2) {
-//            tokens.set(i + 2, cleanString(tokens.get(i + 2)));
-//            tokens.set(i + 1, cleanString(tokens.get(i + 1)));
             if (money.containsKey(tokens.get(i + 1)) && (tokens.get(i + 2).equals("Dollars") || tokens.get(i + 2).equals("dollars") ||
                     tokens.get(i + 2).equals("Dollar") || tokens.get(i + 2).equals("dollar"))) {
                 tokens.set(i + 2, "");
@@ -190,17 +190,22 @@ class Parse {
             }
         }
         if (i < tokens.size() - 1) {
-            //tokens.set(i + 1, cleanString(tokens.get(i + 1)));
             if (tokens.get(i + 1).contains("Dollar")) {
-//                tokens.set(i + 1, cleanString(tokens.get(i + 1)));
                 tokens.set(i, '$' + tokens.get(i));
                 tokens.set(i + 1, "");
             }
         }
         if (tokens.get(i).charAt(0) == '$') {
-            if (money.containsKey(tokens.get(i + 1))) {
+            if (i < tokens.size() - 1 && money.containsKey(tokens.get(i + 1))) {
+                tokens.set(i, tokens.get(i).replaceAll(",", ""));
                 String first = tokens.get(i).substring(1);
-                double number = Double.parseDouble(first) / Double.parseDouble(money.get(tokens.get(i + 1)));
+                double num=0;
+                try {
+                    num = new BigDecimal(Double.parseDouble(first)).doubleValue();
+                }catch (Exception e){
+                    System.out.println("Illegal word");
+                }
+                double number = num / Double.parseDouble(money.get(tokens.get(i + 1)));
                 if (number % (double) 1 == 0)
                     tokens.set(i, Integer.toString((int) number) + " M Dollars");
                 else
@@ -209,8 +214,12 @@ class Parse {
                 return true;
             } else {
                 tokens.set(i, tokens.get(i).substring(1));
-                checkNumber(i);
-                tokens.set(i, tokens.get(i).substring(0, tokens.get(i).length() - 1) + " M Dollars");
+                if(checkNumber(i)) {
+                    tokens.set(i, tokens.get(i).substring(0, tokens.get(i).length() - 1) + " M Dollars");
+                }
+                else{
+                    tokens.set(i, tokens.get(i).substring(0, tokens.get(i).length() - 1) + " Dollars");
+                }
                 return true;
             }
         }
@@ -218,8 +227,15 @@ class Parse {
     }
 
     private boolean checkNumber(int i) {
+        if (illegalNumber(tokens.get(i)))
+            return true;
         tokens.set(i, tokens.get(i).replaceAll(",", ""));
-        double num = new BigDecimal(Double.parseDouble(tokens.get(i))).doubleValue();
+        double num=0;
+        try {
+            num = new BigDecimal(Double.parseDouble(tokens.get(i))).doubleValue();
+        }catch (Exception e){
+            System.out.println("Illegal word");
+        }
         if (i + 1 < tokens.size() && numbers.containsKey(tokens.get(i + 1))) {
             if (tokens.get(i + 1).equals("Trillion"))
                 num *= 100;
@@ -373,13 +389,43 @@ class Parse {
     private boolean checkIfContainsLetters(String s) {
         for (int i = 0; i < s.length(); i++) {
             int ascii = (int) s.charAt(i);
-            if ((ascii >= 65 && ascii <= 90) || (ascii >= 65 && ascii <= 90)) {
+            if ((ascii >= 65 && ascii <= 90) || (ascii >= 97 && ascii <= 122)) {
                 return true;
             }
         }
         return false;
 
     }
+
+    private boolean containsIllegalSymbols(String s) {
+        for (int i = 0; i < s.length(); i++) {
+            int ascii = (int) s.charAt(i);
+            if (ascii <= 35 || (ascii >= 38 && ascii <= 43) || ascii == 47 || (ascii >= 58 && ascii <= 64) || (ascii >= 91 && ascii <= 96) || ascii >= 123)
+
+                return true;
+        }
+        return false;
+    }
+
+    private boolean containsCommas(String s) {
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '.' || s.charAt(i) == ',')
+                return true;
+        }
+        return false;
+    }
+
+    private boolean illegalNumber(String s) {
+        int counter = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '.')
+                counter++;
+            if (counter > 1 || s.charAt(i) == '$')
+                return true;
+        }
+        return false;
+    }
+
 
     private void initRules() {
         numbers.put("Thousand", "K");
@@ -467,5 +513,6 @@ class Parse {
         tests[31] = "10-part";
         tests[32] = "6-7";
         tests[33] = "18-24";
+        tests[34] = "478.79 Dollars";
     }
 }
