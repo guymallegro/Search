@@ -363,7 +363,7 @@ class Parse {
                 currentDocumentTerms.addTermToText(allTerms.get(term));
             }
         }
-        //System.out.println(term + "    Amount: (" + allTerms.get(term).getAmount() + ")");
+        System.out.println(term + "    Amount: (" + allTerms.get(term).getAmount() + ")");
     }
 
     private void splitDocument(String content) {
