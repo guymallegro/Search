@@ -513,7 +513,7 @@ class Parse {
         tests[26]="05-14";
         tests[27]="06-04";
         tests[28]="1994-05";
-        tests[29]="Value-add";
+        tests[29]="Value-ad";
         tests[30]="step-by-step";
         tests[31]="10-part";
         tests[32]="6-7";
