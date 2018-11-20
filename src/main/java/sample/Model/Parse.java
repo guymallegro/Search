@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 class Parse {
     private Stemmer stemmer;
@@ -44,8 +46,12 @@ class Parse {
                     else if (checkLittleMoney(i)){
                     }
                     else if (Character.isDigit(tokens.get(i).charAt(0)) || tokens.get(i).charAt(0) == '$') {
-                        if (!(tokens.get(i).matches("[0-9]+"))){
-                        } else if (checkPercent(i)) {
+                        Pattern p = Pattern.compile("[a-zA-Z]");
+                        Matcher m = p.matcher(tokens.get(i));
+
+                        if(m.find()){}
+                        //if ((tokens.get(i).matches("[0-9]+"+"[.]?"))){ // need to check if there is letter
+                        else if (checkPercent(i)) {
                         } else if (checkDate(i)) {
                         } else if (checkMoney(i)) {
                         } else if (checkNumber(i)) { }
@@ -179,7 +185,7 @@ class Parse {
 //            tokens.set(i + 3, cleanString(tokens.get(i + 3)));
 //            tokens.set(i + 2, cleanString(tokens.get(i + 2)));
 //            tokens.set(i + 1, cleanString(tokens.get(i + 1)));
-            if (tokens.get(i + 2).equals("U.S.") && ((tokens.get(i + 3).equals("dollars")) || (tokens.get(i + 3).equals("dollar")))){
+            if (tokens.get(i + 2).equals("U.S") && ((tokens.get(i + 3).equals("dollars")) || (tokens.get(i + 3).equals("dollar")))){
                 tokens.set(i, '$' + tokens.get(i));
                 tokens.set(i + 2, "");
                 tokens.set(i + 3, "");
@@ -300,18 +306,23 @@ class Parse {
             return "";
         char current = str.charAt(0);
         while (!(Character.isLetter(current) || Character.isDigit(current) || current == '$')) {
-            if (str.length() > 1) {
+            if (str.length() == 1) {
+                return str;
+            }
+            else {
                 str = str.substring(1);
                 current = str.charAt(0);
-            } else
-                return str;
+            }
         }
         current = str.charAt(str.length() - 1);
-        while (!(Character.isLetter(current) || Character.isDigit(current)) || current == '%') {
-            if (str.length() > 1) {
+        while (!(Character.isLetter(current) || Character.isDigit(current) || current == '%')) {
+            if (str.length() == 1) {
+                return str;
+            }
+            else{
                 str = str.substring(0, str.length() - 1);
                 current = str.charAt(str.length() - 1);
-            } else return str;
+            }
         }
         return str;
     }
@@ -333,7 +344,7 @@ class Parse {
                 currentDocumentTerms.addTermToText(allTerms.get(term));
             }
         }
-        //System.out.println(term + "    Amount: (" + allTerms.get(term).getAmount() + ")");
+        System.out.println(term + "    Amount: (" + allTerms.get(term).getAmount() + ")");
     }
 
     private void splitDocument(String content) {
