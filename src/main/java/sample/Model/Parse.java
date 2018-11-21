@@ -20,7 +20,7 @@ class Parse {
     private int currentTest = 0;
     private boolean toTest = false;
 
-    Parse(Model model) {
+    Parse() {
         tokens = new ArrayList<>();
         stemmer = new Stemmer();
         numbers = new HashMap<>();
@@ -42,9 +42,10 @@ class Parse {
                         stemmer.stem();
                         tokens.set(i, stemmer.getTerm());
                     }
-                    if (checkRange(i)) {
-                    } else if (containsIllegalSymbols(tokens.get(i))) {
-                    } else if (checkFraction(i)) {
+                    if (checkIfContainsIllegalSymbols(tokens.get(i))) {
+                    }
+                    else if (checkRange(i)) {
+                    }else if (checkFraction(i)) {
                     } else if (checkLittleMoney(i)) {
                     } else if (Character.isDigit(tokens.get(i).charAt(0)) || tokens.get(i).charAt(0) == '$') {
                         if (checkIfContainsLetters(tokens.get(i))) {
@@ -53,7 +54,6 @@ class Parse {
                         } else if (checkMoney(i)) {
                         } else if (checkNumber(i)) {
                         }
-                    } else if (tokens.get(i).contains("-")) {
                     } else if (date.containsKey(tokens.get(i))) {
                         if (i + 1 < tokens.size()) {
                             if (i < tokens.size()-1 && tokens.get(i + 1).matches("[0-9]+")) {
@@ -86,9 +86,7 @@ class Parse {
     }
 
     private boolean checkRange(int i) {
-        if (tokens.get(i).contains("-"))
-            return true;
-        return false;
+        return tokens.get(i).contains("-");
     }
 
     private boolean checkFraction(int i) {
@@ -148,14 +146,11 @@ class Parse {
                 return true;
             }
         }
-        if (tokens.get(i).charAt(tokens.get(i).length() - 1) == '%') {
-            return true;
-        }
-        return false;
+        return tokens.get(i).charAt(tokens.get(i).length() - 1) == '%';
     }
 
     private boolean checkDate(int i) {
-        if (containsCommas(tokens.get(i)))
+        if (checkIfContainsCommas(tokens.get(i)))
             return false;
         if (i + 1 < tokens.size()) {
             if (date.containsKey(tokens.get(i + 1))) {
@@ -227,7 +222,7 @@ class Parse {
     }
 
     private boolean checkNumber(int i) {
-        if (illegalNumber(tokens.get(i)))
+        if (checkIfIllegalNumber(tokens.get(i)))
             return true;
         tokens.set(i, tokens.get(i).replaceAll(",", ""));
         double num=0;
@@ -330,9 +325,7 @@ class Parse {
     }
 
     private boolean isStopWord(String word) {
-        if (stopWords.contains(word))
-            return true;
-        return false;
+        return stopWords.contains(word);
     }
 
     private void addTerm(String term) {
@@ -394,10 +387,9 @@ class Parse {
             }
         }
         return false;
-
     }
 
-    private boolean containsIllegalSymbols(String s) {
+    private boolean checkIfContainsIllegalSymbols(String s) {
         for (int i = 0; i < s.length(); i++) {
             int ascii = (int) s.charAt(i);
             if (ascii <= 35 || (ascii >= 38 && ascii <= 43) || ascii == 47 || (ascii >= 58 && ascii <= 64) || (ascii >= 91 && ascii <= 96) || ascii >= 123)
@@ -407,7 +399,7 @@ class Parse {
         return false;
     }
 
-    private boolean containsCommas(String s) {
+    private boolean checkIfContainsCommas(String s) {
         for (int i = 0; i < s.length(); i++) {
             if (s.charAt(i) == '.' || s.charAt(i) == ',')
                 return true;
@@ -415,7 +407,7 @@ class Parse {
         return false;
     }
 
-    private boolean illegalNumber(String s) {
+    private boolean checkIfIllegalNumber(String s) {
         int counter = 0;
         for (int i = 0; i < s.length(); i++) {
             if (s.charAt(i) == '.')
@@ -425,7 +417,6 @@ class Parse {
         }
         return false;
     }
-
 
     private void initRules() {
         numbers.put("Thousand", "K");
