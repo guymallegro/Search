@@ -6,6 +6,8 @@ import java.util.Map;
 
 public class DocumentTerms {
     private String id;
+    private int max_tf;
+    private String city;
     private HashMap<Term, Integer> titleTerms;
     private HashMap<Term, Integer> dateTerms;
     private HashMap<Term, Integer> textTerms;
@@ -15,6 +17,8 @@ public class DocumentTerms {
         titleTerms = new HashMap<>();
         dateTerms = new HashMap<>();
         textTerms = new HashMap<>();
+        max_tf = 0;
+        city="";
     }
 
     public void addTermToTitle(Term term) {
@@ -26,13 +30,26 @@ public class DocumentTerms {
         dateTerms.put(term, 1);
     }
 
-
     void addTermToText(Term term) {
         if (!textTerms.containsKey(term))
             textTerms.put(term, 1);
         else {
             textTerms.put(term, textTerms.get(term) + 1);
         }
+        if (textTerms.get(term) > max_tf)
+            max_tf = textTerms.get(term);
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
     }
 
     void print() {

@@ -38,20 +38,23 @@ public class Model {
         createDocuments(data);
         for (Document document : documents) {
             currentDocumentTerms = new DocumentTerms(document.getId());
+            currentDocumentTerms.setCity(document.getCity());
             parse.setCurrentDocumentTerms(currentDocumentTerms);
             parse.parseDocument(document);
             documentsTerms.add(currentDocumentTerms);
         }
         documents.clear();
         documentsTerms.clear();
+        parse.getAllTerms().clear();
     }
 
     private void createDocuments(List<String> data) {
         currentDocument = null;
         text = "";
         insideText = false;
+        String city;
         for (String line : data) {
-            if (!line.equals(""))
+            if (!line.equals("")) {
                 if (line.equals("</TEXT>")) {
                     currentDocument.setContent(text);
                     insideText = false;
@@ -70,7 +73,20 @@ public class Model {
                     currentDocument.setDate(removeTag(line));
                 } else if (line.contains("<DOCNO>")) {
                     currentDocument.setId(removeTag(line));
+                } else if (line.contains("<F P=104>")) {
+                    city = removeTag(line);
+                    int position;
+                    for (position = 0; position < city.length(); position++) {
+                        if (city.charAt(position) != ' ')
+                            break;
+                    }
+                    city = city.substring(position);
+                    if (city.contains(" "))
+                        city = city.substring(0, city.indexOf(" "));
+                    currentDocument.setCity(city.toUpperCase());
                 }
+            }
+
         }
     }
 

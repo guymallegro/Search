@@ -19,6 +19,7 @@ class Parse {
     private String[] tests;
     private ArrayList<String> tokens;
     private int currentTest = 0;
+
     private boolean toTest = false;
 
     Parse() {
@@ -348,9 +349,12 @@ class Parse {
                 Term newTerm = new Term(term);
                 allTerms.put(term, newTerm);
                 currentDocumentTerms.addTermToText(newTerm);
+                newTerm.addInDocument(currentDocumentTerms.getId());
+
             } else {
                 allTerms.get(term).increaseAmount();
                 currentDocumentTerms.addTermToText(allTerms.get(term));
+                allTerms.get(term).addInDocument(currentDocumentTerms.getId());
             }
         }
         //System.out.println(term + "    Amount: (" + allTerms.get(term).getAmount() + ")");
@@ -422,9 +426,9 @@ class Parse {
     private void checkNumberName(int i) {
         int checking = i;
         int finalResult = 0;
-        int result=0;
+        int result = 0;
         if (numberNames.containsKey(tokens.get(i))) {
-            while (checking < tokens.size()&& numberNames.containsKey(tokens.get(checking))) {
+            while (checking < tokens.size() && numberNames.containsKey(tokens.get(checking))) {
                 String str = tokens.get(checking);
                 tokens.set(checking, "");
                 if (str.equals("zero")) {
@@ -511,6 +515,10 @@ class Parse {
         }
     }
 
+    public HashMap<String, Term> getAllTerms() {
+        return allTerms;
+    }
+
     private void initRules() {
         numbers.put("Thousand", "K");
         numbers.put("Million", "M");
@@ -591,7 +599,7 @@ class Parse {
         numberNames.put("thousand", "1000");
         numberNames.put("million", "1000000");
         numberNames.put("billion", "1000000000");
-        numberNames.put("and","");
+        numberNames.put("and", "");
     }
 
     private void initTests() {
