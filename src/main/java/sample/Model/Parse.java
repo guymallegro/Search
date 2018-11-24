@@ -14,6 +14,7 @@ class Parse {
     private HashMap<String, String> percents;
     private HashMap<String, String> money;
     private HashMap<String, String> date;
+    private HashMap<String, String> numberNames;
     private HashMap<String, Term> allTerms;
     private String[] tests;
     private ArrayList<String> tokens;
@@ -25,6 +26,7 @@ class Parse {
         stemmer = new Stemmer();
         numbers = new HashMap<>();
         percents = new HashMap<>();
+        numberNames = new HashMap<>();
         allTerms = new HashMap<>();
         date = new HashMap<>();
         money = new HashMap<>();
@@ -36,6 +38,7 @@ class Parse {
         if (document.getContent() != null) {
             splitDocument(document.getContent());
             for (int i = 0; i < tokens.size(); i++) {
+                checkNumberName(i);
                 if (tokens.get(i).length() > 0 && (!isStopWord(tokens.get(i)) || (tokens.get(i).equals("between") && (i < tokens.size() - 1 && tokens.get(i + 1).length() > 0 && Character.isDigit(tokens.get(i + 1).charAt(0)))))) {
                     if (doStemming) {
                         stemmer.setTerm(tokens.get(i));
@@ -43,9 +46,8 @@ class Parse {
                         tokens.set(i, stemmer.getTerm());
                     }
                     if (checkIfContainsIllegalSymbols(tokens.get(i))) {
-                    }
-                    else if (checkRange(i)) {
-                    }else if (checkFraction(i)) {
+                    } else if (checkRange(i)) {
+                    } else if (checkFraction(i)) {
                     } else if (checkLittleMoney(i)) {
                     } else if (Character.isDigit(tokens.get(i).charAt(0)) || tokens.get(i).charAt(0) == '$') {
                         if (checkIfContainsLetters(tokens.get(i))) {
@@ -56,7 +58,7 @@ class Parse {
                         }
                     } else if (date.containsKey(tokens.get(i))) {
                         if (i + 1 < tokens.size()) {
-                            if (i < tokens.size()-1 && tokens.get(i + 1).matches("[0-9]+")) {
+                            if (i < tokens.size() - 1 && tokens.get(i + 1).matches("[0-9]+")) {
                                 if (tokens.get(i + 1).length() == 4)
                                     tokens.set(i, tokens.get(i + 1) + "-" + date.get(tokens.get(i)));
                                 else if (tokens.get(i + 1).length() == 0) {
@@ -194,10 +196,10 @@ class Parse {
             if (i < tokens.size() - 1 && money.containsKey(tokens.get(i + 1))) {
                 tokens.set(i, tokens.get(i).replaceAll(",", ""));
                 String first = tokens.get(i).substring(1);
-                double num=0;
+                double num = 0;
                 try {
                     num = new BigDecimal(Double.parseDouble(first)).doubleValue();
-                }catch (Exception e){
+                } catch (Exception e) {
                     System.out.println("Illegal word");
                 }
                 double number = num / Double.parseDouble(money.get(tokens.get(i + 1)));
@@ -209,10 +211,9 @@ class Parse {
                 return true;
             } else {
                 tokens.set(i, tokens.get(i).substring(1));
-                if(checkNumber(i)) {
+                if (checkNumber(i)) {
                     tokens.set(i, tokens.get(i).substring(0, tokens.get(i).length() - 1) + " M Dollars");
-                }
-                else{
+                } else {
                     tokens.set(i, tokens.get(i).substring(0, tokens.get(i).length() - 1) + " Dollars");
                 }
                 return true;
@@ -225,10 +226,10 @@ class Parse {
         if (checkIfIllegalNumber(tokens.get(i)))
             return true;
         tokens.set(i, tokens.get(i).replaceAll(",", ""));
-        double num=0;
+        double num = 0;
         try {
             num = new BigDecimal(Double.parseDouble(tokens.get(i))).doubleValue();
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println("Illegal word");
         }
         if (i + 1 < tokens.size() && numbers.containsKey(tokens.get(i + 1))) {
@@ -418,6 +419,98 @@ class Parse {
         return false;
     }
 
+    private void checkNumberName(int i) {
+        int checking = i;
+        int finalResult = 0;
+        int result=0;
+        if (numberNames.containsKey(tokens.get(i))) {
+            while (checking < tokens.size()&& numberNames.containsKey(tokens.get(checking))) {
+                String str = tokens.get(checking);
+                tokens.set(checking, "");
+                if (str.equals("zero")) {
+                    result += 0;
+                } else if (str.equals("one")) {
+                    result += 1;
+                } else if (str.equals("two")) {
+                    result += 2;
+                } else if (str.equals("three")) {
+                    result += 3;
+                } else if (str.equals("four")) {
+                    result += 4;
+                } else if (str.equals("five")) {
+                    result += 5;
+                } else if (str.equals("six")) {
+                    result += 6;
+                } else if (str.equals("seven")) {
+                    result += 7;
+                } else if (str.equals("eight")) {
+                    result += 8;
+                } else if (str.equals("nine")) {
+                    result += 9;
+                } else if (str.equals("ten")) {
+                    result += 10;
+                } else if (str.equals("eleven")) {
+                    result += 11;
+                } else if (str.equals("twelve")) {
+                    result += 12;
+                } else if (str.equals("thirteen")) {
+                    result += 13;
+                } else if (str.equals("fourteen")) {
+                    result += 14;
+                } else if (str.equals("fifteen")) {
+                    result += 15;
+                } else if (str.equals("sixteen")) {
+                    result += 16;
+                } else if (str.equals("seventeen")) {
+                    result += 17;
+                } else if (str.equals("eighteen")) {
+                    result += 18;
+                } else if (str.equals("nineteen")) {
+                    result += 19;
+                } else if (str.equals("twenty")) {
+                    result += 20;
+                } else if (str.equals("thirty")) {
+                    result += 30;
+                } else if (str.equals("forty")) {
+                    result += 40;
+                } else if (str.equals("fifty")) {
+                    result += 50;
+                } else if (str.equals("sixty")) {
+                    result += 60;
+                } else if (str.equals("seventy")) {
+                    result += 70;
+                } else if (str.equals("eighty")) {
+                    result += 80;
+                } else if (str.equals("ninety")) {
+                    result += 90;
+                } else if (str.equals("hundred")) {
+                    result *= 100;
+                } else if (str.equals("thousand")) {
+                    result *= 1000;
+                    finalResult += result;
+                    result = 0;
+                } else if (str.equals("million")) {
+                    result *= 1000000;
+                    finalResult += result;
+                    result = 0;
+                } else if (str.equals("billion")) {
+                    result *= 1000000000;
+                    finalResult += result;
+                    result = 0;
+                } else if (str.equals("trillion")) {
+                    result *= 1000000000000L;
+                    finalResult += result;
+                    result = 0;
+                } else {
+                    tokens.set(checking, str);
+                }
+                checking++;
+            }
+            finalResult += result;
+            tokens.set(i, "" + finalResult);
+        }
+    }
+
     private void initRules() {
         numbers.put("Thousand", "K");
         numbers.put("Million", "M");
@@ -466,10 +559,43 @@ class Parse {
         money.put("bn", "0.001");
         money.put("trillion", "0.000001");
         money.put("T", "0.000001");
+        numberNames.put("zero", "0");
+        numberNames.put("one", "1");
+        numberNames.put("two", "2");
+        numberNames.put("three", "3");
+        numberNames.put("four", "4");
+        numberNames.put("five", "5");
+        numberNames.put("six", "6");
+        numberNames.put("seven", "7");
+        numberNames.put("eight", "8");
+        numberNames.put("nine", "9");
+        numberNames.put("ten", "10");
+        numberNames.put("eleven", "11");
+        numberNames.put("twelve", "12");
+        numberNames.put("thirteen", "13");
+        numberNames.put("fourteen", "14");
+        numberNames.put("fifteen", "15");
+        numberNames.put("sixteen", "16");
+        numberNames.put("seventeen", "17");
+        numberNames.put("eighteen", "18");
+        numberNames.put("nineteen", "19");
+        numberNames.put("twenty", "20");
+        numberNames.put("thirty", "30");
+        numberNames.put("forty", "40");
+        numberNames.put("fifty", "50");
+        numberNames.put("sixty", "60");
+        numberNames.put("seventy", "70");
+        numberNames.put("eighty", "80");
+        numberNames.put("ninety", "90");
+        numberNames.put("hundred", "100");
+        numberNames.put("thousand", "1000");
+        numberNames.put("million", "1000000");
+        numberNames.put("billion", "1000000000");
+        numberNames.put("and","");
     }
 
     private void initTests() {
-        tests = new String[40];
+        tests = new String[50];
         tests[0] = "10.123K";
         tests[1] = "123K";
         tests[2] = "1.01056K";
@@ -504,6 +630,17 @@ class Parse {
         tests[31] = "10-part";
         tests[32] = "6-7";
         tests[33] = "18-24";
-        tests[34] = "478.79 Dollars";
+        tests[34] = "1";
+        tests[35] = "2";
+        tests[36] = "3";
+        tests[37] = "4";
+        tests[38] = "5";
+        tests[39] = "6";
+        tests[40] = "7";
+        tests[41] = "8";
+        tests[42] = "9";
+        tests[43] = "0";
+        tests[44] = "134";
+        tests[45] = "26.000157M";
     }
 }
