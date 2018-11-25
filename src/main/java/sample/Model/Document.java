@@ -5,6 +5,7 @@ public class Document {
     private String date;
     private String title;
     private String content;
+    private String city;
 
     String getId() {
         return id;
@@ -38,11 +39,20 @@ public class Document {
         this.content = content;
     }
 
+    public void setCity(String city){
+        this.city=city;
+    }
+
+    public String getCity(){
+        return city;
+    }
+
     public void print() {
-        System.out.println("id " + id);
-        System.out.println("title " + title);
-        System.out.println("date " + date);
-        System.out.println("Text " + content);
+        System.out.println("id :" + id);
+        System.out.println("title :" + title);
+        System.out.println("date :" + date);
+        System.out.println("city :" + city);
+        System.out.println("Text :" + content);
         System.out.println("-------------------------------------------------");
     }
 }

@@ -18,7 +18,7 @@ public class Model {
     public Model() {
         documents = new ArrayList<>();
         documentsTerms = new HashSet<>();
-        parse = new Parse(this);
+        parse = new Parse();
         fileReader = new ReadFile(this);
     }
 
@@ -34,26 +34,27 @@ public class Model {
         System.out.println("Time it took: " + elapsedSeconds + " seconds");
     }
 
-    public void processFile(List<String> data) {
+    void processFile(List<String> data) {
         createDocuments(data);
         for (Document document : documents) {
-            //System.out.println("Current document :" + document.getId());
             currentDocumentTerms = new DocumentTerms(document.getId());
+            currentDocumentTerms.setCity(document.getCity());
             parse.setCurrentDocumentTerms(currentDocumentTerms);
             parse.parseDocument(document);
             documentsTerms.add(currentDocumentTerms);
-            //currentDocumentTerms.print();
         }
         documents.clear();
         documentsTerms.clear();
+        parse.getAllTerms().clear();
     }
 
     private void createDocuments(List<String> data) {
         currentDocument = null;
         text = "";
         insideText = false;
+        String city;
         for (String line : data) {
-            if (!line.equals(""))
+            if (!line.equals("")) {
                 if (line.equals("</TEXT>")) {
                     currentDocument.setContent(text);
                     insideText = false;
@@ -72,12 +73,25 @@ public class Model {
                     currentDocument.setDate(removeTag(line));
                 } else if (line.contains("<DOCNO>")) {
                     currentDocument.setId(removeTag(line));
+                } else if (line.contains("<F P=104>")) {
+                    city = removeTag(line);
+                    int position;
+                    for (position = 0; position < city.length(); position++) {
+                        if (city.charAt(position) != ' ')
+                            break;
+                    }
+                    city = city.substring(position);
+                    if (city.contains(" "))
+                        city = city.substring(0, city.indexOf(" "));
+                    currentDocument.setCity(city.toUpperCase());
                 }
+            }
+
         }
     }
 
     private String removeTag(String line) {
-        return line.replaceAll("\\<.*?\\>", "");
+        return line.replaceAll("<.*?>", "");
     }
 
     public ArrayList<Document> getDocuments() {
