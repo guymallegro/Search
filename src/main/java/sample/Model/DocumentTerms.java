@@ -6,7 +6,8 @@ import java.util.Map;
 
 public class DocumentTerms {
     private String id;
-    private static int indexId = 1;
+    private int indexId;
+    public static int doccumentsAmount = 1;
     private int max_tf;
     private String city;
     private HashMap<Term, Integer> titleTerms;
@@ -20,13 +21,12 @@ public class DocumentTerms {
         textTerms = new HashMap<>();
         max_tf = 0;
         city="";
-        indexId=indexId++;
+        indexId=doccumentsAmount++;
     }
 
     public void addTermToTitle(Term term) {
         titleTerms.put(term, 1);
     }
-
 
     public void addTermToDate(Term term) {
         dateTerms.put(term, 1);
@@ -44,6 +44,9 @@ public class DocumentTerms {
 
     public String getId() {
         return id;
+    }
+    public  int getIndexId(){
+        return indexId;
     }
 
     public String getCity() {

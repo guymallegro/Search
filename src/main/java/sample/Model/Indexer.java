@@ -2,16 +2,19 @@ package sample.Model;
 
 import java.io.*;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 public class Indexer {
     private HashMap<String, String[]> dictionary;
     private HashMap<Character,String> filesNames;
+    private Iterator it;
 
     public Indexer() {
         dictionary = new HashMap<>();
         filesNames = new HashMap<>();
         try {
-            createPostingFiles();
+            //createPostingFiles();
         } catch (Exception e) {
             System.out.println("failed at createPostingFiles");
         }
@@ -19,21 +22,53 @@ public class Indexer {
 
     }
 
-    public void addToDict(Term term){
-        if(dictionary.containsKey(term.getValue())){
+//    File currentDirectory = new File(path);
+//        currentFile = new File(path + directory);
+//        System.out.println("Current file " + directory);
+//        allFiles = currentFile.list()[0];
+//        try {
+//            lines = Files.readAllLines(Paths.get(path + directory + "/" + allFiles), StandardCharsets.ISO_8859_1);
+//        }
+//        catch (Exception e){
+//            System.out.println("Cannot open file: "+path);
+//        }
+//    }
 
+    public void addToDictionary(Term term, String path){
+        path = "C:\\Users\\ספיר רצון\\Desktop\\test\\";
+        if(dictionary.containsKey(term.getValue())){
+//            String fileName = "";
+//            if (term.getInDocuments().containsKey(term.getValue()))
+//                fileName = term.getInDocuments().get(Integer.toString(term.getValue()));
+//            File currentDirectory = new File(path);
         }
         else{
-            String filename="numbers.txt";
+            String filename = path+ "numbers.txt";
             if(filesNames.containsKey(term.getValue().charAt(0))){
-                filename=filesNames.get(term.getValue().charAt(0) +".txt");
+                filename = path+filesNames.get(term.getValue().charAt(0)) + ".txt";
             }
-            try(FileWriter fw = new FileWriter(filename, true);
-                BufferedWriter bw = new BufferedWriter(fw);
-                PrintWriter out = new PrintWriter(bw))
-            {
-                out.println("<"+term.getValue()+":"+term.getInDocuments().size()+";");
 
+            try{
+                File posting = new File(filename);
+                RandomAccessFile writer = new RandomAccessFile(posting, "rw");
+                writer.writeBytes("<"+term.getValue()+":"+term.getInDocuments().size()+ ";");
+                //                posting.createNewFile();
+//                FileOutputStream out = new FileOutputStream(posting, true);
+//                out.write(("<"+term.getValue()+":"+term.getInDocuments().size()+ ";").getBytes());
+//                FileWriter fw = new FileWriter(filename, true);
+//                BufferedWriter bw = new BufferedWriter(fw);
+//                PrintWriter out = new PrintWriter(bw);
+//                out.print("<"+term.getValue()+":"+term.getInDocuments().size()+ ";");
+                Iterator it = term.getInDocuments().entrySet().iterator();
+                int previous = 0;
+                StringBuilder line = new StringBuilder();
+                while (it.hasNext()) {
+                    Map.Entry pair = (Map.Entry)it.next();
+                    line.append((int)pair.getValue() - previous + ",");
+                    it.remove();
+                }
+                line.deleteCharAt(line.toString().length() - 1).append("\n");
+                writer.writeBytes((line.toString()));
             } catch (IOException e) {
                 //exception handling left as an exercise for the reader
             }
@@ -116,5 +151,14 @@ public class Indexer {
         filesNames.put('y',"uvwxyz");
         filesNames.put('z',"uvwxyz");
 
+    }
+
+    public void addAllTerms(HashMap<String, Term> allTerms) {
+        Iterator it = allTerms.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            addToDictionary((Term) pair.getValue(),"");
+            it.remove();
+        }
     }
 }

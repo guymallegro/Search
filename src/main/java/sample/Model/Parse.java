@@ -349,12 +349,12 @@ class Parse {
                 Term newTerm = new Term(term);
                 allTerms.put(term, newTerm);
                 currentDocumentTerms.addTermToText(newTerm);
-                newTerm.addInDocument(currentDocumentTerms.getId());
+                newTerm.addInDocument(currentDocumentTerms.getIndexId());
 
             } else {
                 allTerms.get(term).increaseAmount();
                 currentDocumentTerms.addTermToText(allTerms.get(term));
-                allTerms.get(term).addInDocument(currentDocumentTerms.getId());
+                allTerms.get(term).addInDocument(currentDocumentTerms.getIndexId());
             }
         }
         //System.out.println(term + "    Amount: (" + allTerms.get(term).getAmount() + ")");

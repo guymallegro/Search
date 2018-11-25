@@ -6,7 +6,7 @@ public class Term {
 
     private String value;
     private int amount;
-    private HashMap<String,Integer> inDocuments;
+    private HashMap<Integer,Integer> inDocuments;
 
     public Term(String value) {
         this.value = value;
@@ -30,16 +30,17 @@ public class Term {
 
     public void setAmount (int newAmount) {amount = newAmount;}
 
-    public void addInDocument(String documentId){
+    public void addInDocument(int documentId){
         if(inDocuments.containsKey(documentId)){
-            inDocuments.put(documentId, inDocuments.get(documentId)+1);
+            //inDocuments.put(documentId, inDocuments.get(documentId)+1);
+            inDocuments.replace(documentId, inDocuments.get(documentId)+1);
         }
         else {
             inDocuments.put(documentId,1);
         }
     }
 
-    public HashMap<String,Integer> getInDocuments(){
+    public HashMap<Integer,Integer> getInDocuments(){
         return inDocuments;
     }
 }
