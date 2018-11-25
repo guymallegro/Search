@@ -6,6 +6,7 @@ import java.util.Map;
 
 public class DocumentTerms {
     private String id;
+    private static int indexId = 1;
     private int max_tf;
     private String city;
     private HashMap<Term, Integer> titleTerms;
@@ -19,6 +20,7 @@ public class DocumentTerms {
         textTerms = new HashMap<>();
         max_tf = 0;
         city="";
+        indexId=indexId++;
     }
 
     public void addTermToTitle(Term term) {

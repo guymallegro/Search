@@ -398,7 +398,6 @@ class Parse {
         for (int i = 0; i < s.length(); i++) {
             int ascii = (int) s.charAt(i);
             if (ascii <= 35 || (ascii >= 38 && ascii <= 43) || ascii == 47 || (ascii >= 58 && ascii <= 64) || (ascii >= 91 && ascii <= 96) || ascii >= 123)
-
                 return true;
         }
         return false;

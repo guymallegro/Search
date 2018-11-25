@@ -14,11 +14,13 @@ public class Model {
     private Document currentDocument;
     private String text;
     private boolean insideText;
+    private Indexer indexer;
 
     public Model() {
         documents = new ArrayList<>();
         documentsTerms = new HashSet<>();
         parse = new Parse();
+        Indexer indexer = new Indexer();
         fileReader = new ReadFile(this);
     }
 
@@ -42,6 +44,7 @@ public class Model {
             parse.setCurrentDocumentTerms(currentDocumentTerms);
             parse.parseDocument(document);
             documentsTerms.add(currentDocumentTerms);
+
         }
         documents.clear();
         documentsTerms.clear();
