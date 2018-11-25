@@ -38,4 +38,8 @@ public class Term {
             inDocuments.put(documentId,1);
         }
     }
+
+    public HashMap<String,Integer> getInDocuments(){
+        return inDocuments;
+    }
 }
