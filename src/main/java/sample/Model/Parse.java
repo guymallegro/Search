@@ -47,6 +47,7 @@ class Parse {
                         tokens.set(i, stemmer.getTerm());
                     }
                     if (checkIfContainsIllegalSymbols(tokens.get(i))) {
+                        continue;
                     } else if (checkRange(i)) {
                     } else if (checkFraction(i)) {
                     } else if (checkLittleMoney(i)) {

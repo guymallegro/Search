@@ -15,7 +15,7 @@ public class Model {
     private String text;
     private boolean insideText;
     private Indexer indexer;
-    private int numOfDocs;
+    private int numOfDocs = 1000;
 
     public Model() {
         documents = new ArrayList<>();
@@ -45,11 +45,15 @@ public class Model {
             parse.setCurrentDocumentTerms(currentDocumentTerms);
             parse.parseDocument(document);
             documentsTerms.add(currentDocumentTerms);
+            numOfDocs--;
         }
-        indexer.addAllTerms(parse.getAllTerms());
-        documents.clear();
-        documentsTerms.clear();
-        parse.getAllTerms().clear();
+        if (numOfDocs < 0){
+            indexer.addAllTerms(parse.getAllTerms(), "");
+            documents.clear();
+            documentsTerms.clear();
+            parse.getAllTerms().clear();
+        }
+        numOfDocs = 1000;
     }
 
     private void createDocuments(List<String> data) {
