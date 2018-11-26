@@ -7,11 +7,21 @@ public class Document {
     private int indexId;
     public static int doccumentsAmount = 1;
     private int max_tf;
-    private HashMap<Term, Integer> textTerms;
+    private HashMap <Term, Integer> textTerms;
     private String date;
     private String title;
     private String content;
     private String city;
+    private HashMap<Term, Integer> titleTerms;
+    private HashMap<Term, Integer> dateTerms;
+
+    public Document(){
+        titleTerms = new HashMap<>();
+        dateTerms = new HashMap<>();
+        textTerms = new HashMap<>();
+        max_tf = 0;
+        indexId = doccumentsAmount++;
+    }
 
     String getId() { return id; }
 

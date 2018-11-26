@@ -36,10 +36,11 @@ class Parse {
     }
 
     void parseDocument(Document document) {
+        currentDocument = document;
         if (document.getContent() != null) {
             splitDocument(document.getContent());
             for (int i = 0; i < tokens.size(); i++) {
-                checkNumberName(i);
+                //checkNumberName(i);
                 if (tokens.get(i).length() == 0)
                     continue;
                 String stop = (Character.toLowerCase(tokens.get(i).charAt(0))) + tokens.get(i).substring(1);
@@ -351,7 +352,7 @@ class Parse {
             if (!allTerms.containsKey(term)) {
                 Term newTerm = new Term(term);
                 allTerms.put(term, newTerm);
-                //currentDocumentTerms.addTermToText(newTerm);
+                //currentDocument.addTermToText(newTerm);
                 newTerm.addInDocument(currentDocument.getIndexId());
 
             } else {
