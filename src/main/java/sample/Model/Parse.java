@@ -9,7 +9,7 @@ class Parse {
     private Stemmer stemmer;
     private boolean doStemming = true; //@TODO Needs to be set by UI
     private HashSet<String> stopWords;
-    private DocumentTerms currentDocumentTerms;
+    private Document currentDocument;
     private HashMap<String, String> numbers;
     private HashMap<String, String> percents;
     private HashMap<String, String> money;
@@ -18,9 +18,9 @@ class Parse {
     private HashMap<String, Term> allTerms;
     private String[] tests;
     private ArrayList<String> tokens;
-    private int currentTest = 0;
+    //private int currentTest = 0;
 
-    private boolean toTest = false;
+    //private boolean toTest = false;
 
     Parse() {
         tokens = new ArrayList<>();
@@ -40,7 +40,10 @@ class Parse {
             splitDocument(document.getContent());
             for (int i = 0; i < tokens.size(); i++) {
                 checkNumberName(i);
-                if (tokens.get(i).length() > 0 && (!isStopWord(tokens.get(i)) || (tokens.get(i).equals("between") && (i < tokens.size() - 1 && tokens.get(i + 1).length() > 0 && Character.isDigit(tokens.get(i + 1).charAt(0)))))) {
+                if (tokens.get(i).length() == 0)
+                    continue;
+                String stop = (Character.toLowerCase(tokens.get(i).charAt(0))) + tokens.get(i).substring(1);
+                if (tokens.get(i).length() > 0 && (!isStopWord(stop) || (tokens.get(i).equals("between") && (i < tokens.size() - 1 && tokens.get(i + 1).length() > 0 && Character.isDigit(tokens.get(i + 1).charAt(0)))))) {
                     if (doStemming) {
                         stemmer.setTerm(tokens.get(i));
                         stemmer.stem();
@@ -160,7 +163,6 @@ class Parse {
             if (date.containsKey(tokens.get(i + 1))) {
                 tokens.set(i, date.get(tokens.get(i + 1)) + "-" + String.format("%02d", Integer.parseInt(tokens.get(i))));
                 if (i + 2 < tokens.size()) {
-                    //tokens.set(i + 2, cleanString(tokens.get(i + 2)));
                     if (tokens.get(i + 2).matches("[0-9][0-9][0-9][0-9]")) {
                         addTerm(tokens.get(i + 2) + "-" + date.get(tokens.get(i + 1)));
                         tokens.set(i + 2, "");
@@ -332,30 +334,29 @@ class Parse {
     }
 
     private void addTerm(String term) {
-        if (term.length() > 0) {
-            if (term.equals("NEW-TEST")) {
-                toTest = true;
-                return;
-            }
-            if (toTest) {
-                if (term.equals(tests[currentTest])) {
-                    System.out.println("Successful test : " + term);
-                } else {
-                    System.out.println("FAILED TEST!!! Got : " + term + " , Expected " + tests[currentTest]);
-                }
-                toTest = false;
-                currentTest++;
-            }
+        if (term.length() > 1 || (term.length() == 1 && Character.isDigit(term.charAt(0)))) {
+//            if (term.equals("NEW-TEST")) {
+//                toTest = true;
+//                return;
+//            }
+//            if (toTest) {
+//                if (term.equals(tests[currentTest])) {
+//                    System.out.println("Successful test : " + term);
+//                } else {
+//                    System.out.println("FAILED TEST!!! Got : " + term + " , Expected " + tests[currentTest]);
+//                }
+//                toTest = false;
+//                currentTest++;
+//            }
             if (!allTerms.containsKey(term)) {
                 Term newTerm = new Term(term);
                 allTerms.put(term, newTerm);
-                currentDocumentTerms.addTermToText(newTerm);
-                newTerm.addInDocument(currentDocumentTerms.getIndexId());
+                //currentDocumentTerms.addTermToText(newTerm);
+                newTerm.addInDocument(currentDocument.getIndexId());
 
             } else {
                 allTerms.get(term).increaseAmount();
-                currentDocumentTerms.addTermToText(allTerms.get(term));
-                allTerms.get(term).addInDocument(currentDocumentTerms.getIndexId());
+                allTerms.get(term).addInDocument(currentDocument.getIndexId());
             }
         }
         //System.out.println(term + "    Amount: (" + allTerms.get(term).getAmount() + ")");
@@ -377,13 +378,9 @@ class Parse {
         }
     }
 
-    void setStopWords(HashSet<String> stopWords) {
-        this.stopWords = stopWords;
-    }
+    void setStopWords(HashSet<String> stopWords) { this.stopWords = stopWords; }
 
-    void setCurrentDocumentTerms(DocumentTerms documentTerms) {
-        currentDocumentTerms = documentTerms;
-    }
+    void setCurrentDocumentTerms(Document document) { currentDocument = document; }
 
     private boolean checkIfContainsLetters(String s) {
         for (int i = 0; i < s.length(); i++) {
@@ -511,7 +508,7 @@ class Parse {
                 checking++;
             }
             finalResult += result;
-            tokens.set(i, "" + finalResult);
+            tokens.set(i, Integer.toString(finalResult));
         }
     }
 
@@ -567,6 +564,7 @@ class Parse {
         money.put("bn", "0.001");
         money.put("trillion", "0.000001");
         money.put("T", "0.000001");
+
         numberNames.put("zero", "0");
         numberNames.put("one", "1");
         numberNames.put("two", "2");

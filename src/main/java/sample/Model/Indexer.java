@@ -22,10 +22,9 @@ public class Indexer {
         public void addAllTerms(HashMap<String, Term> allTerms, String path){
         path = "C:\\Users\\ספיר רצון\\Desktop\\test\\";
         Object [] sortedterms = allTerms.keySet().toArray();
-
         Arrays.sort(sortedterms);
         StringBuilder line = new StringBuilder();
-        List<String> lines = new LinkedList<String>();
+        List<String> lines = new LinkedList<>();
         for (int i = 0; i < sortedterms.length; i++){
             line.append("<" + sortedterms[i]+":" + allTerms.get(sortedterms[i]).getInDocuments().size()+ ";");
             Iterator it = allTerms.get(sortedterms[i]).getInDocuments().entrySet().iterator();

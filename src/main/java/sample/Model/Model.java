@@ -7,10 +7,8 @@ import java.util.List;
 public class Model {
 
     private ArrayList<Document> documents;
-    private HashSet<DocumentTerms> documentsTerms;
     private Parse parse;
     private ReadFile fileReader;
-    private DocumentTerms currentDocumentTerms;
     private Document currentDocument;
     private String text;
     private boolean insideText;
@@ -19,7 +17,6 @@ public class Model {
 
     public Model() {
         documents = new ArrayList<>();
-        documentsTerms = new HashSet<>();
         parse = new Parse();
         indexer = new Indexer();
         fileReader = new ReadFile(this);
@@ -40,17 +37,13 @@ public class Model {
     void processFile(List<String> data) {
         createDocuments(data);
         for (Document document : documents) {
-            currentDocumentTerms = new DocumentTerms(document.getId());
-            currentDocumentTerms.setCity(document.getCity());
-            parse.setCurrentDocumentTerms(currentDocumentTerms);
+            parse.setCurrentDocumentTerms(currentDocument);
             parse.parseDocument(document);
-            documentsTerms.add(currentDocumentTerms);
             numOfDocs--;
         }
         if (numOfDocs < 0){
             indexer.addAllTerms(parse.getAllTerms(), "");
             documents.clear();
-            documentsTerms.clear();
             parse.getAllTerms().clear();
         }
         numOfDocs = 1000;

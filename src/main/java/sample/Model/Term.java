@@ -32,7 +32,6 @@ public class Term {
 
     public void addInDocument(int documentId){
         if(inDocuments.containsKey(documentId)){
-            //inDocuments.put(documentId, inDocuments.get(documentId)+1);
             inDocuments.replace(documentId, inDocuments.get(documentId)+1);
         }
         else {

@@ -4,7 +4,7 @@ import sample.Model.Model;
 
 public class Controller {
     private Model model;
-    private String filesPath="C:\\Users\\Guy Shuster\\Desktop\\temp\\corpus\\"; // @TODO Needs to be set by UI
+    private String filesPath="C:\\Users\\ספיר רצון\\Desktop\\corpus\\"; // @TODO Needs to be set by UI
     //private String filesPath=".\\src\\main\\resources\\test\\"; // @TODO Needs to be set by UI
     private String stopWordsPath=".\\src\\main\\resources\\stop_words"; // @TODO Needs to be set by UI
 
