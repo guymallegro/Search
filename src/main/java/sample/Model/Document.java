@@ -21,11 +21,18 @@ public class Document {
         textTerms = new HashMap<>();
         max_tf = 0;
         indexId = doccumentsAmount++;
+        content = "";
     }
 
     String getId() { return id; }
 
     void setId(String id) { this.id = id; }
+
+    public String getDate() { return date; }
+
+    public String getTitle() { return title; }
+
+    public String getCity() { return city; }
 
     void setDate(String date) { this.date = date; }
 
