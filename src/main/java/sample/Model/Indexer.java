@@ -24,7 +24,7 @@ public class Indexer {
     }
 
     public void addAllTerms(String path) {
-        path = "C:\\Users\\ספיר רצון\\Desktop\\post\\";
+        path = "/home/guy/Desktop/post/";
         Object[] sortedterms = allTerms.keySet().toArray();
         Arrays.sort(sortedterms);
         StringBuilder line = new StringBuilder();
@@ -33,13 +33,14 @@ public class Indexer {
             int prev = 0;
             line.append("<" + sortedterms[i] + ":" + allTerms.get(sortedterms[i]).getInDocuments().length + ";");
             Object[] documentsOfTerm = allTerms.get(sortedterms[i]).getInDocuments();
-            allTerms.get(sortedterms[i]).clear();
             for (Object documentId : documentsOfTerm) {
                 line.append((int) documentId - prev + ",");
                 prev = (int) documentId;
             }
             line.deleteCharAt(line.toString().length() - 1);
             lines.add(line.toString());
+            addToDictionary((String) sortedterms[i], currentPartOfPostFile);
+
             line.setLength(0);
         }
         path += "post" + currentPostFile + ".txt";
@@ -60,7 +61,7 @@ public class Indexer {
         int currentIndex = 0;
         boolean isChanged = true;
         try {
-            fw = new FileWriter("C:\\Users\\ספיר רצון\\Desktop\\final.txt");
+            fw = new FileWriter("/home/guy/Desktop/final.txt");
         } catch (Exception e) {
             System.out.println("Failed to create file writer");
         }
@@ -68,7 +69,7 @@ public class Indexer {
         out = new PrintWriter(bw);
         for (int i = 0; i < currentPostFile; i++) {
             try {
-                scanners[i] = new Scanner(new File("C:\\Users\\ספיר רצון\\Desktop\\post\\post" + i + ".txt"));
+                scanners[i] = new Scanner(new File("/home/guy/Desktop/post/post" + i + ".txt"));
             } catch (Exception e) {
                 System.out.println("Failed to create a scanner");
             }
@@ -114,8 +115,7 @@ public class Indexer {
                     changePostFile(toWrite.charAt(1));
                 }
                 out.println(toWrite);
-                addToDictionary(fromCompare, currentPartOfPostFile);
-                isChanged=true;
+                isChanged = true;
             } else
                 break;
         }
@@ -135,16 +135,14 @@ public class Indexer {
     }
 
     private void addToDictionary(String term, char path) {
-        if (Model.dictionary.containsKey(term)){
-            int numOfDocuments = (int)Model.dictionary.get(term).get(0);
+        if (Model.dictionary.containsKey(term)) {
+            int numOfDocuments = (int) Model.dictionary.get(term).get(0);
             Model.dictionary.get(term).set(0, numOfDocuments + allTerms.get(term).getInDocuments().length);
-        }
-        else {
+        } else {
             ArrayList<Object> attributes = new ArrayList<>();
-            attributes.set(0, allTerms.get(term).getInDocuments().length);
-            attributes.set(1, path);
+            attributes.add(allTerms.get(term).getInDocuments().length);
+            attributes.add(path);
             Model.dictionary.put(term, attributes);
         }
-
     }
 }

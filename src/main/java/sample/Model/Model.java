@@ -13,14 +13,14 @@ public class Model {
     private int nomOfDocs = 11800; //@TODO Need to find the best amount
     private int totalAmountOfDocs = 0;
     private ArrayList<Document> documents;
-    static HashMap <String, ArrayList<Object>> dictionary;
+    static HashMap<String, ArrayList<Object>> dictionary;
 
     public Model() {
         parse = new Parse();
-        indexer = new Indexer(parse.getAllTerms());
         fileReader = new ReadFile(this);
         documents = new ArrayList<>();
         dictionary = new HashMap<>();
+        indexer = new Indexer(parse.getAllTerms());
     }
 
     public void readFiles(String filesPath, String stopWordsPath) {
@@ -35,6 +35,7 @@ public class Model {
         tStart = System.currentTimeMillis();
         System.out.println("Time it took: " + elapsedSeconds + " seconds");
         indexer.mergeAllPostFiles();
+        parse.getAllTerms().clear();
         System.out.println("--------------------------------------");
         System.out.println("-----------------Complete-------------");
         tEnd = System.currentTimeMillis();
