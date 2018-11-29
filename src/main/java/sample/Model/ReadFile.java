@@ -1,13 +1,6 @@
 package sample.Model;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
 import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -16,11 +9,11 @@ import java.util.Scanner;
 public class ReadFile {
     private Model model;
     private File currentFile;
-    private List<String> lines;
     private String allFiles;
     private ArrayList <Document> documents;
     private Document currentDocument;
     private int numOfDocs = 1000;
+    private int total;
 
     public ReadFile(Model model) {
         this.model = model;
@@ -41,15 +34,16 @@ public class ReadFile {
                 String line = buf.readLine();
                 StringBuilder sb = new StringBuilder();
                 while(line != null){
-                    sb.append(line);
+                    sb.append(line + " ");
                     //sb.append(line).append("\n");
                     line = buf.readLine();
                 }
                 String fileAsString = sb.toString();
                 String [] allDocuments = fileAsString.split("<DOC>");
                 for (String document: allDocuments) {
-                    if (document.length() == 0 ) continue;
+                    if (document.length() == 0 || document.equals(" ") ) continue;
                     currentDocument = new Document();
+                    total++;
                     numOfDocs--;
                     int startTagIndex = document.indexOf("<DOCNO>");
                     int endTagIndex = document.indexOf("</DOCNO>");
@@ -89,6 +83,7 @@ public class ReadFile {
             model.index();
         }
         documents.clear();
+        System.out.println(total);
     }
 
     private String findCity(String city) {
@@ -102,24 +97,6 @@ public class ReadFile {
             city = city.substring(0, city.indexOf(" "));
         return city;
     }
-
-
-//    public void readFile(String path) {
-//        File currentDirectory = new File(path);
-//        String[] allDirectories = currentDirectory.list();
-//        for (String directory : allDirectories) {
-//            currentFile = new File(path + directory);
-//            System.out.println("Current file " + directory);
-//            allFiles = currentFile.list()[0];
-//            try {
-//                lines = Files.readAllLines(Paths.get(path + directory + "/" + allFiles), StandardCharsets.ISO_8859_1);
-//            }
-//            catch (Exception e){
-//                System.out.println("Cannot open file: "+path);
-//            }
-//            model.processFile(lines);
-//        }
-//    }
 
     public HashSet<String> readStopWords(String path) {
         HashSet<String> stopWords = new HashSet<>();
