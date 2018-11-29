@@ -29,6 +29,7 @@ public class Model {
         long tStart = System.currentTimeMillis();
         parse.setStopWords(fileReader.readStopWords(stopWordsPath));
         fileReader.readFile(filesPath);
+        indexer.mergeAllPostFiles();
         System.out.println("--------------------------------------");
         System.out.println("-----------------Complete-------------");
         long tEnd = System.currentTimeMillis();
