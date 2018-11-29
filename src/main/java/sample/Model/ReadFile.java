@@ -1,13 +1,6 @@
 package sample.Model;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
 import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -16,11 +9,11 @@ import java.util.Scanner;
 public class ReadFile {
     private Model model;
     private File currentFile;
-    private List<String> lines;
     private String allFiles;
     private ArrayList <Document> documents;
     private Document currentDocument;
     private int numOfDocs = 1000;
+    private int total;
 
     public ReadFile(Model model) {
         this.model = model;
@@ -41,54 +34,17 @@ public class ReadFile {
                 String line = buf.readLine();
                 StringBuilder sb = new StringBuilder();
                 while(line != null){
-                    sb.append(line);
-                    //sb.append(line).append("\n");
+                    sb.append(line + " ");
                     line = buf.readLine();
                 }
                 String fileAsString = sb.toString();
-                String [] allDocuments = fileAsString.split("<DOC>");
-                for (String document: allDocuments) {
-                    if (document.length() == 0 ) continue;
-                    currentDocument = new Document();
-                    numOfDocs--;
-                    int startTagIndex = document.indexOf("<DOCNO>");
-                    int endTagIndex = document.indexOf("</DOCNO>");
-                    if (startTagIndex != -1 && endTagIndex != -1)
-                        currentDocument.setId(document.substring(startTagIndex + 7, endTagIndex));
-                    startTagIndex = document.indexOf("<TEXT>");
-                    endTagIndex = document.indexOf("</TEXT>");
-                    if (startTagIndex != -1 && endTagIndex != -1)
-                        currentDocument.setContent(document.substring(startTagIndex + 6, endTagIndex));
-                    startTagIndex = document.indexOf("<TI>");
-                    endTagIndex = document.indexOf("</TI>");
-                    if (startTagIndex != -1 && endTagIndex != -1)
-                        currentDocument.setTitle(document.substring(startTagIndex + 4, endTagIndex));
-                    startTagIndex = document.indexOf("<DATE>");
-                    endTagIndex = document.indexOf("</DATE>");
-                    if (startTagIndex != -1 && endTagIndex != -1)
-                        currentDocument.setDate(document.substring(startTagIndex + 7, endTagIndex));
-                    startTagIndex = document.indexOf("<F P=104>");
-                    endTagIndex = document.indexOf("</F>", startTagIndex);
-                    if (startTagIndex != -1 && endTagIndex != -1)
-                        currentDocument.setCity(document.substring(startTagIndex + 9, endTagIndex));
-                    documents.add(currentDocument);
-                }
-                    if (numOfDocs < 0){
-                        model.processFile(documents);
-                        model.index();
-                        documents.clear();
-                        numOfDocs = 1000;
-                    }
-                } catch (FileNotFoundException e) {
+                model.processFile(fileAsString);
+            } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace(); }
         }
-        if (numOfDocs != 1000) {
-            model.processFile(documents);
-            model.index();
-        }
-        documents.clear();
+        model.finishReading();
     }
 
     private String findCity(String city) {
@@ -102,24 +58,6 @@ public class ReadFile {
             city = city.substring(0, city.indexOf(" "));
         return city;
     }
-
-
-//    public void readFile(String path) {
-//        File currentDirectory = new File(path);
-//        String[] allDirectories = currentDirectory.list();
-//        for (String directory : allDirectories) {
-//            currentFile = new File(path + directory);
-//            System.out.println("Current file " + directory);
-//            allFiles = currentFile.list()[0];
-//            try {
-//                lines = Files.readAllLines(Paths.get(path + directory + "/" + allFiles), StandardCharsets.ISO_8859_1);
-//            }
-//            catch (Exception e){
-//                System.out.println("Cannot open file: "+path);
-//            }
-//            model.processFile(lines);
-//        }
-//    }
 
     public HashSet<String> readStopWords(String path) {
         HashSet<String> stopWords = new HashSet<>();
@@ -136,5 +74,4 @@ public class ReadFile {
         }
         return stopWords;
     }
-
 }
