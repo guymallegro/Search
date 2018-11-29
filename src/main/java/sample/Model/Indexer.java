@@ -19,6 +19,7 @@ public class Indexer {
         currentPostFile = 0;
         dictionary = new HashMap<>();
         filesNames = new HashMap<>();
+
     }
 
     public void addAllTerms(HashMap<String, Term> allTerms, String path) {
