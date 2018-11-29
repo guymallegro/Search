@@ -9,7 +9,7 @@ public class Model {
     private Parse parse;
     private ReadFile fileReader;
     private Indexer indexer;
-    private int nomOfDocs = 1000; //@TODO Need to find the best amount
+    private int nomOfDocs = 11800; //@TODO Need to find the best amount
     private int totalAmountOfDocs = 0;
     ArrayList<Document> documents;
 
@@ -24,12 +24,19 @@ public class Model {
         long tStart = System.currentTimeMillis();
         parse.setStopWords(fileReader.readStopWords(stopWordsPath));
         fileReader.readFile(filesPath);
-        indexer.mergeAllPostFiles();
         System.out.println("--------------------------------------");
-        System.out.println("-----------------Complete-------------");
+        System.out.println("-----------indexing--------------------");
         long tEnd = System.currentTimeMillis();
         long tDelta = tEnd - tStart;
         double elapsedSeconds = tDelta / 1000.0;
+        tStart = System.currentTimeMillis();
+        System.out.println("Time it took: " + elapsedSeconds + " seconds");
+        indexer.mergeAllPostFiles();
+        System.out.println("--------------------------------------");
+        System.out.println("-----------------Complete-------------");
+        tEnd = System.currentTimeMillis();
+        tDelta = tEnd - tStart;
+        elapsedSeconds = tDelta / 1000.0;
         System.out.println("Time it took: " + elapsedSeconds + " seconds");
     }
 
@@ -67,7 +74,7 @@ public class Model {
                 }
                 index();
                 documents.clear();
-                nomOfDocs = 1000;
+                nomOfDocs = 11800;
             }
         }
     }

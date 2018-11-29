@@ -14,6 +14,10 @@ public class Indexer {
     private HashMap<String, String[]> dictionary;
     private HashMap<Character, String> filesNames;
     private int currentPostFile;
+    private BufferedWriter bw;
+    private PrintWriter out;
+    private char currentPartOfPostFile = '~';
+    private FileWriter fw;
 
     public Indexer() {
         currentPostFile = 0;
@@ -28,13 +32,13 @@ public class Indexer {
         StringBuilder line = new StringBuilder();
         List<String> lines = new LinkedList<>();
         for (int i = 0; i < sortedterms.length; i++) {
-            int prev=0;
+            int prev = 0;
             line.append("<" + sortedterms[i] + ":" + allTerms.get(sortedterms[i]).getInDocuments().length + ";");
             Object[] documentsOfTerm = allTerms.get(sortedterms[i]).getInDocuments();
             allTerms.get(sortedterms[i]).clear();
             for (Object documentId : documentsOfTerm) {
-                line.append((int) documentId-prev + ",");
-                prev=(int)documentId;
+                line.append((int) documentId - prev + ",");
+                prev = (int) documentId;
             }
             line.deleteCharAt(line.toString().length() - 1);
             lines.add(line.toString());
@@ -53,16 +57,17 @@ public class Indexer {
     public void mergeAllPostFiles() {
         Scanner[] scanners = new Scanner[currentPostFile];
         String[] currentLine = new String[currentPostFile];
-        FileWriter fw = null;
+        fw = null;
         String toWrite = "";
         int currentIndex = 0;
+        boolean isChanged = true;
         try {
-            fw = new FileWriter("/home/guy/Desktop/final.txt");
+            fw = new FileWriter("/home/guy/Desktop/finalPostFiles/finalNumbers.txt");
         } catch (Exception e) {
             System.out.println("Failed to create file writer");
         }
-        BufferedWriter bw = new BufferedWriter(fw);
-        PrintWriter out = new PrintWriter(bw);
+        bw = new BufferedWriter(fw);
+        out = new PrintWriter(bw);
         for (int i = 0; i < currentPostFile; i++) {
             try {
                 scanners[i] = new Scanner(new File("/home/guy/Desktop/post/post" + i + ".txt"));
@@ -74,24 +79,29 @@ public class Indexer {
 
         while (true) {
             toWrite = "~";
-            String fromCompare;
+            String fromCompare = "";
             for (int i = 0; i < currentPostFile; i++) {
                 if (!currentLine[i].equals("~")) {
-                    if (!toWrite.equals("~"))
-                        fromCompare = toWrite.substring(0, toWrite.indexOf(':'));
-                    else
-                        fromCompare = "~";
+                    if (isChanged) {
+                        if (!toWrite.equals("~"))
+                            fromCompare = toWrite.substring(0, toWrite.indexOf(':'));
+                        else
+                            fromCompare = "~";
+                        isChanged = false;
+                    }
                     String toCompare = currentLine[i].substring(0, currentLine[i].indexOf(':'));
                     double compare = fromCompare.compareTo(toCompare);
                     if (compare > 0) {
                         toWrite = currentLine[i];
                         currentIndex = i;
+                        isChanged = true;
                     } else if (compare == 0) {
                         toWrite += "," + currentLine[i].substring(currentLine[i].indexOf(';') + 1);
                         if (scanners[i].hasNext())
                             currentLine[i] = scanners[i].nextLine();
                         else {
                             currentLine[i] = "~";
+                            scanners[i].close();
                         }
                     }
                 }
@@ -101,11 +111,27 @@ public class Indexer {
             else {
                 currentLine[currentIndex] = "~";
             }
-            if (!toWrite.equals("~"))
+            if (!toWrite.equals("~")) {
+                if (!Character.isDigit(toWrite.charAt(1)) && toWrite.charAt(1) != currentPartOfPostFile) {
+                    changePostFile(toWrite.charAt(1));
+                }
                 out.println(toWrite);
-            else
+                isChanged=true;
+            } else
                 break;
         }
         out.close();
+    }
+
+    private void changePostFile(char nextFile) {
+        out.close();
+        currentPartOfPostFile = nextFile;
+        try {
+            fw = new FileWriter("/home/guy/Desktop/finalPostFiles/final" + currentPartOfPostFile + ".txt");
+        } catch (Exception e) {
+            System.out.println("Failed to create file writer");
+        }
+        bw = new BufferedWriter(fw);
+        out = new PrintWriter(bw);
     }
 }
