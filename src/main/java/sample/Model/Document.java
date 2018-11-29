@@ -1,51 +1,48 @@
 package sample.Model;
 
+import java.util.HashMap;
+
 public class Document {
     private String id;
+    private int indexId;
+    public static int doccumentsAmount = 1;
+    private int max_tf;
+    private HashMap <Term, Integer> textTerms;
     private String date;
     private String title;
     private String content;
     private String city;
+    private HashMap<Term, Integer> titleTerms;
+    private HashMap<Term, Integer> dateTerms;
 
-    String getId() {
-        return id;
+    public Document(){
+        titleTerms = new HashMap<>();
+        dateTerms = new HashMap<>();
+        textTerms = new HashMap<>();
+        max_tf = 0;
+        indexId = doccumentsAmount++;
+        content = "";
     }
 
-    void setId(String id) {
-        this.id = id;
-    }
+    String getId() { return id; }
 
-    public String getDate() {
-        return date;
-    }
+    void setId(String id) { this.id = id; }
 
-    void setDate(String date) {
-        this.date = date;
-    }
+    public String getDate() { return date; }
 
-    public String getTitle() {
-        return title;
-    }
+    public String getTitle() { return title; }
 
-    void setTitle(String title) {
-        this.title = title;
-    }
+    public String getCity() { return city; }
 
-    String getContent() {
-        return content;
-    }
+    void setDate(String date) { this.date = date; }
 
-    void setContent(String content) {
-        this.content = content;
-    }
+    void setTitle(String title) { this.title = title; }
 
-    public void setCity(String city){
-        this.city=city;
-    }
+    String getContent() { return content; }
 
-    public String getCity(){
-        return city;
-    }
+    void setContent(String content) { this.content = content; }
+
+    public void setCity(String city){ this.city=city; }
 
     public void print() {
         System.out.println("id :" + id);
@@ -55,4 +52,6 @@ public class Document {
         System.out.println("Text :" + content);
         System.out.println("-------------------------------------------------");
     }
+
+    public int getIndexId() { return indexId; }
 }

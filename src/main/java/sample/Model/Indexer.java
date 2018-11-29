@@ -28,13 +28,13 @@ public class Indexer {
         StringBuilder line = new StringBuilder();
         List<String> lines = new LinkedList<>();
         for (int i = 0; i < sortedterms.length; i++) {
-            line.append("<" + sortedterms[i] + ":" + allTerms.get(sortedterms[i]).getInDocuments().size() + ";");
-            Iterator it = allTerms.get(sortedterms[i]).getInDocuments().entrySet().iterator();
-            int previous = 0;
-            while (it.hasNext()) {
-                Map.Entry pair = (Map.Entry) it.next();
-                line.append((int) pair.getValue() - previous + ",");
-                it.remove();
+            int prev=0;
+            line.append("<" + sortedterms[i] + ":" + allTerms.get(sortedterms[i]).getInDocuments().length + ";");
+            Object[] documentsOfTerm = allTerms.get(sortedterms[i]).getInDocuments();
+            allTerms.get(sortedterms[i]).clear();
+            for (Object documentId : documentsOfTerm) {
+                line.append((int) documentId-prev + ",");
+                prev=(int)documentId;
             }
             line.deleteCharAt(line.toString().length() - 1);
             lines.add(line.toString());
@@ -74,12 +74,25 @@ public class Indexer {
 
         while (true) {
             toWrite = "~";
+            String fromCompare;
             for (int i = 0; i < currentPostFile; i++) {
-                if(!currentLine[i].equals("~")) {
+                if (!currentLine[i].equals("~")) {
+                    if (!toWrite.equals("~"))
+                        fromCompare = toWrite.substring(0, toWrite.indexOf(':'));
+                    else
+                        fromCompare = "~";
                     String toCompare = currentLine[i].substring(0, currentLine[i].indexOf(':'));
-                    if (toWrite.compareTo(currentLine[i]) > 0) {
+                    double compare = fromCompare.compareTo(toCompare);
+                    if (compare > 0) {
                         toWrite = currentLine[i];
                         currentIndex = i;
+                    } else if (compare == 0) {
+                        toWrite += "," + currentLine[i].substring(currentLine[i].indexOf(';') + 1);
+                        if (scanners[i].hasNext())
+                            currentLine[i] = scanners[i].nextLine();
+                        else {
+                            currentLine[i] = "~";
+                        }
                     }
                 }
             }

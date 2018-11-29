@@ -1,11 +1,7 @@
 package sample.Model;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.*;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Scanner;
@@ -13,11 +9,15 @@ import java.util.Scanner;
 public class ReadFile {
     private Model model;
     private File currentFile;
-    private List<String> lines;
     private String allFiles;
+    private ArrayList <Document> documents;
+    private Document currentDocument;
+    private int numOfDocs = 1000;
+    private int total;
 
     public ReadFile(Model model) {
         this.model = model;
+        documents = new ArrayList<>();
     }
 
     public void readFile(String path) {
@@ -27,14 +27,24 @@ public class ReadFile {
             currentFile = new File(path + directory);
             System.out.println("Current file " + directory);
             allFiles = currentFile.list()[0];
+            currentFile = new File(path + directory + "/" + allFiles);
             try {
-                lines = Files.readAllLines(Paths.get(path + directory + "/" + allFiles), StandardCharsets.ISO_8859_1);
-            }
-            catch (Exception e){
-                System.out.println("Cannot open file: "+path);
-            }
-            model.processFile(lines);
+                InputStream is = new FileInputStream(currentFile);
+                BufferedReader buf = new BufferedReader(new InputStreamReader(is));
+                String line = buf.readLine();
+                StringBuilder sb = new StringBuilder();
+                while(line != null){
+                    sb.append(line + " ");
+                    line = buf.readLine();
+                }
+                String fileAsString = sb.toString();
+                model.processFile(fileAsString);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace(); }
         }
+        model.finishReading();
     }
 
     public HashSet<String> readStopWords(String path) {
@@ -43,7 +53,9 @@ public class ReadFile {
         try {
             Scanner scanner = new Scanner(file);
             while (scanner.hasNextLine()) {
-                stopWords.add(scanner.nextLine());
+                String stopWord = scanner.nextLine();
+                stopWords.add(stopWord);
+                stopWords.add(Character.toUpperCase(stopWord.charAt(0)) + stopWord.substring(1));
             }
         } catch (FileNotFoundException e) {
             System.out.println("Cannot open the file: " + path);

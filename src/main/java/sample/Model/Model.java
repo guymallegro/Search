@@ -6,23 +6,18 @@ import java.util.List;
 
 public class Model {
 
-    private ArrayList<Document> documents;
-    private HashSet<DocumentTerms> documentsTerms;
     private Parse parse;
     private ReadFile fileReader;
-    private DocumentTerms currentDocumentTerms;
-    private Document currentDocument;
-    private String text;
-    private boolean insideText;
     private Indexer indexer;
-    private int numOfDocs = 1000;
+    private int nomOfDocs = 1000; //@TODO Need to find the best amount
+    private int totalAmountOfDocs = 0;
+    ArrayList<Document> documents;
 
     public Model() {
-        documents = new ArrayList<>();
-        documentsTerms = new HashSet<>();
         parse = new Parse();
         indexer = new Indexer();
         fileReader = new ReadFile(this);
+        documents = new ArrayList<>();
     }
 
     public void readFiles(String filesPath, String stopWordsPath) {
@@ -38,73 +33,56 @@ public class Model {
         System.out.println("Time it took: " + elapsedSeconds + " seconds");
     }
 
-    void processFile(List<String> data) {
-        createDocuments(data);
-        for (Document document : documents) {
-            currentDocumentTerms = new DocumentTerms(document.getId());
-            currentDocumentTerms.setCity(document.getCity());
-            parse.setCurrentDocumentTerms(currentDocumentTerms);
-            parse.parseDocument(document);
-            documentsTerms.add(currentDocumentTerms);
-            numOfDocs--;
-        }
-        if (numOfDocs < 0){
-            indexer.addAllTerms(parse.getAllTerms(), "");
-            documents.clear();
-            documentsTerms.clear();
-            parse.getAllTerms().clear();
-        }
-        numOfDocs = 1000;
-    }
-
-    private void createDocuments(List<String> data) {
-        currentDocument = null;
-        text = "";
-        insideText = false;
-        String city;
-        for (String line : data) {
-            if (!line.equals("")) {
-                if (line.equals("</TEXT>")) {
-                    currentDocument.setContent(text);
-                    insideText = false;
-                } else if (insideText) {
-                    text += line;
-                } else if (line.equals("<DOC>")) {
-                    currentDocument = new Document();
-                } else if (line.equals("</DOC>")) {
-                    documents.add(currentDocument);
-                    text = "";
-                } else if (line.equals("<TEXT>")) {
-                    insideText = true;
-                } else if (line.contains("<TI>")) {
-                    currentDocument.setTitle(removeTag(line));
-                } else if (line.contains("<DATE")) {
-                    currentDocument.setDate(removeTag(line));
-                } else if (line.contains("<DOCNO>")) {
-                    currentDocument.setId(removeTag(line));
-                } else if (line.contains("<F P=104>")) {
-                    city = removeTag(line);
-                    int position;
-                    for (position = 0; position < city.length(); position++) {
-                        if (city.charAt(position) != ' ')
-                            break;
-                    }
-                    city = city.substring(position);
-                    if (city.contains(" "))
-                        city = city.substring(0, city.indexOf(" "));
-                    currentDocument.setCity(city.toUpperCase());
+    void processFile(String fileAsString) {
+        String[] allDocuments = fileAsString.split("<DOC>");
+        for (String document : allDocuments) {
+            if (document.length() == 0 || document.equals(" ")) continue;
+            Document currentDocument = new Document();
+            totalAmountOfDocs++;
+            nomOfDocs--;
+            int startTagIndex = document.indexOf("<DOCNO>");
+            int endTagIndex = document.indexOf("</DOCNO>");
+            if (startTagIndex != -1 && endTagIndex != -1)
+                currentDocument.setId(document.substring(startTagIndex + 7, endTagIndex));
+            startTagIndex = document.indexOf("<TEXT>");
+            endTagIndex = document.indexOf("</TEXT>");
+            if (startTagIndex != -1 && endTagIndex != -1)
+                currentDocument.setContent(document.substring(startTagIndex + 6, endTagIndex));
+            startTagIndex = document.indexOf("<TI>");
+            endTagIndex = document.indexOf("</TI>");
+            if (startTagIndex != -1 && endTagIndex != -1)
+                currentDocument.setTitle(document.substring(startTagIndex + 4, endTagIndex));
+            startTagIndex = document.indexOf("<DATE>");
+            endTagIndex = document.indexOf("</DATE>");
+            if (startTagIndex != -1 && endTagIndex != -1)
+                currentDocument.setDate(document.substring(startTagIndex + 7, endTagIndex));
+            startTagIndex = document.indexOf("<F P=104>");
+            endTagIndex = document.indexOf("</F>", startTagIndex);
+            if (startTagIndex != -1 && endTagIndex != -1)
+                currentDocument.setCity(document.substring(startTagIndex + 9, endTagIndex));
+            documents.add(currentDocument);
+            if (nomOfDocs < 0) {
+                for (Document doc : documents) {
+                    parse.parseDocument(doc);
                 }
+                index();
+                documents.clear();
+                nomOfDocs = 1000;
             }
-
         }
     }
 
-    private String removeTag(String line) {
-        return line.replaceAll("<.*?>", "");
+    public void index() {
+        indexer.addAllTerms(parse.getAllTerms(), "");
+        parse.getAllTerms().clear();
     }
 
-    public ArrayList<Document> getDocuments() {
-        return documents;
+    public void finishReading() {
+        for (Document doc : documents) {
+            parse.parseDocument(doc);
+        }
+        index();
+        documents.clear();
+        System.out.println(totalAmountOfDocs);
     }
-
 }
