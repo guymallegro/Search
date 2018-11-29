@@ -7,7 +7,7 @@ import java.util.HashSet;
 
 class Parse {
     private Stemmer stemmer;
-    private boolean doStemming = true; //@TODO Needs to be set by UI
+    private boolean doStemming = false; //@TODO Needs to be set by UI
     private HashSet<String> stopWords;
     private HashMap<String, String> numbers;
     private HashMap<String, String> percents;
@@ -20,7 +20,7 @@ class Parse {
     private int currentTest = 0;
     private Document currentDocument;
 
-    private boolean toTest = false;
+    //private boolean toTest = false;
 
     Parse() {
         tokens = new ArrayList<>();
@@ -92,7 +92,25 @@ class Parse {
     }
 
     private boolean checkRange(int i) {
-        return tokens.get(i).contains("-");
+        String [] range = tokens.get(i).split("-");
+        if (range.length > 1) {
+            String ans = range[0];
+            if (range[0].matches("[0-9]+")) {
+                tokens.set(i, range[0]);
+                checkNumber(i);
+                ans = tokens.get(i);
+            }
+            if (range[1].matches("[0-9]+")) {
+                tokens.set(i, range[1]);
+                checkNumber(i);
+                ans += "-" + tokens.get(i);
+            }
+            else
+                ans += "-" + range[1];
+            tokens.set(i, ans);
+            return true;
+        }
+        return false;
     }
 
     private boolean checkFraction(int i) {
@@ -111,9 +129,12 @@ class Parse {
         return false;
     }
 
-    private boolean checkLittleMoney(int i) {
-        if (i + 1 < tokens.size() && tokens.get(i + 1).contains("Dollar")) {
-            if ((tokens.get(i).length() > 6) || (tokens.get(i).contains(",") && tokens.get(i).length() > 7))
+    private boolean checkLittleMoney (int i){
+        if (i + 1 < tokens.size() && (tokens.get(i + 1).contains("dollar") || tokens.get(i + 1).contains("Dollar"))){
+            if (tokens.get(i).indexOf(",") != tokens.get(i).lastIndexOf(",") || tokens.get(i).charAt(0) == '$')
+                return false;
+            String num = tokens.get(i).replaceAll(",", "");
+            if (num.indexOf(".") > 7)
                 return false;
             if (tokens.get(i).charAt(0) == '$')
                 tokens.set(i, tokens.get(i).substring(1));
@@ -122,24 +143,13 @@ class Parse {
             tokens.set(i, tokens.get(i) + " Dollars");
             tokens.set(i + 1, "");
             return true;
-
-        } else if (tokens.get(i).charAt(0) == '$') {
-            if (tokens.get(i).contains(",")) {
-                if (tokens.get(i).length() > 8)
-                    return false;
-            } else {
-                if (tokens.get(i).length() > 7)
-                    return false;
-            }
-            if (i < tokens.size() - 1) {
-                if (tokens.get(i + 1).contains("million")) {
-                    tokens.set(i, tokens.get(i).substring(1) + " M" + " Dollars");
-                    return true;
-                } else if (tokens.get(i + 1).contains("billion")) {
-                    tokens.set(i, tokens.get(i).substring(1) + "000 M" + " Dollars");
-                    return true;
-                }
-            }
+        }
+        else if (tokens.get(i).charAt(0) == '$'){
+            if (tokens.get(i).indexOf(",") != tokens.get(i).lastIndexOf(","))
+                return false;
+            String num = tokens.get(i).replaceAll(",", "");
+            if (num.indexOf(".") > 7 || (i + 1 < tokens.size() && money.containsKey(tokens.get(i + 1))))
+                return false;
             tokens.set(i, tokens.get(i).substring(1) + " Dollars");
             return true;
         }
@@ -164,7 +174,6 @@ class Parse {
             if (date.containsKey(tokens.get(i + 1))) {
                 tokens.set(i, date.get(tokens.get(i + 1)) + "-" + String.format("%02d", Integer.parseInt(tokens.get(i))));
                 if (i + 2 < tokens.size()) {
-                    //tokens.set(i + 2, cleanString(tokens.get(i + 2)));
                     if (tokens.get(i + 2).matches("[0-9][0-9][0-9][0-9]")) {
                         addTerm(tokens.get(i + 2) + "-" + date.get(tokens.get(i + 1)));
                         tokens.set(i + 2, "");
@@ -217,16 +226,15 @@ class Parse {
                 if (number % (double) 1 == 0)
                     tokens.set(i, Integer.toString((int) number) + " M Dollars");
                 else
-                    tokens.set(i, Double.toString(number) + " M Dollars");
+                    tokens.set(i, Double.toString(number).substring(0, Double.toString(number).indexOf(".") + 2) + " M Dollars");
+                    // here the change - sapir
                 tokens.set(i + 1, "");
                 return true;
-            } else {
+            }
+            else{
                 tokens.set(i, tokens.get(i).substring(1));
-                if (checkNumber(i)) {
-                    tokens.set(i, tokens.get(i).substring(0, tokens.get(i).length() - 1) + " M Dollars");
-                } else {
-                    tokens.set(i, tokens.get(i).substring(0, tokens.get(i).length() - 1) + " Dollars");
-                }
+                checkNumber(i);
+                tokens.set(i, tokens.get(i).substring(0, tokens.get(i).length() - 1) + " M Dollars");
                 return true;
             }
         }
@@ -241,7 +249,7 @@ class Parse {
         try {
             num = new BigDecimal(Double.parseDouble(tokens.get(i))).doubleValue();
         } catch (Exception e) {
-            System.out.println("Illegal word");
+            System.out.println("Illegal word" + tokens.get(i));
         }
         if (i + 1 < tokens.size() && numbers.containsKey(tokens.get(i + 1))) {
             if (tokens.get(i + 1).equals("Trillion"))
@@ -381,9 +389,7 @@ class Parse {
         }
     }
 
-    void setStopWords(HashSet<String> stopWords) {
-        this.stopWords = stopWords;
-    }
+    void setStopWords(HashSet<String> stopWords) { this.stopWords = stopWords; }
 
     private boolean checkIfContainsLetters(String s) {
         for (int i = 0; i < s.length(); i++) {
@@ -396,6 +402,8 @@ class Parse {
     }
 
     private boolean checkIfContainsIllegalSymbols(String s) {
+        if (s.indexOf(".") != s.lastIndexOf("."))
+            return true;
         for (int i = 0; i < s.length(); i++) {
             int ascii = (int) s.charAt(i);
             if (ascii <= 35 || (ascii >= 38 && ascii <= 43) || ascii == 47 || (ascii >= 58 && ascii <= 64) || (ascii >= 91 && ascii <= 96) || ascii >= 123)
@@ -511,7 +519,7 @@ class Parse {
                 checking++;
             }
             finalResult += result;
-            tokens.set(i, "" + finalResult);
+            tokens.set(i, Integer.toString(finalResult));
         }
     }
 
@@ -567,6 +575,7 @@ class Parse {
         money.put("bn", "0.001");
         money.put("trillion", "0.000001");
         money.put("T", "0.000001");
+
         numberNames.put("zero", "0");
         numberNames.put("one", "1");
         numberNames.put("two", "2");

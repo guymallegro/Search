@@ -47,6 +47,18 @@ public class ReadFile {
         model.finishReading();
     }
 
+    private String findCity(String city) {
+        int position;
+        for (position = 0; position < city.length(); position++) {
+            if (city.charAt(position) != ' ')
+                break;
+        }
+        city = city.substring(position);
+        if (city.contains(" "))
+            city = city.substring(0, city.indexOf(" "));
+        return city;
+    }
+
     public HashSet<String> readStopWords(String path) {
         HashSet<String> stopWords = new HashSet<>();
         File file = new File(path);
@@ -62,5 +74,4 @@ public class ReadFile {
         }
         return stopWords;
     }
-
 }
