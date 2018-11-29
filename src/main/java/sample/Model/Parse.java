@@ -19,8 +19,7 @@ class Parse {
     private ArrayList<String> tokens;
     private int currentTest = 0;
     private Document currentDocument;
-
-    //private boolean toTest = false;
+    private boolean toTest = false;
 
     Parse() {
         tokens = new ArrayList<>();

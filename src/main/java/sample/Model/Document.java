@@ -55,4 +55,3 @@ public class Document {
 
     public int getIndexId() { return indexId; }
 }
-]
