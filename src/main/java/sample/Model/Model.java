@@ -1,6 +1,7 @@
 package sample.Model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -11,13 +12,15 @@ public class Model {
     private Indexer indexer;
     private int nomOfDocs = 11800; //@TODO Need to find the best amount
     private int totalAmountOfDocs = 0;
-    ArrayList<Document> documents;
+    private ArrayList<Document> documents;
+    static HashMap <String, ArrayList<Object>> dictionary;
 
     public Model() {
         parse = new Parse();
-        indexer = new Indexer();
+        indexer = new Indexer(parse.getAllTerms());
         fileReader = new ReadFile(this);
         documents = new ArrayList<>();
+        dictionary = new HashMap<>();
     }
 
     public void readFiles(String filesPath, String stopWordsPath) {
@@ -38,6 +41,7 @@ public class Model {
         tDelta = tEnd - tStart;
         elapsedSeconds = tDelta / 1000.0;
         System.out.println("Time it took: " + elapsedSeconds + " seconds");
+        System.out.println("dictionarySize: " + dictionary.size());
     }
 
     void processFile(String fileAsString) {
@@ -80,7 +84,7 @@ public class Model {
     }
 
     public void index() {
-        indexer.addAllTerms(parse.getAllTerms(), "");
+        indexer.addAllTerms("");
         parse.getAllTerms().clear();
     }
 

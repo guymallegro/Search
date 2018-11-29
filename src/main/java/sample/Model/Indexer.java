@@ -11,22 +11,20 @@ import java.nio.file.Paths;
 import java.util.*;
 
 public class Indexer {
-    private HashMap<String, String[]> dictionary;
-    private HashMap<Character, String> filesNames;
+    private HashMap<String, Term> allTerms;
     private int currentPostFile;
     private BufferedWriter bw;
     private PrintWriter out;
     private char currentPartOfPostFile = '~';
     private FileWriter fw;
 
-    public Indexer() {
+    public Indexer(HashMap<String, Term> allTerms) {
         currentPostFile = 0;
-        dictionary = new HashMap<>();
-        filesNames = new HashMap<>();
+        this.allTerms = allTerms;
     }
 
-    public void addAllTerms(HashMap<String, Term> allTerms, String path) {
-        path = "/home/guy/Desktop/post/";
+    public void addAllTerms(String path) {
+        path = "C:\\Users\\ספיר רצון\\Desktop\\post\\";
         Object[] sortedterms = allTerms.keySet().toArray();
         Arrays.sort(sortedterms);
         StringBuilder line = new StringBuilder();
@@ -62,7 +60,7 @@ public class Indexer {
         int currentIndex = 0;
         boolean isChanged = true;
         try {
-            fw = new FileWriter("/home/guy/Desktop/finalPostFiles/finalNumbers.txt");
+            fw = new FileWriter("C:\\Users\\ספיר רצון\\Desktop\\final.txt");
         } catch (Exception e) {
             System.out.println("Failed to create file writer");
         }
@@ -70,7 +68,7 @@ public class Indexer {
         out = new PrintWriter(bw);
         for (int i = 0; i < currentPostFile; i++) {
             try {
-                scanners[i] = new Scanner(new File("/home/guy/Desktop/post/post" + i + ".txt"));
+                scanners[i] = new Scanner(new File("C:\\Users\\ספיר רצון\\Desktop\\post\\post" + i + ".txt"));
             } catch (Exception e) {
                 System.out.println("Failed to create a scanner");
             }
@@ -84,12 +82,12 @@ public class Indexer {
                 if (!currentLine[i].equals("~")) {
                     if (isChanged) {
                         if (!toWrite.equals("~"))
-                            fromCompare = toWrite.substring(0, toWrite.indexOf(':'));
+                            fromCompare = toWrite.substring(1, toWrite.indexOf(':'));
                         else
                             fromCompare = "~";
                         isChanged = false;
                     }
-                    String toCompare = currentLine[i].substring(0, currentLine[i].indexOf(':'));
+                    String toCompare = currentLine[i].substring(1, currentLine[i].indexOf(':'));
                     double compare = fromCompare.compareTo(toCompare);
                     if (compare > 0) {
                         toWrite = currentLine[i];
@@ -116,6 +114,7 @@ public class Indexer {
                     changePostFile(toWrite.charAt(1));
                 }
                 out.println(toWrite);
+                addToDictionary(fromCompare, currentPartOfPostFile);
                 isChanged=true;
             } else
                 break;
@@ -133,5 +132,19 @@ public class Indexer {
         }
         bw = new BufferedWriter(fw);
         out = new PrintWriter(bw);
+    }
+
+    private void addToDictionary(String term, char path) {
+        if (Model.dictionary.containsKey(term)){
+            int numOfDocuments = (int)Model.dictionary.get(term).get(0);
+            Model.dictionary.get(term).set(0, numOfDocuments + allTerms.get(term).getInDocuments().length);
+        }
+        else {
+            ArrayList<Object> attributes = new ArrayList<>();
+            attributes.set(0, allTerms.get(term).getInDocuments().length);
+            attributes.set(1, path);
+            Model.dictionary.put(term, attributes);
+        }
+
     }
 }
