@@ -22,7 +22,7 @@ public class Indexer {
     }
 
     public void addAllTerms(HashMap<String, Term> allTerms, String path) {
-        path = "C:\\Users\\Guy Shuster\\Desktop\\post\\";
+        path = "/home/guy/Desktop/post/";
         Object[] sortedterms = allTerms.keySet().toArray();
         Arrays.sort(sortedterms);
         StringBuilder line = new StringBuilder();
@@ -57,7 +57,7 @@ public class Indexer {
         String toWrite = "";
         int currentIndex = 0;
         try {
-            fw = new FileWriter("C:\\Users\\Guy Shuster\\Desktop\\final.txt");
+            fw = new FileWriter("/home/guy/Desktop/final.txt");
         } catch (Exception e) {
             System.out.println("Failed to create file writer");
         }
@@ -65,7 +65,7 @@ public class Indexer {
         PrintWriter out = new PrintWriter(bw);
         for (int i = 0; i < currentPostFile; i++) {
             try {
-                scanners[i] = new Scanner(new File("C:\\Users\\Guy Shuster\\Desktop\\post\\post" + i + ".txt"));
+                scanners[i] = new Scanner(new File("/home/guy/Desktop/post/post" + i + ".txt"));
             } catch (Exception e) {
                 System.out.println("Failed to create a scanner");
             }
@@ -73,11 +73,14 @@ public class Indexer {
         }
 
         while (true) {
+            toWrite = "~";
             for (int i = 0; i < currentPostFile; i++) {
-                toWrite = "~";
-                if (toWrite.compareTo(currentLine[i]) > 0) {
-                    toWrite = currentLine[i];
-                    currentIndex = i;
+                if(!currentLine[i].equals("~")) {
+                    String toCompare = currentLine[i].substring(0, currentLine[i].indexOf(':'));
+                    if (toWrite.compareTo(currentLine[i]) > 0) {
+                        toWrite = currentLine[i];
+                        currentIndex = i;
+                    }
                 }
             }
             if (scanners[currentIndex].hasNext())
