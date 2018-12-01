@@ -10,6 +10,7 @@ public class Model {
     private Parse parse;
     private ReadFile fileReader;
     private Indexer indexer;
+    private CityChecker cityChecker;
     private int nomOfDocs = 11800; //@TODO Need to find the best amount
     private int totalAmountOfDocs = 0;
     private ArrayList<Document> documents;
@@ -17,6 +18,7 @@ public class Model {
 
     public Model() {
         parse = new Parse();
+        cityChecker = new CityChecker();
         fileReader = new ReadFile(this);
         documents = new ArrayList<>();
         dictionary = new HashMap<>();
@@ -25,6 +27,8 @@ public class Model {
 
     public void readFiles(String filesPath, String stopWordsPath) {
         long tStart = System.currentTimeMillis();
+        HashMap<String, String> cityInfo = cityChecker.findCityInformation("paris");
+        System.out.println(cityInfo.get("country") + "," + cityInfo.get("currency") + "," + cityInfo.get("population"));
         parse.setStopWords(fileReader.readStopWords(stopWordsPath));
         fileReader.readFile(filesPath);
         System.out.println("--------------------------------------");
