@@ -36,9 +36,9 @@ public class CityChecker {
                 info.put("country", response.toString().substring(startTagIndex + 11, endTagIndex));
                 startTagIndex = response.toString().indexOf("tion\":");
                 endTagIndex = response.toString().indexOf("0}]");
-                info.put("population", response.toString().substring(startTagIndex + 6, endTagIndex));
+                info.put("population", response.toString().substring(startTagIndex + 6, endTagIndex+1));
             } else {
-                System.out.println("GET request not worked");
+                System.out.println("The request have failed.");
             }
         } catch (Exception e) {
             System.out.println("Filed to get city information for :" + city);
