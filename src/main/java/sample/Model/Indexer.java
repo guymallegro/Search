@@ -1,7 +1,5 @@
 package sample.Model;
 
-import jdk.nashorn.internal.runtime.ECMAException;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -33,11 +31,10 @@ class Indexer {
         List<String> lines = new LinkedList<>();
         for (Object sortedterm : sortedterms) {
             int prev = 0;
-            line.append("<").append(sortedterm).append(":");
+            line.append("<").append(sortedterm).append(";");
             Object[] documentsOfTerm = allTerms.get(sortedterm).getInDocuments();
-            line.append(documentsOfTerm[documentsOfTerm.length - 1]).append(";");
             for (Object documentId : documentsOfTerm) {
-                line.append((int) documentId - prev).append("^");
+                line.append((int) documentId).append(",");
                 prev = (int) documentId;
             }
             line.deleteCharAt(line.toString().length() - 1);
@@ -75,51 +72,39 @@ class Indexer {
             } catch (Exception e) {
                 System.out.println("Failed to create a scanner");
             }
-            currentLine[i] = scanners[i].nextLine();
+            try {
+                currentLine[i] = scanners[i].nextLine();
+            } catch (Exception e) {
+                currentPostFile--;
+            }
         }
-        boolean merge = false;
+
         while (true) {
-            int previous = 0;
             toWrite = new StringBuilder("~");
             String fromCompare = "";
             for (int i = 0; i < currentPostFile; i++) {
                 if (!currentLine[i].equals("~")) {
                     if (isChanged) {
-                        if (!toWrite.toString().equals("~")) {
-                            fromCompare = toWrite.substring(1, toWrite.toString().indexOf(':'));
-                        } else
+                        if (!toWrite.toString().equals("~"))
+                            fromCompare = toWrite.substring(1, toWrite.toString().indexOf(';'));
+                        else
                             fromCompare = "~";
                         isChanged = false;
                     }
-                    String toCompare = currentLine[i].substring(1, currentLine[i].indexOf(':'));
+                    String toCompare = currentLine[i].substring(1, currentLine[i].indexOf(';'));
                     double compare = fromCompare.compareTo(toCompare);
                     if (compare > 0) {
                         toWrite = new StringBuilder(currentLine[i]);
                         currentIndex = i;
                         isChanged = true;
-                        previous = 0;
                     } else if (compare == 0) {
-                        if (previous == 0) {
-                            int startIndex = toWrite.toString().indexOf(':');
-                            int endIndex = toWrite.toString().indexOf(';');
-                            previous = Integer.parseInt(toWrite.toString().substring(startIndex + 1, endIndex));
-                        } else {
-                            if (currentLine[i].contains("^"))
-                                previous = Integer.parseInt(currentLine[i].substring(currentLine[i].indexOf(';') + 1, currentLine[i].indexOf('^'))) - 1;
-                            else
-                                previous = Integer.parseInt(currentLine[i].substring(currentLine[i].indexOf(';') + 1)) - 1;
-                        }
-                        if (currentLine[i].contains("^")) {
-                            toWrite.append("^").append(Integer.parseInt(currentLine[i].substring(currentLine[i].indexOf(';') + 1, currentLine[i].indexOf('^'))) - previous).append("^").append(currentLine[i].substring(currentLine[i].indexOf('^') + 1));
-                        } else
-                            toWrite.append("^").append(Integer.parseInt(currentLine[i].substring(currentLine[i].indexOf(';') + 1)) - previous);
+                        toWrite.append(",").append(currentLine[i].substring(currentLine[i].indexOf(';') + 1));
                         if (scanners[i].hasNext())
                             currentLine[i] = scanners[i].nextLine();
                         else {
                             currentLine[i] = "~";
                             scanners[i].close();
                         }
-                        merge = true;
                     }
                 }
             }
@@ -130,11 +115,9 @@ class Indexer {
             }
             if (!toWrite.toString().equals("~")) {
                 if (!Character.isDigit(toWrite.charAt(1)) && toWrite.charAt(1) != currentPartOfPostFile) {
-                    changePostFile(toWrite.charAt(1));
+                    //      changePostFile(toWrite.charAt(1));
                 }
-                out.println(toWrite.toString().substring(0, toWrite.indexOf(":")) + toWrite.substring(toWrite.indexOf(";")));
-                System.out.println(toWrite.toString().substring(0, toWrite.indexOf(":")) + toWrite.substring(toWrite.indexOf(";")));
-                merge = false;
+                out.println(toWrite.toString());
                 isChanged = true;
             } else
                 break;
