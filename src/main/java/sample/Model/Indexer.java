@@ -40,7 +40,6 @@ class Indexer {
             line.deleteCharAt(line.toString().length() - 1);
             lines.add(line.toString());
             addToDictionary((String) sortedterm, currentPartOfPostFile);
-
             line.setLength(0);
         }
         path += "post" + currentPostFile + ".txt";
@@ -57,7 +56,7 @@ class Indexer {
         Scanner[] scanners = new Scanner[currentPostFile];
         String[] currentLine = new String[currentPostFile];
         fw = null;
-        String toWrite = "";
+        StringBuilder toWrite = new StringBuilder();
         int currentIndex = 0;
         boolean isChanged = true;
         try {
@@ -77,13 +76,13 @@ class Indexer {
         }
 
         while (true) {
-            toWrite = "~";
+            toWrite = new StringBuilder("~");
             String fromCompare = "";
             for (int i = 0; i < currentPostFile; i++) {
                 if (!currentLine[i].equals("~")) {
                     if (isChanged) {
-                        if (!toWrite.equals("~"))
-                            fromCompare = toWrite.substring(1, toWrite.indexOf(':'));
+                        if (!toWrite.toString().equals("~"))
+                            fromCompare = toWrite.substring(1, toWrite.toString().indexOf(';'));
                         else
                             fromCompare = "~";
                         isChanged = false;
@@ -91,11 +90,11 @@ class Indexer {
                     String toCompare = currentLine[i].substring(1, currentLine[i].indexOf(';'));
                     double compare = fromCompare.compareTo(toCompare);
                     if (compare > 0) {
-                        toWrite = currentLine[i];
+                        toWrite = new StringBuilder(currentLine[i]);
                         currentIndex = i;
                         isChanged = true;
                     } else if (compare == 0) {
-                        toWrite += "," + currentLine[i].substring(currentLine[i].indexOf(';') + 1);
+                        toWrite.append(",").append(currentLine[i].substring(currentLine[i].indexOf(';') + 1));
                         if (scanners[i].hasNext())
                             currentLine[i] = scanners[i].nextLine();
                         else {
@@ -110,15 +109,16 @@ class Indexer {
             else {
                 currentLine[currentIndex] = "~";
             }
-            if (!toWrite.equals("~")) {
+            if (!toWrite.toString().equals("~")) {
                 if (!Character.isDigit(toWrite.charAt(1)) && toWrite.charAt(1) != currentPartOfPostFile) {
                     changePostFile(toWrite.charAt(1));
                 }
-                out.println(toWrite);
+                out.println(toWrite.toString());
                 isChanged = true;
             } else
                 break;
         }
+        out.close();
         out.close();
     }
 
@@ -135,14 +135,14 @@ class Indexer {
     }
 
     private void addToDictionary(String term, char path) {
-        if (Model.dictionary.containsKey(term)) {
-            int numOfDocuments = (int) Model.dictionary.get(term).get(0);
-            Model.dictionary.get(term).set(0, numOfDocuments + allTerms.get(term).getInDocuments().length);
+        if (Model.termsDictionary.containsKey(term)) {
+            int numOfDocuments = (int) Model.termsDictionary.get(term).get(0);
+            Model.termsDictionary.get(term).set(0, numOfDocuments + allTerms.get(term).getInDocuments().length);
         } else {
             ArrayList<Object> attributes = new ArrayList<>();
             attributes.add(allTerms.get(term).getInDocuments().length);
             attributes.add(path);
-            Model.dictionary.put(term, attributes);
+            Model.termsDictionary.put(term, attributes);
         }
     }
 }

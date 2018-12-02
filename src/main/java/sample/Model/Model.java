@@ -2,8 +2,6 @@ package sample.Model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 
 public class Model {
 
@@ -11,24 +9,29 @@ public class Model {
     private ReadFile fileReader;
     private Indexer indexer;
     private CityChecker cityChecker;
-    private int nomOfDocs = 11800; //@TODO Need to find the best amount
+    private int nomOfDocs = 10; //@TODO Need to find the best amount
     private int totalAmountOfDocs = 0;
     private ArrayList<Document> documents;
-    static HashMap<String, ArrayList<Object>> dictionary;
+    static HashMap<String, ArrayList<Object>> termsDictionary;
+    static HashMap<String, ArrayList<Object>> documentsDictionary;
+    static HashMap<String, ArrayList<Object>> citiesDictionary;
+
 
     public Model() {
         parse = new Parse();
         cityChecker = new CityChecker();
         fileReader = new ReadFile(this);
         documents = new ArrayList<>();
-        dictionary = new HashMap<>();
+        termsDictionary = new HashMap<>();
+        documentsDictionary = new HashMap<>();
+        citiesDictionary = new HashMap<>();
         indexer = new Indexer(parse.getAllTerms());
     }
 
     public void readFiles(String filesPath, String stopWordsPath) {
         long tStart = System.currentTimeMillis();
-        HashMap<String, String> cityInfo = cityChecker.findCityInformation("paris");
-        System.out.println(cityInfo.get("country") + "," + cityInfo.get("currency") + "," + cityInfo.get("population"));
+        //HashMap<String, String> cityInfo = cityChecker.findCityInformation("jerusalem");
+        // System.out.println(cityInfo.get("country") + "," + cityInfo.get("currency") + "," + cityInfo.get("population"));
         parse.setStopWords(fileReader.readStopWords(stopWordsPath));
         fileReader.readFile(filesPath);
         System.out.println("--------------------------------------");
@@ -46,7 +49,7 @@ public class Model {
         tDelta = tEnd - tStart;
         elapsedSeconds = tDelta / 1000.0;
         System.out.println("Time it took: " + elapsedSeconds + " seconds");
-        System.out.println("dictionarySize: " + dictionary.size());
+        System.out.println("dictionarySize: " + termsDictionary.size());
     }
 
     void processFile(String fileAsString) {
@@ -83,17 +86,17 @@ public class Model {
                 }
                 index();
                 documents.clear();
-                nomOfDocs = 11800;
+                nomOfDocs = 10;
             }
         }
     }
 
-    public void index() {
+    private void index() {
         indexer.addAllTerms("");
         parse.getAllTerms().clear();
     }
 
-    public void finishReading() {
+    void finishReading() {
         for (Document doc : documents) {
             parse.parseDocument(doc);
         }
