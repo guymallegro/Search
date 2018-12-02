@@ -10,7 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class Indexer {
+class Indexer {
     private HashMap<String, Term> allTerms;
     private int currentPostFile;
     private BufferedWriter bw;
@@ -18,28 +18,28 @@ public class Indexer {
     private char currentPartOfPostFile = '~';
     private FileWriter fw;
 
-    public Indexer(HashMap<String, Term> allTerms) {
+    Indexer(HashMap<String, Term> allTerms) {
         currentPostFile = 0;
         this.allTerms = allTerms;
     }
 
-    public void addAllTerms(String path) {
+    void addAllTerms(String path) {
         path = "/home/guy/Desktop/post/";
         Object[] sortedterms = allTerms.keySet().toArray();
         Arrays.sort(sortedterms);
         StringBuilder line = new StringBuilder();
         List<String> lines = new LinkedList<>();
-        for (int i = 0; i < sortedterms.length; i++) {
+        for (Object sortedterm : sortedterms) {
             int prev = 0;
-            line.append("<" + sortedterms[i] + ":" + allTerms.get(sortedterms[i]).getInDocuments().length + ";");
-            Object[] documentsOfTerm = allTerms.get(sortedterms[i]).getInDocuments();
+            line.append("<").append(sortedterm).append(";");
+            Object[] documentsOfTerm = allTerms.get(sortedterm).getInDocuments();
             for (Object documentId : documentsOfTerm) {
-                line.append((int) documentId - prev + ",");
+                line.append((int) documentId - prev).append(",");
                 prev = (int) documentId;
             }
             line.deleteCharAt(line.toString().length() - 1);
             lines.add(line.toString());
-            addToDictionary((String) sortedterms[i], currentPartOfPostFile);
+            addToDictionary((String) sortedterm, currentPartOfPostFile);
 
             line.setLength(0);
         }
@@ -53,7 +53,7 @@ public class Indexer {
         currentPostFile++;
     }
 
-    public void mergeAllPostFiles() {
+    void mergeAllPostFiles() {
         Scanner[] scanners = new Scanner[currentPostFile];
         String[] currentLine = new String[currentPostFile];
         fw = null;
@@ -88,7 +88,7 @@ public class Indexer {
                             fromCompare = "~";
                         isChanged = false;
                     }
-                    String toCompare = currentLine[i].substring(1, currentLine[i].indexOf(':'));
+                    String toCompare = currentLine[i].substring(1, currentLine[i].indexOf(';'));
                     double compare = fromCompare.compareTo(toCompare);
                     if (compare > 0) {
                         toWrite = currentLine[i];
