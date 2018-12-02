@@ -10,7 +10,7 @@ public class Model {
     private Indexer indexer;
     private CityChecker cityChecker;
     private int nomOfDocs = 2; //@TODO Need to find the best amount
-    private int totalAmountOfDocs = 100;
+    private int totalAmountOfDocs = 0;
     private ArrayList<Document> documents;
     static HashMap<String, ArrayList<Object>> termsDictionary;
     static HashMap<String, ArrayList<Object>> documentsDictionary;
