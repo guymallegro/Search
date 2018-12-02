@@ -85,7 +85,8 @@ class Parse {
                     } else {
                         parseByLetters(i);
                     }
-                    addTerm(tokens.get(i));
+                    if (tokens.get(i).length() > 1 || (tokens.get(i).length() == 1 && Character.isDigit(tokens.get(i).charAt(0))))
+                        addTerm(tokens.get(i));
                 }
             }
         }
@@ -336,29 +337,27 @@ class Parse {
     }
 
     private void addTerm(String term) {
-        if (term.length() > 1 || (term.length() == 1 && Character.isDigit(term.charAt(0)))) {
-            if (!allTerms.containsKey(term)) {
-                Term newTerm = new Term(term);
-                allTerms.put(term, newTerm);
-                newTerm.addInDocument(currentDocument.getIndexId());
+        if (!allTerms.containsKey(term)) {
+            Term newTerm = new Term(term);
+            allTerms.put(term, newTerm);
+            newTerm.addInDocument(currentDocument.getIndexId());
 
+        } else {
+            allTerms.get(term).increaseAmount();
+            allTerms.get(term).addInDocument(currentDocument.getIndexId());
+        }
+        if (term.equals("NEW-TEST")) {
+            toTest = true;
+            return;
+        }
+        if (toTest) {
+            if (term.equals(tests[currentTest])) {
+                System.out.println("Successful test : " + term);
             } else {
-                allTerms.get(term).increaseAmount();
-                allTerms.get(term).addInDocument(currentDocument.getIndexId());
+                System.out.println("FAILED TEST!!! Got : " + term + " , Expected " + tests[currentTest]);
             }
-            if (term.equals("NEW-TEST")) {
-                toTest = true;
-                return;
-            }
-            if (toTest) {
-                if (term.equals(tests[currentTest])) {
-                    System.out.println("Successful test : " + term);
-                } else {
-                    System.out.println("FAILED TEST!!! Got : " + term + " , Expected " + tests[currentTest]);
-                }
-                toTest = false;
-                currentTest++;
-            }
+            toTest = false;
+            currentTest++;
         }
     }
 
