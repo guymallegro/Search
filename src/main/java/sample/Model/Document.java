@@ -68,6 +68,10 @@ public class Document {
         this.city = city;
     }
 
+    public HashMap<Term, Integer> getTextTerms() {
+        return textTerms;
+    }
+
     void addTermToText(Term term) {
         if (!textTerms.containsKey(term))
             textTerms.put(term, 1);

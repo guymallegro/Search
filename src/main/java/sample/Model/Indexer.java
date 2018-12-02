@@ -155,7 +155,9 @@ class Indexer {
     void addAllDocuments() {
         for (Document doc : documents) {
             ArrayList<Object> attributes = new ArrayList<>();
-            attributes.add(doc.getMax_tf());
+            attributes.add(0,doc.getMax_tf());
+            attributes.add(1,doc.getTextTerms().size());
+            attributes.add(2,doc.getCity());
             Model.documentsDictionary.put(doc.getIndexId(), attributes);
         }
     }

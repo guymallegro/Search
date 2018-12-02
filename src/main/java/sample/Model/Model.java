@@ -25,7 +25,7 @@ public class Model {
         termsDictionary = new HashMap<>();
         documentsDictionary = new HashMap<>();
         citiesDictionary = new HashMap<>();
-        indexer = new Indexer(parse.getAllTerms(),documents);
+        indexer = new Indexer(parse.getAllTerms(), documents);
     }
 
     public void readFiles(String filesPath, String stopWordsPath) {
@@ -50,6 +50,7 @@ public class Model {
         elapsedSeconds = tDelta / 1000.0;
         System.out.println("Time it took: " + elapsedSeconds + " seconds");
         System.out.println("dictionarySize: " + termsDictionary.size());
+        System.out.println("Doc 10 info :" + documentsDictionary.get(10).get(0) + "," + documentsDictionary.get(10).get(1) + "," + documentsDictionary.get(10).get(2));
     }
 
     void processFile(String fileAsString) {
