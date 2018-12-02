@@ -85,8 +85,7 @@ class Parse {
                     } else {
                         parseByLetters(i);
                     }
-                    if (tokens.get(i).length() > 1 || (tokens.get(i).length() == 1 && Character.isDigit(tokens.get(i).charAt(0))))
-                        addTerm(tokens.get(i));
+                    addTerm(tokens.get(i));
                 }
             }
         }
@@ -337,27 +336,29 @@ class Parse {
     }
 
     private void addTerm(String term) {
-        if (!allTerms.containsKey(term)) {
-            Term newTerm = new Term(term);
-            allTerms.put(term, newTerm);
-            newTerm.addInDocument(currentDocument.getIndexId());
+        if (term.length() > 1 || (term.length() == 1 && Character.isDigit(term.charAt(0)))) {
+            if (!allTerms.containsKey(term)) {
+                Term newTerm = new Term(term);
+                allTerms.put(term, newTerm);
+                newTerm.addInDocument(currentDocument.getIndexId());
 
-        } else {
-            allTerms.get(term).increaseAmount();
-            allTerms.get(term).addInDocument(currentDocument.getIndexId());
-        }
-        if (term.equals("NEW-TEST")) {
-            toTest = true;
-            return;
-        }
-        if (toTest) {
-            if (term.equals(tests[currentTest])) {
-                System.out.println("Successful test : " + term);
             } else {
-                System.out.println("FAILED TEST!!! Got : " + term + " , Expected " + tests[currentTest]);
+                allTerms.get(term).increaseAmount();
+                allTerms.get(term).addInDocument(currentDocument.getIndexId());
             }
-            toTest = false;
-            currentTest++;
+            if (term.equals("NEW-TEST")) {
+                toTest = true;
+                return;
+            }
+            if (toTest) {
+                if (term.equals(tests[currentTest])) {
+                    System.out.println("Successful test : " + term);
+                } else {
+                    System.out.println("FAILED TEST!!! Got : " + term + " , Expected " + tests[currentTest]);
+                }
+                toTest = false;
+                currentTest++;
+            }
         }
     }
 
@@ -397,7 +398,7 @@ class Parse {
         if (s.indexOf(".") != s.lastIndexOf("."))
             return true;
         int index = s.indexOf('$');
-        if (index != -1 && index != 0 && index != s.length() -1)
+        if (index != -1 && index != 0 && index != s.length() - 1)
             return true;
         int size = s.length();
         for (int i = 0; i < size; i++) {
