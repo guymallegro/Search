@@ -4,15 +4,15 @@ import sample.Model.Model;
 
 public class Controller {
     private Model model;
-    private String filesPath="C:\\Users\\ספיר רצון\\Desktop\\corpus\\"; // @TODO Needs to be set by UI
-    //private String filesPath=".\\src\\main\\resources\\test\\"; // @TODO Needs to be set by UI
-    private String stopWordsPath=".\\src\\main\\resources\\stop_words"; // @TODO Needs to be set by UI
+    private String filesPath = "/home/guy/Desktop/Uni/shortTest/"; // @TODO Needs to be set by UI
+    //private String filesPath="./src/main/resources/test/"; // @TODO Needs to be set by UI
+    private String stopWordsPath = "./src/main/resources/stop_words"; // @TODO Needs to be set by UI
 
-    public Controller(){
+    public Controller() {
         model = new Model();
     }
 
     public void readFiles() {
-        model.readFiles(filesPath,stopWordsPath);
+        model.readFiles(filesPath, stopWordsPath);
     }
 }
