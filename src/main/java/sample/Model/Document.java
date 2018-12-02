@@ -7,7 +7,7 @@ public class Document {
     private int indexId;
     public static int doccumentsAmount = 1;
     private int max_tf;
-    private HashMap <Term, Integer> textTerms;
+    private HashMap<Term, Integer> textTerms;
     private String date;
     private String title;
     private String content;
@@ -15,7 +15,7 @@ public class Document {
     private HashMap<Term, Integer> titleTerms;
     private HashMap<Term, Integer> dateTerms;
 
-    public Document(){
+    public Document() {
         titleTerms = new HashMap<>();
         dateTerms = new HashMap<>();
         textTerms = new HashMap<>();
@@ -24,25 +24,60 @@ public class Document {
         content = "";
     }
 
-    String getId() { return id; }
+    public int getMax_tf() {
+        return max_tf;
+    }
 
-    void setId(String id) { this.id = id; }
+    String getId() {
+        return id;
+    }
 
-    public String getDate() { return date; }
+    void setId(String id) {
+        this.id = id;
+    }
 
-    public String getTitle() { return title; }
+    public String getDate() {
+        return date;
+    }
 
-    public String getCity() { return city; }
+    public String getTitle() {
+        return title;
+    }
 
-    void setDate(String date) { this.date = date; }
+    public String getCity() {
+        return city;
+    }
 
-    void setTitle(String title) { this.title = title; }
+    void setDate(String date) {
+        this.date = date;
+    }
 
-    String getContent() { return content; }
+    void setTitle(String title) {
+        this.title = title;
+    }
 
-    void setContent(String content) { this.content = content; }
+    String getContent() {
+        return content;
+    }
 
-    public void setCity(String city){ this.city=city; }
+    void setContent(String content) {
+        this.content = content;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    void addTermToText(Term term) {
+        if (!textTerms.containsKey(term))
+            textTerms.put(term, 1);
+        else {
+            textTerms.put(term, textTerms.get(term) + 1);
+        }
+        if (textTerms.get(term) > max_tf)
+            max_tf = textTerms.get(term);
+    }
+
 
     public void print() {
         System.out.println("id :" + id);
@@ -53,5 +88,7 @@ public class Document {
         System.out.println("-------------------------------------------------");
     }
 
-    public int getIndexId() { return indexId; }
+    public int getIndexId() {
+        return indexId;
+    }
 }

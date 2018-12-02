@@ -1,5 +1,6 @@
 package sample.Model;
 
+import javax.jws.WebParam;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -12,15 +13,17 @@ import java.util.*;
 
 class Indexer {
     private HashMap<String, Term> allTerms;
+    private ArrayList<Document> documents;
     private int currentPostFile;
     private BufferedWriter bw;
     private PrintWriter out;
     private char currentPartOfPostFile = '~';
     private FileWriter fw;
 
-    Indexer(HashMap<String, Term> allTerms) {
+    Indexer(HashMap<String, Term> allTerms, ArrayList<Document> documents) {
         currentPostFile = 0;
         this.allTerms = allTerms;
+        this.documents = documents;
     }
 
     void addAllTerms(String path) {
@@ -39,7 +42,7 @@ class Indexer {
             }
             line.deleteCharAt(line.toString().length() - 1);
             lines.add(line.toString());
-            addToDictionary((String) sortedterm, currentPartOfPostFile);
+            addTermToDictionary((String) sortedterm, currentPartOfPostFile);
             line.setLength(0);
         }
         path += "post" + currentPostFile + ".txt";
@@ -137,7 +140,7 @@ class Indexer {
         out = new PrintWriter(bw);
     }
 
-    private void addToDictionary(String term, char path) {
+    private void addTermToDictionary(String term, char path) {
         if (Model.termsDictionary.containsKey(term)) {
             int numOfDocuments = (int) Model.termsDictionary.get(term).get(0);
             Model.termsDictionary.get(term).set(0, numOfDocuments + allTerms.get(term).getInDocuments().length);
@@ -146,6 +149,14 @@ class Indexer {
             attributes.add(allTerms.get(term).getInDocuments().length);
             attributes.add(path);
             Model.termsDictionary.put(term, attributes);
+        }
+    }
+
+    void addAllDocuments() {
+        for (Document doc : documents) {
+            ArrayList<Object> attributes = new ArrayList<>();
+            attributes.add(doc.getMax_tf());
+            Model.documentsDictionary.put(doc.getIndexId(), attributes);
         }
     }
 }

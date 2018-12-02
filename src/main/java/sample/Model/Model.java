@@ -13,7 +13,7 @@ public class Model {
     private int totalAmountOfDocs = 0;
     private ArrayList<Document> documents;
     static HashMap<String, ArrayList<Object>> termsDictionary;
-    static HashMap<String, ArrayList<Object>> documentsDictionary;
+    static HashMap<Integer, ArrayList<Object>> documentsDictionary;
     static HashMap<String, ArrayList<Object>> citiesDictionary;
 
 
@@ -25,7 +25,7 @@ public class Model {
         termsDictionary = new HashMap<>();
         documentsDictionary = new HashMap<>();
         citiesDictionary = new HashMap<>();
-        indexer = new Indexer(parse.getAllTerms());
+        indexer = new Indexer(parse.getAllTerms(),documents);
     }
 
     public void readFiles(String filesPath, String stopWordsPath) {
@@ -93,6 +93,7 @@ public class Model {
 
     private void index() {
         indexer.addAllTerms("");
+        indexer.addAllDocuments();
         parse.getAllTerms().clear();
     }
 
