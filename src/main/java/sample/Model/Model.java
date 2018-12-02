@@ -9,7 +9,7 @@ public class Model {
     private ReadFile fileReader;
     private Indexer indexer;
     private CityChecker cityChecker;
-    private int nomOfDocs = 10; //@TODO Need to find the best amount
+    private int nomOfDocs = 11800; //@TODO Need to find the best amount
     private int totalAmountOfDocs = 0;
     private ArrayList<Document> documents;
     static HashMap<String, ArrayList<Object>> termsDictionary;
@@ -86,7 +86,7 @@ public class Model {
                 }
                 index();
                 documents.clear();
-                nomOfDocs = 10;
+                nomOfDocs = 11800;
             }
         }
     }
