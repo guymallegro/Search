@@ -7,7 +7,7 @@ public class Document {
     private int indexId;
     public static int doccumentsAmount = 1;
     private int max_tf;
-    private HashMap <Term, Integer> textTerms;
+    private HashMap<Term, Integer> textTerms;
     private String date;
     private String title;
     private String content;
@@ -15,7 +15,7 @@ public class Document {
     private HashMap<Term, Integer> titleTerms;
     private HashMap<Term, Integer> dateTerms;
 
-    public Document(){
+    public Document() {
         titleTerms = new HashMap<>();
         dateTerms = new HashMap<>();
         textTerms = new HashMap<>();
@@ -24,25 +24,45 @@ public class Document {
         content = "";
     }
 
-    String getId() { return id; }
+    String getId() {
+        return id;
+    }
 
-    void setId(String id) { this.id = id; }
+    void setId(String id) {
+        this.id = id;
+    }
 
-    public String getDate() { return date; }
+    public String getDate() {
+        return date;
+    }
 
-    public String getTitle() { return title; }
+    public String getTitle() {
+        return title;
+    }
 
-    public String getCity() { return city; }
+    public String getCity() {
+        return city;
+    }
 
-    void setDate(String date) { this.date = date; }
+    void setDate(String date) {
+        this.date = date;
+    }
 
-    void setTitle(String title) { this.title = title; }
+    void setTitle(String title) {
+        this.title = title;
+    }
 
-    String getContent() { return content; }
+    String getContent() {
+        return content;
+    }
 
-    void setContent(String content) { this.content = content; }
+    void setContent(String content) {
+        this.content = content;
+    }
 
-    public void setCity(String city){ this.city=city; }
+    public void setCity(String city) {
+        this.city = city;
+    }
 
     public void print() {
         System.out.println("id :" + id);
@@ -53,6 +73,8 @@ public class Document {
         System.out.println("-------------------------------------------------");
     }
 
-    public int getIndexId() { return indexId; }
+    public int getIndexId() {
+        return indexId;
+    }
 }
-]
+
