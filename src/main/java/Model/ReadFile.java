@@ -1,9 +1,8 @@
-package sample.Model;
+package Model;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Scanner;
 
 public class ReadFile {
@@ -24,6 +23,8 @@ public class ReadFile {
         File currentDirectory = new File(path);
         String[] allDirectories = currentDirectory.list();
         for (String directory : allDirectories) {
+            if (directory.equals("stop_words"))
+                continue;
             currentFile = new File(path + directory);
             System.out.println("Current file " + directory);
             allFiles = currentFile.list()[0];

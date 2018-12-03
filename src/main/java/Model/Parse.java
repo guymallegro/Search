@@ -1,13 +1,12 @@
-package sample.Model;
+package Model;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
 class Parse {
     private Stemmer stemmer;
-    private boolean doStemming = true; //@TODO Needs to be set by UI
+    private boolean doStemming = true; //@TODO change the name of the postfile if true
     private HashSet<String> stopWords;
     private HashMap<String, String> numbers;
     private HashMap<String, String> percents;
@@ -530,6 +529,11 @@ class Parse {
 //            return ans.substring(0, ans.indexOf("."));
         return ans;
     }
+
+    public void setStemming (boolean selected){
+        doStemming = selected;
+    }
+
 
     public HashMap<String, Term> getAllTerms() {
         return allTerms;

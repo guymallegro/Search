@@ -1,10 +1,6 @@
-package sample.Model;
+package Model;
 
-import javax.jws.WebParam;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,6 +15,8 @@ class Indexer {
     private PrintWriter out;
     private char currentPartOfPostFile = '~';
     private FileWriter fw;
+    private String postingPath;
+    private boolean isStemming;
 
     Indexer(HashMap<String, Term> allTerms, ArrayList<Document> documents) {
         currentPostFile = 0;
@@ -27,7 +25,8 @@ class Indexer {
     }
 
     void addAllTerms(String path) {
-        path = "/home/guy/Desktop/post/";
+        postingPath = path;
+        int indexOfPosting = currentPostFile;
         Object[] sortedterms = allTerms.keySet().toArray();
         Arrays.sort(sortedterms);
         StringBuilder line = new StringBuilder();
@@ -45,7 +44,7 @@ class Indexer {
             addTermToDictionary((String) sortedterm, currentPartOfPostFile);
             line.setLength(0);
         }
-        path += "post" + currentPostFile + ".txt";
+        path += "/post" + currentPostFile + ".txt";
         Path file = Paths.get(path);
         try {
             Files.write(file, lines, Charset.forName("UTF-8"));
@@ -62,8 +61,11 @@ class Indexer {
         StringBuilder toWrite;
         int currentIndex = 0;
         boolean isChanged = true;
+        String lastPosting = "/final.txt";
+        if (isStemming)
+            lastPosting = "/finalWithStemming.txt";
         try {
-            fw = new FileWriter("/home/guy/Desktop/final.txt");
+            fw = new FileWriter(postingPath + lastPosting);
         } catch (Exception e) {
             System.out.println("Failed to create file writer");
         }
@@ -71,7 +73,7 @@ class Indexer {
         out = new PrintWriter(bw);
         for (int i = 0; i < currentPostFile; i++) {
             try {
-                scanners[i] = new Scanner(new File("/home/guy/Desktop/post/post" + i + ".txt"));
+                scanners[i] = new Scanner(new File(postingPath + "/post" + i + ".txt"));
             } catch (Exception e) {
                 System.out.println("Failed to create a scanner");
             }
@@ -81,7 +83,6 @@ class Indexer {
                 currentPostFile--;
             }
         }
-
         while (true) {
             toWrite = new StringBuilder("~");
             String fromCompare = "";
@@ -132,7 +133,7 @@ class Indexer {
         out.close();
         currentPartOfPostFile = nextFile;
         try {
-            fw = new FileWriter("/home/guy/Desktop/finalPostFiles/final" + currentPartOfPostFile + ".txt");
+            fw = new FileWriter(postingPath + "/post" + currentPartOfPostFile + ".txt");
         } catch (Exception e) {
             System.out.println("Failed to create file writer");
         }
@@ -161,4 +162,6 @@ class Indexer {
             Model.documentsDictionary.put(doc.getIndexId(), attributes);
         }
     }
+
+    public void setStemming(boolean stemming) { isStemming = stemming; }
 }

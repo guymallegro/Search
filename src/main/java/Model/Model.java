@@ -1,7 +1,10 @@
-package sample.Model;
+package Model;
+
+import Controller.Controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class Model {
 
@@ -9,9 +12,12 @@ public class Model {
     private ReadFile fileReader;
     private Indexer indexer;
     private CityChecker cityChecker;
-    private int nomOfDocs = 2; //@TODO Need to find the best amount
+    private String postingPathDestination;
+    private int nomOfDocs = 11800; //@TODO Need to find the best amount
     private int totalAmountOfDocs = 0;
+    private HashSet<String> languages;
     private ArrayList<Document> documents;
+
     static HashMap<String, ArrayList<Object>> termsDictionary;
     static HashMap<Integer, ArrayList<Object>> documentsDictionary;
     static HashMap<String, ArrayList<Object>> citiesDictionary;
@@ -22,13 +28,15 @@ public class Model {
         cityChecker = new CityChecker();
         fileReader = new ReadFile(this);
         documents = new ArrayList<>();
+        languages = new HashSet<>();
         termsDictionary = new HashMap<>();
         documentsDictionary = new HashMap<>();
         citiesDictionary = new HashMap<>();
         indexer = new Indexer(parse.getAllTerms(), documents);
     }
 
-    public void readFiles(String filesPath, String stopWordsPath) {
+    public void readFiles(String filesPath, String stopWordsPath, String postingpath) {
+        postingPathDestination = postingpath;
         long tStart = System.currentTimeMillis();
         //HashMap<String, String> cityInfo = cityChecker.findCityInformation("jerusalem");
         // System.out.println(cityInfo.get("country") + "," + cityInfo.get("currency") + "," + cityInfo.get("population"));
@@ -80,6 +88,13 @@ public class Model {
             endTagIndex = document.indexOf("</F>", startTagIndex);
             if (startTagIndex != -1 && endTagIndex != -1)
                 currentDocument.setCity(document.substring(startTagIndex + 9, endTagIndex));
+            startTagIndex = document.indexOf("<F P=105>");
+            endTagIndex = document.indexOf("</F>", startTagIndex);
+            if (startTagIndex != -1 && endTagIndex != -1) {
+                String ans = cleanString(document.substring(startTagIndex + 9, endTagIndex));
+                if (ans.length() > 0)
+                    languages.add(ans);
+            }
             documents.add(currentDocument);
             if (nomOfDocs < 0) {
                 for (Document doc : documents) {
@@ -87,23 +102,57 @@ public class Model {
                 }
                 index();
                 documents.clear();
-                nomOfDocs = 2;
+                nomOfDocs = 11800;
             }
         }
     }
 
     private void index() {
-        indexer.addAllTerms("");
+        indexer.addAllTerms(postingPathDestination);
         indexer.addAllDocuments();
         parse.getAllTerms().clear();
     }
 
     void finishReading() {
-        for (Document doc : documents) {
-            parse.parseDocument(doc);
-        }
+        int size = documents.size();
+        for (int i = 0; i < size; i++)
+            parse.parseDocument(documents.get(i));
         index();
         documents.clear();
         System.out.println(totalAmountOfDocs);
     }
+
+    public void setStemming(boolean selected) {
+        indexer.setStemming(selected);
+        parse.setStemming(selected);
+    }
+
+    private String cleanString(String str) {
+        if (str.length() == 0)
+            return "";
+        char current = str.charAt(0);
+        while (!(Character.isLetter(current))) {
+            if (str.length() == 1) {
+                return "";
+            } else {
+                str = str.substring(1);
+                current = str.charAt(0);
+            }
+        }
+        current = str.charAt(str.length() - 1);
+        while (!(Character.isLetter(current))) {
+            if (str.length() == 1) {
+                return "";
+            } else {
+                str = str.substring(0, str.length() - 1);
+                current = str.charAt(str.length() - 1);
+            }
+        }
+        return str;
+    }
+
+
+    public static HashMap<String, ArrayList<Object>> getTermsDictionary() { return termsDictionary; }
+
+    public HashSet<String> getLanguages() { return languages; }
 }
