@@ -10,7 +10,7 @@
          <children>
             <ScrollPane fx:id="scrollPane" layoutX="-5.0" layoutY="-3.0" prefHeight="413.0" prefWidth="527.0">
                <content>
-                  <TextArea fx:id="allTerms" prefHeight="408.0" prefWidth="520.0" />
+                  <TextArea fx:id="allTerms" prefHeight="414.0" prefWidth="520.0" />
                </content></ScrollPane>
          </children>
       </AnchorPane>

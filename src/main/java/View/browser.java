@@ -1,7 +1,6 @@
 package View;
 
 import Controller.Controller;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
