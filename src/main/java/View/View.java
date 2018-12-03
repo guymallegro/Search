@@ -51,7 +51,6 @@ public class View {
         browser browser = myLoader.getController();
         browser.setController(controller);
         browser.setView(this);
-        //if (stemming.isSelected())
         controller.setStemming (stemming.isSelected());
         stage.show();
     }
@@ -97,10 +96,6 @@ public class View {
         Dictionary dic = myLoader.getController();
         HashMap<String, ArrayList<Object>> dictionary = Controller.getDictionary();
         dic.setDictionary(dictionary);
-        //browser.setController(controller);
-        //browser.setView(this);
-        //if (stemming.isSelected())
-        //controller.setStemming (stemming.isSelected());
         stage.show();
         dic.displayDictionary();
     }

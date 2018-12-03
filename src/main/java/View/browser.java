@@ -3,16 +3,9 @@ package View;
 import Controller.Controller;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
-import javafx.event.EventHandler;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
@@ -30,7 +23,7 @@ public class browser {
     public void browseCorpus(ActionEvent actionEvent) {
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("Corpus Directory");
-        //chooser..getExtensionFilters().add(new FileChooser.ExtensionFilter("Directory", "*"));
+        //chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Directory", "*"));
         Stage stage = new Stage();
         File selectedDirectory = chooser.showDialog(stage);
         if (selectedDirectory != null) {
@@ -41,7 +34,7 @@ public class browser {
     public void browsePosting(ActionEvent actionEvent) {
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("Posting Directory");
-        //chooser..getExtensionFilters().add(new FileChooser.ExtensionFilter("Directory", "*"));
+        //chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Directory", "*"));
         Stage stage = new Stage();
         File selectedDirectory = chooser.showDialog(stage);
         if (selectedDirectory != null) {

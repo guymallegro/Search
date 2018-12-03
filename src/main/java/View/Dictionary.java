@@ -1,11 +1,7 @@
 package View;
 
-import Controller.Controller;
-import com.sun.javafx.css.Rule;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.scene.control.Alert;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,9 +11,6 @@ public class Dictionary {
 
     public javafx.scene.control.ScrollPane scrollPane;
     public javafx.scene.control.TextArea allTerms;
-    //public javafx.scene.control.ListView allTerms;
-    //public javafx.scene.control.Label allTerms;
-    //public javafx.scene.control.ScrollBar scroll;
     private HashMap<String, ArrayList<Object>> dictionary;
 
 
