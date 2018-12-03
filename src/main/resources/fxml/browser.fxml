@@ -6,7 +6,7 @@
 
 <AnchorPane prefHeight="318.0" prefWidth="365.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.browser">
    <children>
-      <Button fx:id="OK" layoutX="162.0" layoutY="262.0" mnemonicParsing="false" onAction="#ok" text="OK" />
+      <Button fx:id="OK" layoutX="161.0" layoutY="262.0" mnemonicParsing="false" onAction="#ok" text="OK" />
       <TextField fx:id="corpusPath" layoutX="14.0" layoutY="75.0" prefHeight="39.0" prefWidth="219.0" text="Enter Path" />
        <Button fx:id="browseCorpus" layoutX="245.0" layoutY="75.0" mnemonicParsing="false" onAction="#browseCorpus" prefHeight="39.0" prefWidth="26.0" text="..." />
       <TextField fx:id="postingPath" layoutX="15.0" layoutY="176.0" prefHeight="39.0" prefWidth="219.0" text="Enter Path" />

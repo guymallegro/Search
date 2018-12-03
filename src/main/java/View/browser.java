@@ -9,6 +9,7 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
 
+
 public class browser {
     private View myView;
     private Controller myController;

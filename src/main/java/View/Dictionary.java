@@ -1,11 +1,8 @@
 package View;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-
 public class Dictionary {
 
     public javafx.scene.control.ScrollPane scrollPane;
