@@ -18,7 +18,6 @@ public class Dictionary {
         Object[] sortedterms = dictionary.keySet().toArray();
         Arrays.sort(sortedterms);
         StringBuilder lines = new StringBuilder();
-        ObservableList<String> items = FXCollections.observableArrayList ();
         for (int i = 0; i < sortedterms.length; i ++) {
             lines.append(sortedterms[i]);
             lines.append(" (" );
