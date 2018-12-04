@@ -42,6 +42,7 @@ class Parse {
             for (int i = 0; i < tokens.size(); i++) {
                 checkNumberName(i);
                 if (tokens.get(i).length() > 0 && (!isStopWord(tokens.get(i)) || (tokens.get(i).equals("between") && (i < tokens.size() - 1 && tokens.get(i + 1).length() > 0 && Character.isDigit(tokens.get(i + 1).charAt(0)))))) {
+                    checkCity(i);
                     if (doStemming) {
                         stemmer.setTerm(tokens.get(i));
                         stemmer.stem();
@@ -87,6 +88,12 @@ class Parse {
                     addTerm(tokens.get(i));
                 }
             }
+        }
+    }
+
+    private void checkCity(int i) {
+        if (Model.citiesDictionary.containsKey(tokens.get(i))) {
+            Model.citiesDictionary.get(tokens.get(i)).addLocation(currentDocument.getIndexId(), i);
         }
     }
 
@@ -530,7 +537,7 @@ class Parse {
         return ans;
     }
 
-    public void setStemming (boolean selected){
+    public void setStemming(boolean selected) {
         doStemming = selected;
     }
 

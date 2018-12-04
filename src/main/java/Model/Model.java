@@ -1,7 +1,5 @@
 package Model;
 
-import Controller.Controller;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,33 +15,34 @@ public class Model {
     private int totalAmountOfDocs = 0;
     private HashSet<String> languages;
     private ArrayList<Document> documents;
-
+    private HashSet<String> stopWords;
     static HashMap<String, ArrayList<Object>> termsDictionary;
     static HashMap<Integer, ArrayList<Object>> documentsDictionary;
-    static HashMap<String, ArrayList<Object>> citiesDictionary;
-
+    static HashMap<String, CityInfo> citiesDictionary;
 
     public Model() {
         parse = new Parse();
-        cityChecker = new CityChecker();
+        citiesDictionary = new HashMap<>();
+        cityChecker = new CityChecker(Main.citiesUrl,citiesDictionary);
         fileReader = new ReadFile(this);
         documents = new ArrayList<>();
         languages = new HashSet<>();
         termsDictionary = new HashMap<>();
         documentsDictionary = new HashMap<>();
-        citiesDictionary = new HashMap<>();
         indexer = new Indexer(parse.getAllTerms(), documents);
     }
 
     public void readFiles(String filesPath, String stopWordsPath, String postingpath) {
         postingPathDestination = postingpath;
         long tStart = System.currentTimeMillis();
-        //HashMap<String, String> cityInfo = cityChecker.findCityInformation("jerusalem");
-        // System.out.println(cityInfo.get("country") + "," + cityInfo.get("currency") + "," + cityInfo.get("population"));
-        parse.setStopWords(fileReader.readStopWords(stopWordsPath));
-        fileReader.readFile(filesPath);
+        stopWords = fileReader.readStopWords(stopWordsPath);
+        parse.setStopWords(stopWords);
+        fileReader.readFile(filesPath, true);
+        Object[] cities = citiesDictionary.keySet().toArray();
+        printCities(cities);
+        fileReader.readFile(filesPath, false);
         System.out.println("--------------------------------------");
-        System.out.println("-----------indexing--------------------");
+        System.out.println("--------------indexing-----------------");
         long tEnd = System.currentTimeMillis();
         long tDelta = tEnd - tStart;
         double elapsedSeconds = tDelta / 1000.0;
@@ -59,6 +58,12 @@ public class Model {
         System.out.println("Time it took: " + elapsedSeconds + " seconds");
         System.out.println("dictionarySize: " + termsDictionary.size());
         System.out.println("Doc 10 info :" + documentsDictionary.get(10).get(0) + "," + documentsDictionary.get(10).get(1) + "," + documentsDictionary.get(10).get(2));
+    }
+
+    private void printCities(Object[] cities) {
+        for (int i = 0; i < cities.length; i++) {
+            System.out.println(cities[i] + " : " + citiesDictionary.get(cities[i]));
+        }
     }
 
     void processFile(String fileAsString) {
@@ -107,6 +112,34 @@ public class Model {
         }
     }
 
+    public void addCitiesToDictionary(String fileAsString) {
+        String[] allDocuments = fileAsString.split("<DOC>");
+        for (String document : allDocuments) {
+            if (document.length() == 0 || document.equals(" ")) continue;
+            int startTagIndex = document.indexOf("<F P=104>");
+            int endTagIndex = document.indexOf("</F>", startTagIndex);
+            if (startTagIndex != -1 && endTagIndex != -1)
+                addCityToDictionary(document.substring(startTagIndex + 9, endTagIndex));
+        }
+    }
+
+    private void addCityToDictionary(String city) {
+        if (city.contains(" ")) {
+            int counter;
+            for (counter = 0; counter < city.length(); counter++) {
+                if (city.charAt(counter) != ' ')
+                    break;
+            }
+            city = city.substring(counter);
+            city = city.substring(0, city.indexOf(' '));
+        }
+        if (city.length() > 1 && !stopWords.contains(city)) {
+            if (!citiesDictionary.containsKey(city) && !stopWords.contains(city.toLowerCase())) {
+                citiesDictionary.put(city, cityChecker.getCityInfo(city));
+            }
+        }
+    }
+
     private void index() {
         indexer.addAllTerms(postingPathDestination);
         indexer.addAllDocuments();
@@ -118,6 +151,7 @@ public class Model {
         for (int i = 0; i < size; i++)
             parse.parseDocument(documents.get(i));
         index();
+        indexer.addAllCities(postingPathDestination);
         documents.clear();
         System.out.println(totalAmountOfDocs);
     }
@@ -151,8 +185,11 @@ public class Model {
         return str;
     }
 
+    public static HashMap<String, ArrayList<Object>> getTermsDictionary() {
+        return termsDictionary;
+    }
 
-    public static HashMap<String, ArrayList<Object>> getTermsDictionary() { return termsDictionary; }
-
-    public HashSet<String> getLanguages() { return languages; }
+    public HashSet<String> getLanguages() {
+        return languages;
+    }
 }
