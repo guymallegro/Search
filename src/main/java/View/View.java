@@ -10,21 +10,22 @@ import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 
 public class View {
     private Controller controller;
     private String postingPath;
+    ArrayList <String> dictionary;
     public javafx.scene.control.Button start;
     public javafx.scene.control.Button reset;
     public javafx.scene.control.Button displayDictionary;
+    public javafx.scene.control.Button loadDictionary;
     public javafx.scene.control.TextField query;
     public javafx.scene.control.CheckBox stemming;
     public javafx.scene.control.ComboBox languages;
+
 
     public void startWindow(ActionEvent actionEvent) {
         Parent root = null;
@@ -48,27 +49,23 @@ public class View {
         stage.show();
     }
 
-    public void reset(ActionEvent actionEvent) {
-        File currentDirectory = new File(postingPath);
-        String[] allFiles = currentDirectory.list();
-        for (String file : allFiles) {
-            if (file.equals("stop_words"))
-                continue;
-            File currentFile = new File(postingPath + "\\" + file);
-            if (currentFile.delete())
-                System.out.println("Current file " + file + " is closed");
-            else // @TODO dont forget to close the posting temporary files
-                System.out.println("no deletion");
+    public void loadDictionary () {
+        dictionary = new ArrayList<>();
+        String path = postingPath + "/termsDictionary.txt";
+        if (stemming.isSelected())
+            path = postingPath + "/termsDictionaryWithStemming.txt";
+        File file = new File(path);
+        try {
+            Scanner scanner = new Scanner(file);
+            while (scanner.hasNextLine()) {
+                String term = scanner.nextLine();
+                dictionary.add(term);
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("Cannot open the terms dictionary");
         }
-    }
-
-    public void setPostingPath (String posting){ postingPath = posting; }
-
-
-
-    public void setController(Controller controller) {
-        this.controller = controller;
-        this.controller.setView(this);
+        loadDictionary.setDisable(true);
+        displayDictionary.setDisable(false);
     }
 
     public void displayDictionary(ActionEvent actionEvent) {
@@ -87,8 +84,8 @@ public class View {
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setTitle("Start");
         Dictionary dic = myLoader.getController();
-        HashMap<String, ArrayList<Object>> dictionary = Controller.getDictionary();
         dic.setDictionary(dictionary);
+        dic.setView(this);
         stage.show();
         dic.displayDictionary();
     }
@@ -97,12 +94,33 @@ public class View {
         HashSet <String> languageList = controller.getLanguages();
         Object[] sortedterms = languageList.toArray();
         Arrays.sort(sortedterms);
-        StringBuilder lines = new StringBuilder();
-        ObservableList<String> items = FXCollections.observableArrayList ();
         for (int i = 0; i < sortedterms.length; i ++) {
             languages.getItems().add(sortedterms[i]);
         }
+        loadDictionary.setDisable(false);
         languages.setDisable(false);
         query.setDisable(false);
     }
+
+    public void reset(ActionEvent actionEvent) {
+        File currentDirectory = new File(postingPath);
+        String[] allFiles = currentDirectory.list();
+        for (String file : allFiles) {
+            if (file.equals("stop_words"))
+                continue;
+            File currentFile = new File(postingPath + "\\" + file);
+            if (currentFile.delete())
+                System.out.println("Current file " + file + " is closed");
+            else // @TODO dont forget to close the posting temporary files
+                System.out.println("no deletion");
+        }
+    }
+
+    public void setPostingPath (String posting){ postingPath = posting; }
+
+    public void setController(Controller controller) {
+        this.controller = controller;
+        this.controller.setView(this);
+    }
+
 }

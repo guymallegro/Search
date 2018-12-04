@@ -1,5 +1,8 @@
 package Model;
 
+import com.sun.org.apache.xpath.internal.operations.Mod;
+
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -280,29 +283,34 @@ class Parse {
     }
 
     /*
-    This function refers to small or capital letters of terms.
+    This function checks if the term start in small or capital letters.
     For each term, if the first letter of the term always appears as capital letter,
-    the term will be save just with capital letters, else, the term will be save just with small letters.
+    the term will be saved just with capital letters, else, the term will be save just with small letters.
     */
     private void parseByLetters(int i) {
         String upper = tokens.get(i).toUpperCase();
         String lowerCase = tokens.get(i).toLowerCase();
-        if (allTerms.containsKey(lowerCase)) {
-            tokens.set(i, lowerCase);
-            return;
-        }
-        if (Character.isUpperCase(tokens.get(i).charAt(0))) {
-            tokens.set(i, upper);
-        } else {
-            if (allTerms.containsKey(upper)) {
-                int amount = allTerms.get(upper).getAmount();
-                allTerms.remove(upper);
-                Term newTerm = new Term(lowerCase);
-                newTerm.setAmount(amount);
-                allTerms.put(newTerm.getValue(), newTerm);
-                tokens.set(i, newTerm.getValue());
-            } else
+        if (Character.isUpperCase(tokens.get(i).charAt(0))){
+            if (allTerms.containsKey(lowerCase)) {
                 tokens.set(i, lowerCase);
+                return;
+            }
+            else if (Model.termsDictionary.containsKey(lowerCase)){
+                if (allTerms.containsKey(upper)) {
+                    Term value = allTerms.remove(upper);
+                    allTerms.put(lowerCase, value);
+                    return;
+
+                }
+            }
+        }
+        else if (Character.isLowerCase(tokens.get(i).charAt(0))) {
+            if (allTerms.containsKey(lowerCase))
+                return;
+            if (allTerms.containsKey(upper)){
+                Term value = allTerms.remove(upper);
+                allTerms.put(lowerCase, value);
+            }
         }
     }
 
@@ -331,23 +339,37 @@ class Parse {
     }
 
     private boolean isStopWord(String word) {
-        return stopWords.contains(word);
+        if (stopWords.contains(word) || stopWords.contains(Character.toUpperCase(word.charAt(0)) + word.substring(1)))
+            return true;
+        return false;
     }
 
     private void addTerm(String term) {
         if (term.length() > 1 || (term.length() == 1 && Character.isDigit(term.charAt(0)))) {
-            if (!allTerms.containsKey(term)) {
-                Term newTerm = new Term(term);
-                allTerms.put(term, newTerm);
-                newTerm.addInDocument(currentDocument.getIndexId());
-                currentDocument.addTermToText(newTerm);
-
-            } else {
+            String upper = term.toUpperCase();
+            String lowerCase = term.toLowerCase();
+            if (allTerms.containsKey(term)) {
                 allTerms.get(term).increaseAmount();
                 allTerms.get(term).addInDocument(currentDocument.getIndexId());
                 currentDocument.addTermToText(allTerms.get(term));
             }
-
+            else {
+                if (Character.isUpperCase(term.charAt(0))) {
+                    Term newTerm;
+                    if (Model.termsDictionary.containsKey(lowerCase))
+                        newTerm = new Term(lowerCase);
+                    else
+                        newTerm = new Term(upper);
+                    allTerms.put(term, newTerm);
+                    newTerm.addInDocument(currentDocument.getIndexId());
+                    currentDocument.addTermToText(newTerm);
+                } else {
+                    Term newTerm = new Term(lowerCase);
+                    allTerms.put(term, newTerm);
+                    newTerm.addInDocument(currentDocument.getIndexId());
+                    currentDocument.addTermToText(newTerm);
+                }
+            }
             if (term.equals("NEW-TEST")) {
                 toTest = true;
                 return;
@@ -380,9 +402,7 @@ class Parse {
         }
     }
 
-    void setStopWords(HashSet<String> stopWords) {
-        this.stopWords = stopWords;
-    }
+    void setStopWords(HashSet<String> stopWords) { this.stopWords = stopWords; }
 
     private boolean checkIfContainsLetters(String s) {
         for (int i = 0; i < s.length(); i++) {
@@ -521,19 +541,12 @@ class Parse {
             else
                 ans = ans.substring(0, ans.length() - 1);
         }
-//        if (ans.length() > ans.indexOf('.') + 3)
-//            ans = ans.substring(0, ans.indexOf('.') + 3);
-//        num = Double.parseDouble(ans);
-//        ans = Double.toString(num);
-//        if (ans.length() == ans.indexOf('.') + 2 && ans.charAt(ans.indexOf(".") + 1) == '0')
-//            return ans.substring(0, ans.indexOf("."));
         return ans;
     }
 
     public void setStemming (boolean selected){
         doStemming = selected;
     }
-
 
     public HashMap<String, Term> getAllTerms() {
         return allTerms;

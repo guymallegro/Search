@@ -9,6 +9,7 @@ import java.util.*;
 
 class Indexer {
     private HashMap<String, Term> allTerms;
+    private HashMap<String, String> capitalLetters;
     private ArrayList<Document> documents;
     private int currentPostFile;
     private BufferedWriter bw;
@@ -22,26 +23,28 @@ class Indexer {
         currentPostFile = 0;
         this.allTerms = allTerms;
         this.documents = documents;
+        capitalLetters = new HashMap<>();
     }
 
     void addAllTerms(String path) {
         postingPath = path;
-        int indexOfPosting = currentPostFile;
-        Object[] sortedterms = allTerms.keySet().toArray();
-        Arrays.sort(sortedterms);
+        Object[] sortedTerms = allTerms.keySet().toArray();
+        Arrays.sort(sortedTerms);
         StringBuilder line = new StringBuilder();
         List<String> lines = new LinkedList<>();
-        for (Object sortedterm : sortedterms) {
-            int prev = 0;
-            line.append("<").append(sortedterm).append(";");
-            Object[] documentsOfTerm = allTerms.get(sortedterm).getInDocuments();
-            for (Object documentId : documentsOfTerm) {
-                line.append((int) documentId).append(",");
-                prev = (int) documentId;
+        for (Object sortedTerm : sortedTerms) {
+            line.append("<").append(sortedTerm).append("^");
+            Object[] documentsOfTerm = allTerms.get(sortedTerm).getInDocuments();
+            int size = documentsOfTerm.length;
+            addTermToDictionary((String) sortedTerm, currentPartOfPostFile);
+            line.append((int)documentsOfTerm[0]).append(";");
+            line.append((int)documentsOfTerm[0]).append(",");
+            for (int i = 1; i < size; i++) {
+                line.append((int)documentsOfTerm[i] - (int)documentsOfTerm[i - 1]).append(",");
             }
             line.deleteCharAt(line.toString().length() - 1);
+            line.append(";").append((int)documentsOfTerm[size - 1]);
             lines.add(line.toString());
-            addTermToDictionary((String) sortedterm, currentPartOfPostFile);
             line.setLength(0);
         }
         path += "/post" + currentPostFile + ".txt";
@@ -90,19 +93,19 @@ class Indexer {
                 if (!currentLine[i].equals("~")) {
                     if (isChanged) {
                         if (!toWrite.toString().equals("~"))
-                            fromCompare = toWrite.substring(1, toWrite.toString().indexOf(';'));
+                            fromCompare = toWrite.substring(1, toWrite.toString().indexOf('^'));
                         else
                             fromCompare = "~";
                         isChanged = false;
                     }
-                    String toCompare = currentLine[i].substring(1, currentLine[i].indexOf(';'));
+                    String toCompare = currentLine[i].substring(1, currentLine[i].indexOf('^'));
                     double compare = fromCompare.compareTo(toCompare);
                     if (compare > 0) {
                         toWrite = new StringBuilder(currentLine[i]);
                         currentIndex = i;
                         isChanged = true;
                     } else if (compare == 0) {
-                        toWrite.append(",").append(currentLine[i].substring(currentLine[i].indexOf(';') + 1));
+                        toWrite = calculateGaps (toWrite.toString(), currentLine[i]);
                         if (scanners[i].hasNext())
                             currentLine[i] = scanners[i].nextLine();
                         else {
@@ -121,12 +124,64 @@ class Indexer {
                 if (!Character.isDigit(toWrite.charAt(1)) && toWrite.charAt(1) != currentPartOfPostFile) {
                     //      changePostFile(toWrite.charAt(1));
                 }
-                out.println(toWrite.toString());
+                String current = toWrite.toString().substring(1, toWrite.toString().indexOf('^'));
+                if (Character.isUpperCase(current.charAt(0))){
+                    if (Model.termsDictionary.containsKey(current.toLowerCase())) {
+                        capitalLetters.put(current.toLowerCase(), toWrite.toString().toLowerCase());
+                        int toAdd = (int)Model.termsDictionary.get(current).get(0);
+                        int amount = (int)Model.termsDictionary.get(current.toLowerCase()).get(0);
+                        Model.termsDictionary.get(current.toLowerCase()).set(0, amount + toAdd);
+                        Model.termsDictionary.remove(current);
+                        toWrite.setLength(0);
+                    }
+                }
+                else if (Character.isLowerCase(current.charAt(0))){
+                    if (capitalLetters.containsKey(current))
+                        toWrite = calculateGaps(capitalLetters.get(current), toWrite.toString());
+                }
+                toWrite = lastLineVersion(toWrite.toString());
+                if (toWrite.length() != 0)
+                    out.println(toWrite.toString());
                 isChanged = true;
             } else
                 break;
         }
+        for (int i = 0; i < scanners.length; i++) {
+            scanners[i].close();
+        }
         out.close();
+    }
+
+    private StringBuilder lastLineVersion (String line){
+        StringBuilder ans = new StringBuilder();
+        if (line.length() == 0)
+            return ans;
+        String term = line.substring(0, line.indexOf("^"));
+        ans.append(term);
+        String temp = line.substring(line.indexOf(";"), line.lastIndexOf(";"));
+        if (temp.equals(""))
+            ans.append(line.substring(line.lastIndexOf(";") + 1));
+        else
+            ans.append(temp);
+        return ans;
+    }
+
+    private StringBuilder calculateGaps(String toWrite, String next) {
+        String [] term = toWrite.split(";");
+        StringBuilder ans = new StringBuilder(term[0]);
+        ans.append(";");
+        if (!term[1].equals(""))
+            ans.append(term[1]).append(",");
+        String firstDoc = next.substring(next.indexOf("^") + 1, next.indexOf(";"));
+        ans.append(Integer.parseInt(firstDoc) - Integer.valueOf(term[2]));
+        int comma = next.indexOf(",", next.indexOf(";"));
+        if (comma != -1) {
+            ans.append(next.substring(comma));
+        }
+        else {
+            ans.append(next.substring(next.lastIndexOf(";")));
+        }
+        return ans;
     }
 
     private void changePostFile(char nextFile) {

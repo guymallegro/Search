@@ -2,9 +2,11 @@ package Model;
 
 import Controller.Controller;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 
 public class Model {
 
@@ -17,11 +19,10 @@ public class Model {
     private int totalAmountOfDocs = 0;
     private HashSet<String> languages;
     private ArrayList<Document> documents;
-
     static HashMap<String, ArrayList<Object>> termsDictionary;
     static HashMap<Integer, ArrayList<Object>> documentsDictionary;
     static HashMap<String, ArrayList<Object>> citiesDictionary;
-
+    private boolean isStemming = false;
 
     public Model() {
         parse = new Parse();
@@ -51,6 +52,7 @@ public class Model {
         System.out.println("Time it took: " + elapsedSeconds + " seconds");
         indexer.mergeAllPostFiles();
         parse.getAllTerms().clear();
+        writeDictionary ();
         System.out.println("--------------------------------------");
         System.out.println("-----------------Complete-------------");
         tEnd = System.currentTimeMillis();
@@ -59,6 +61,32 @@ public class Model {
         System.out.println("Time it took: " + elapsedSeconds + " seconds");
         System.out.println("dictionarySize: " + termsDictionary.size());
         System.out.println("Doc 10 info :" + documentsDictionary.get(10).get(0) + "," + documentsDictionary.get(10).get(1) + "," + documentsDictionary.get(10).get(2));
+    }
+
+    private void writeDictionary() {
+        Object[] sortedTerms = termsDictionary.keySet().toArray();
+        Arrays.sort(sortedTerms);
+        StringBuilder line = new StringBuilder();
+        List<String> lines = new LinkedList<>();
+        int size = sortedTerms.length;
+        for (int i = 1; i < size; i++) {
+            line.append(sortedTerms[i]);
+            line.append(" (");
+            line.append(termsDictionary.get(sortedTerms[i]).get(0));
+            line.append(")");
+            lines.add(line.toString());
+            line.setLength(0);
+        }
+        String path = postingPathDestination + "/termsDictionary.txt";
+        if (isStemming)
+            path = postingPathDestination + "/termsDictionaryWithStemming.txt";
+        Path file = Paths.get(path);
+        try {
+            Files.write(file, lines, Charset.forName("UTF-8"));
+        } catch (Exception e) {
+            System.out.println("cannot write to dictionary");
+        }
+        termsDictionary.clear();
     }
 
     void processFile(String fileAsString) {
@@ -123,6 +151,7 @@ public class Model {
     }
 
     public void setStemming(boolean selected) {
+        isStemming = selected;
         indexer.setStemming(selected);
         parse.setStemming(selected);
     }
@@ -150,7 +179,6 @@ public class Model {
         }
         return str;
     }
-
 
     public static HashMap<String, ArrayList<Object>> getTermsDictionary() { return termsDictionary; }
 

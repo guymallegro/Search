@@ -7,7 +7,6 @@ import javafx.scene.control.Alert;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import java.io.File;
-import java.io.IOException;
 
 
 public class browser {
@@ -34,7 +33,7 @@ public class browser {
     public void browsePosting(ActionEvent actionEvent) {
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("Posting Directory");
-        //chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Directory", "*"));
+        //chooser.getExtensionFilters().add(new DirectoryChooser().ExtensionFilter("Directory", ""));
         Stage stage = new Stage();
         File selectedDirectory = chooser.showDialog(stage);
         if (selectedDirectory != null) {
@@ -42,14 +41,14 @@ public class browser {
         }
     }
 
-    public void ok(ActionEvent actionEvent) throws IOException {
+    public void ok(ActionEvent actionEvent) {
         if (corpusPath.getText().equals("Enter Path"))
             showAlert("enter please a corpus directory");
         else if (postingPath.getText().equals("Enter Path"))
             showAlert("enter please a posting destination directory");
         else {
             myController.setCorpusPath(corpusPath.getText() + "\\");
-            myController.setStopWordsPath(corpusPath.getText() + "\\stop_words.txt");
+            myController.setStopWordsPath(corpusPath.getText() + "\\stop_words");
             myController.setPostingPath(postingPath.getText());
             myView.setPostingPath(postingPath.getText());
 

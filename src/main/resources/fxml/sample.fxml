@@ -18,11 +18,12 @@
                <font>
                   <Font name="Segoe UI Italic" size="18.0" />
                </font></Button>
-            <Button fx:id="reset" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#reset" text="Reset" />
-            <Button fx:id="displayDictionary" layoutX="9.0" layoutY="63.0" mnemonicParsing="false" onAction="#displayDictionary" text="Show Dictionary" />
-            <CheckBox fx:id="stemming" layoutX="104.0" layoutY="226.0" mnemonicParsing="false" text="Stemming" />
-            <TextField fx:id="query" disable="true" layoutX="104.0" layoutY="129.0" prefHeight="39.0" prefWidth="358.0" />
-            <ComboBox fx:id="languages" disable="true" layoutX="104.0" layoutY="175.0" prefHeight="39.0" prefWidth="218.0" promptText="Choose Language" />
+            <Button fx:id="reset" layoutX="8.0" layoutY="-8.0" mnemonicParsing="false" onAction="#reset" text="Reset" />
+            <Button fx:id="displayDictionary" disable="true" layoutX="8.0" layoutY="81.0" mnemonicParsing="false" onAction="#displayDictionary" text="Display Dictionary" />
+            <CheckBox fx:id="stemming" layoutX="104.0" layoutY="239.0" mnemonicParsing="false" text="Stemming" />
+            <TextField fx:id="query" disable="true" layoutX="104.0" layoutY="148.0" prefHeight="39.0" prefWidth="358.0" />
+            <ComboBox fx:id="languages" disable="true" layoutX="104.0" layoutY="194.0" prefHeight="39.0" prefWidth="218.0" promptText="Choose Language" />
+            <Button fx:id="loadDictionary" disable="true" layoutX="8.0" layoutY="37.0" mnemonicParsing="false" onAction="#loadDictionary" text="load dictionary" />
          </children>
       </AnchorPane>
    </children>

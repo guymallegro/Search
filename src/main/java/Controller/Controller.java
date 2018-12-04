@@ -32,7 +32,7 @@ public class Controller {
 
     public void setStemming(boolean selected) { model.setStemming(selected); }
 
-    public static HashMap <String, ArrayList<Object>> getDictionary () {return Model.getTermsDictionary();}
+    //public static HashMap <String, ArrayList<Object>> getDictionary () {return Model.getTermsDictionary();}
 
     public HashSet<String> getLanguages () { return model.getLanguages();}
 }
