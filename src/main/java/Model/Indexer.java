@@ -1,7 +1,5 @@
 package Model;
 
-import com.sun.org.apache.xpath.internal.operations.Mod;
-
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -106,7 +104,6 @@ class Indexer {
                             currentLine[i] = scanners[i].nextLine();
                         else {
                             currentLine[i] = "~";
-                            scanners[i].close();
                         }
                     }
                 }
@@ -124,6 +121,9 @@ class Indexer {
                 isChanged = true;
             } else
                 break;
+        }
+        for (int i = 0; i < scanners.length; i++) {
+            scanners[i].close();
         }
         out.close();
     }
@@ -175,7 +175,7 @@ class Indexer {
             String key = name;
             String value = "";
             if (Model.citiesDictionary.get(name).getCurrency() != null && Model.citiesDictionary.get(name).getLocationsInDocuments().size() == 0) {
-                Model.citiesDictionary.put(name,null);
+                Model.citiesDictionary.put(name, null);
                 continue;
             } else {
                 Iterator it = Model.citiesDictionary.get(name).getLocationsInDocuments().entrySet().iterator();
