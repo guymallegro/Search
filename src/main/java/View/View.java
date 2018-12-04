@@ -52,8 +52,6 @@ public class View {
         File currentDirectory = new File(postingPath);
         String[] allFiles = currentDirectory.list();
         for (String file : allFiles) {
-            if (file.equals("stop_words"))
-                continue;
             File currentFile = new File(postingPath + "\\" + file);
             if (currentFile.delete())
                 System.out.println("Current file " + file + " is closed");
