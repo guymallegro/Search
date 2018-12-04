@@ -45,6 +45,7 @@ class Parse {
             for (int i = 0; i < tokens.size(); i++) {
                 checkNumberName(i);
                 if (tokens.get(i).length() > 0 && (!isStopWord(tokens.get(i)) || (tokens.get(i).equals("between") && (i < tokens.size() - 1 && tokens.get(i + 1).length() > 0 && Character.isDigit(tokens.get(i + 1).charAt(0)))))) {
+                    checkCity(i);
                     if (doStemming) {
                         stemmer.setTerm(tokens.get(i));
                         stemmer.stem();
@@ -87,9 +88,16 @@ class Parse {
                     } else {
                         parseByLetters(i);
                     }
+                    removeRedundantZero(i);
                     addTerm(tokens.get(i));
                 }
             }
+        }
+    }
+
+    private void checkCity(int i) {
+        if (Model.citiesDictionary.containsKey(tokens.get(i))) {
+            Model.citiesDictionary.get(tokens.get(i)).addLocation(currentDocument.getIndexId(), i);
         }
     }
 
@@ -544,7 +552,12 @@ class Parse {
         return ans;
     }
 
-    public void setStemming (boolean selected){
+    private void removeRedundantZero(int i) {
+        if (tokens.get(i).length()>2&&tokens.get(i).charAt(0) == '0' && tokens.get(i).charAt(1) == '.')
+            tokens.set(i, tokens.get(i).substring(1));
+    }
+
+    public void setStemming(boolean selected) {
         doStemming = selected;
     }
 
@@ -697,7 +710,7 @@ class Parse {
         tests[26] = "05-14";
         tests[27] = "06-04";
         tests[28] = "1994-05";
-        tests[29] = "Value-ad";
+        tests[29] = "Value-added";
         tests[30] = "step-by-step";
         tests[31] = "10-part";
         tests[32] = "6-7";
@@ -716,5 +729,6 @@ class Parse {
         tests[45] = "26.000157M";
         tests[46] = "5 Dollars";
         tests[47] = "1.000003 M Dollars";
+        tests[48] = ".15";
     }
 }

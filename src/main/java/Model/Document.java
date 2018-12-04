@@ -8,6 +8,7 @@ public class Document {
     public static int doccumentsAmount = 1;
     private int max_tf;
     private HashMap<Term, Integer> textTerms;
+    private HashMap<String, String> cities;
     private String date;
     private String title;
     private String content;
@@ -15,10 +16,12 @@ public class Document {
     private HashMap<Term, Integer> titleTerms;
     private HashMap<Term, Integer> dateTerms;
 
+
     public Document() {
         titleTerms = new HashMap<>();
         dateTerms = new HashMap<>();
         textTerms = new HashMap<>();
+        cities = new HashMap<>();
         max_tf = 0;
         indexId = doccumentsAmount++;
         content = "";
@@ -80,6 +83,10 @@ public class Document {
         }
         if (textTerms.get(term) > max_tf)
             max_tf = textTerms.get(term);
+    }
+
+    public HashMap<String, String> getCities() {
+        return cities;
     }
 
 

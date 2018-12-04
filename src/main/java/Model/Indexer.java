@@ -211,12 +211,42 @@ class Indexer {
     void addAllDocuments() {
         for (Document doc : documents) {
             ArrayList<Object> attributes = new ArrayList<>();
-            attributes.add(0,doc.getMax_tf());
-            attributes.add(1,doc.getTextTerms().size());
-            attributes.add(2,doc.getCity());
+            attributes.add(0, doc.getMax_tf());
+            attributes.add(1, doc.getTextTerms().size());
+            attributes.add(2, doc.getCity());
             Model.documentsDictionary.put(doc.getIndexId(), attributes);
         }
     }
 
-    public void setStemming(boolean stemming) { isStemming = stemming; }
+    public void setStemming(boolean stemming) {
+        isStemming = stemming;
+    }
+
+    public void addAllCities(String path) {
+        postingPath = path;
+        path += "/postCities.txt";
+        Path file = Paths.get(path);
+        ArrayList<String> toPrint = new ArrayList<>();
+        for (String name : Model.citiesDictionary.keySet()) {
+            String key = name;
+            String value = "";
+            if (Model.citiesDictionary.get(name).getCurrency() != null && Model.citiesDictionary.get(name).getLocationsInDocuments().size() == 0) {
+                Model.citiesDictionary.put(name, null);
+                continue;
+            } else {
+                Iterator it = Model.citiesDictionary.get(name).getLocationsInDocuments().entrySet().iterator();
+                while (it.hasNext()) {
+                    Map.Entry pair = (Map.Entry) it.next();
+                    value += pair.getKey() + " [ " + pair.getValue() + "]";
+                    it.remove(); // avoids a ConcurrentModificationException
+                }
+                toPrint.add(key + " " + value);
+            }
+        }
+        try {
+            Files.write(file, toPrint, Charset.forName("UTF-8"));
+        } catch (Exception e) {
+            System.out.println("cannot write");
+        }
+    }
 }

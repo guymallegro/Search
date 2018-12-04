@@ -49,6 +49,26 @@ public class View {
         stage.show();
     }
 
+    public void reset(ActionEvent actionEvent) {
+        File currentDirectory = new File(postingPath);
+        String[] allFiles = currentDirectory.list();
+        for (String file : allFiles) {
+            File currentFile = new File(postingPath + "\\" + file);
+            if (currentFile.delete())
+                System.out.println("Current file " + file + " is closed");
+            else // @TODO dont forget to close the posting temporary files
+                System.out.println("no deletion");
+        }
+        controller.resetDictionaries();
+    }
+
+    public void setPostingPath (String posting){ postingPath = posting; }
+
+    public void setController(Controller controller) {
+        this.controller = controller;
+        this.controller.setView(this);
+    }
+
     public void loadDictionary () {
         dictionary = new ArrayList<>();
         String path = postingPath + "/termsDictionary.txt";
@@ -100,27 +120,6 @@ public class View {
         loadDictionary.setDisable(false);
         languages.setDisable(false);
         query.setDisable(false);
-    }
-
-    public void reset(ActionEvent actionEvent) {
-        File currentDirectory = new File(postingPath);
-        String[] allFiles = currentDirectory.list();
-        for (String file : allFiles) {
-            if (file.equals("stop_words"))
-                continue;
-            File currentFile = new File(postingPath + "\\" + file);
-            if (currentFile.delete())
-                System.out.println("Current file " + file + " is closed");
-            else // @TODO dont forget to close the posting temporary files
-                System.out.println("no deletion");
-        }
-    }
-
-    public void setPostingPath (String posting){ postingPath = posting; }
-
-    public void setController(Controller controller) {
-        this.controller = controller;
-        this.controller.setView(this);
     }
 
 }
