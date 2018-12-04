@@ -27,6 +27,9 @@ public class Model {
     static HashMap<Integer, ArrayList<Object>> documentsDictionary;
     private boolean isStemming = false;
     static HashMap<String, CityInfo> citiesDictionary;
+    private int documentsAmount;
+    private int termsAmount;
+    private double totalTime;
 
     public Model() {
         parse = new Parse();
@@ -46,27 +49,15 @@ public class Model {
         stopWords = fileReader.readStopWords(stopWordsPath);
         parse.setStopWords(stopWords);
         fileReader.readFile(filesPath, true);
-        Object[] cities = citiesDictionary.keySet().toArray();
-        printCities(cities);
         fileReader.readFile(filesPath, false);
-        System.out.println("--------------------------------------");
-        System.out.println("--------------indexing-----------------");
+        indexer.mergeAllPostFiles();
+        termsAmount = termsDictionary.size();
+        documentsAmount = documentsDictionary.size();
+        parse.getAllTerms().clear();
+        writeDictionary();
         long tEnd = System.currentTimeMillis();
         long tDelta = tEnd - tStart;
-        double elapsedSeconds = tDelta / 1000.0;
-        tStart = System.currentTimeMillis();
-        System.out.println("Time it took: " + elapsedSeconds + " seconds");
-        indexer.mergeAllPostFiles();
-        parse.getAllTerms().clear();
-        writeDictionary ();
-        System.out.println("--------------------------------------");
-        System.out.println("-----------------Complete-------------");
-        tEnd = System.currentTimeMillis();
-        tDelta = tEnd - tStart;
-        elapsedSeconds = tDelta / 1000.0;
-        System.out.println("Time it took: " + elapsedSeconds + " seconds");
-        System.out.println("dictionarySize: " + termsDictionary.size());
-        System.out.println("Doc 10 info :" + documentsDictionary.get(10).get(0) + "," + documentsDictionary.get(10).get(1) + "," + documentsDictionary.get(10).get(2));
+        totalTime = tDelta / 1000.0;
     }
 
     private void writeDictionary() {
@@ -93,12 +84,6 @@ public class Model {
             System.out.println("cannot write to dictionary");
         }
         termsDictionary.clear();
-    }
-
-    private void printCities(Object[] cities) {
-        for (int i = 0; i < cities.length; i++) {
-            System.out.println(cities[i] + " : " + citiesDictionary.get(cities[i]));
-        }
     }
 
     void processFile(String fileAsString) {
@@ -221,13 +206,29 @@ public class Model {
         return str;
     }
 
-    public HashSet<String> getLanguages() { return languages; }
+    public HashSet<String> getLanguages() {
+        return languages;
+    }
 
-    public static HashMap<String, ArrayList<Object>> getTermsDictionary() { return termsDictionary; }
+    public static HashMap<String, ArrayList<Object>> getTermsDictionary() {
+        return termsDictionary;
+    }
 
     public void resetDictionaries() {
         termsDictionary.clear();
         documentsDictionary.clear();
         citiesDictionary.clear();
+    }
+
+    public Integer getTotalDocuments() {
+        return documentsAmount;
+    }
+
+    public Integer getTotalTerms() {
+        return termsAmount;
+    }
+
+    public Double getTotalTime() {
+        return totalTime;
     }
 }

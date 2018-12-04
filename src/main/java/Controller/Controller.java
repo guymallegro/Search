@@ -32,4 +32,14 @@ public class Controller {
     public void setStopWordsPath(String stopWordsPath) { this.stopWordsPath = stopWordsPath; }
 
     public void setPostingPath(String postingPath) { this.postingPath = postingPath; }
+
+    public Integer getTotalDocuments() {
+        return model.getTotalDocuments();
+    }
+    public Integer getTotalTerms() {
+        return model.getTotalTerms();
+    }
+    public Double getTotalTime() {
+        return model.getTotalTime();
+    }
 }
