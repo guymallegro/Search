@@ -96,9 +96,8 @@ class Parse {
     }
 
     private void checkCity(int i) {
-        if (Model.citiesDictionary.containsKey(tokens.get(i))) {
+        if (Model.citiesDictionary.containsKey(tokens.get(i)))
             Model.citiesDictionary.get(tokens.get(i)).addLocation(currentDocument.getIndexId(), i);
-        }
     }
 
     private boolean checkRange(int i) {

@@ -238,7 +238,7 @@ class Indexer {
                 while (it.hasNext()) {
                     Map.Entry pair = (Map.Entry) it.next();
                     value += pair.getKey() + " [ " + pair.getValue() + "]";
-                    it.remove(); // avoids a ConcurrentModificationException
+                    it.remove();
                 }
                 toPrint.add(key + " " + value);
             }

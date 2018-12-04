@@ -51,7 +51,6 @@ public class browser {
             myController.setStopWordsPath(corpusPath.getText() + "\\stop_words");
             myController.setPostingPath(postingPath.getText());
             myView.setPostingPath(postingPath.getText());
-
             Stage window = (Stage)((Node)actionEvent.getSource()).getScene().getWindow();
             window.close();
             myController.readFiles();
