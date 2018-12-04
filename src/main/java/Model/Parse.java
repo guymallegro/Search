@@ -41,7 +41,7 @@ class Parse {
             splitDocument(document.getContent());
             for (int i = 0; i < tokens.size(); i++) {
                 checkNumberName(i);
-                if (tokens.get(i).length() > 0 && ((!isStopWord(tokens.get(i).toLowerCase()) || (tokens.get(i).equals("between") || tokens.get(i).toLowerCase().equals("may")) && (i < tokens.size() - 1 && tokens.get(i + 1).length() > 0 && Character.isDigit(tokens.get(i + 1).charAt(0)))))) {
+                if (tokens.get(i).length() > 0 && (!isStopWord(tokens.get(i)) || (tokens.get(i).equals("between") && (i < tokens.size() - 1 && tokens.get(i + 1).length() > 0 && Character.isDigit(tokens.get(i + 1).charAt(0)))))) {
                     checkCity(i);
                     if (doStemming) {
                         stemmer.setTerm(tokens.get(i));
@@ -339,7 +339,9 @@ class Parse {
     }
 
     private boolean isStopWord(String word) {
-        return stopWords.contains(word);
+        if (stopWords.contains(word) || stopWords.contains(Character.toUpperCase(word.charAt(0)) + word.substring(1)))
+            return true;
+        return false;
     }
 
     private void addTerm(String term) {

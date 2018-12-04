@@ -58,11 +58,10 @@ public class View {
             else // @TODO dont forget to close the posting temporary files
                 System.out.println("no deletion");
         }
+        controller.resetDictionaries();
     }
 
     public void setPostingPath (String posting){ postingPath = posting; }
-
-
 
     public void setController(Controller controller) {
         this.controller = controller;

@@ -23,7 +23,7 @@ public class Model {
     public Model() {
         parse = new Parse();
         citiesDictionary = new HashMap<>();
-        cityChecker = new CityChecker(Main.citiesUrl,citiesDictionary);
+        cityChecker = new CityChecker(Main.citiesUrl, citiesDictionary);
         fileReader = new ReadFile(this);
         documents = new ArrayList<>();
         languages = new HashSet<>();
@@ -191,5 +191,11 @@ public class Model {
 
     public HashSet<String> getLanguages() {
         return languages;
+    }
+
+    public void resetDictionaries() {
+        termsDictionary.clear();
+        documentsDictionary.clear();
+        citiesDictionary.clear();
     }
 }
