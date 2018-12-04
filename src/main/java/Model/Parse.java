@@ -85,6 +85,7 @@ class Parse {
                     } else {
                         parseByLetters(i);
                     }
+                    removeRedundantZero(i);
                     addTerm(tokens.get(i));
                 }
             }
@@ -537,10 +538,14 @@ class Parse {
         return ans;
     }
 
+    private void removeRedundantZero(int i) {
+        if (tokens.get(i).length()>2&&tokens.get(i).charAt(0) == '0' && tokens.get(i).charAt(1) == '.')
+            tokens.set(i, tokens.get(i).substring(1));
+    }
+
     public void setStemming(boolean selected) {
         doStemming = selected;
     }
-
 
     public HashMap<String, Term> getAllTerms() {
         return allTerms;
@@ -691,7 +696,7 @@ class Parse {
         tests[26] = "05-14";
         tests[27] = "06-04";
         tests[28] = "1994-05";
-        tests[29] = "Value-ad";
+        tests[29] = "Value-added";
         tests[30] = "step-by-step";
         tests[31] = "10-part";
         tests[32] = "6-7";
@@ -710,5 +715,6 @@ class Parse {
         tests[45] = "26.000157M";
         tests[46] = "5 Dollars";
         tests[47] = "1.000003 M Dollars";
+        tests[48] = ".15";
     }
 }
