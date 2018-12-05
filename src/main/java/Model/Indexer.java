@@ -47,7 +47,10 @@ class Indexer {
             lines.add(line.toString());
             line.setLength(0);
         }
-        path += "/post" + currentPostFile + ".txt";
+        if (isStemming)
+            path += "/post" + currentPostFile + "WithStemming.txt";
+        else
+            path += "/post" + currentPostFile + ".txt";
         Path file = Paths.get(path);
         try {
             Files.write(file, lines, Charset.forName("UTF-8"));
@@ -76,7 +79,10 @@ class Indexer {
         out = new PrintWriter(bw);
         for (int i = 0; i < currentPostFile; i++) {
             try {
-                scanners[i] = new Scanner(new File(postingPath + "/post" + i + ".txt"));
+                if (isStemming)
+                    scanners[i] = new Scanner(new File(postingPath + "/post" + i + "WithStemming.txt"));
+                else
+                    scanners[i] = new Scanner(new File(postingPath + "/post" + i + ".txt"));
             } catch (Exception e) {
                 System.out.println("Failed to create a scanner");
             }
@@ -252,6 +258,8 @@ class Indexer {
             System.out.println("cannot write");
         }
     }
+
+    public void initCurrentPostFile() { currentPostFile = 0; }
 
     public void setStemming(boolean stemming) { isStemming = stemming; }
 }

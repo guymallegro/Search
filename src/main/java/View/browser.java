@@ -48,7 +48,7 @@ public class browser {
             showAlert("enter please a posting destination directory");
         else {
             myController.setCorpusPath(corpusPath.getText() + "\\");
-            myController.setStopWordsPath(corpusPath.getText() + "\\stop_words");
+            myController.setStopWordsPath(corpusPath.getText() + "\\stop_words.txt");
             myController.setPostingPath(postingPath.getText());
             myView.setPostingPath(postingPath.getText());
             Stage window = (Stage)((Node)actionEvent.getSource()).getScene().getWindow();

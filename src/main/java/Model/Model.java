@@ -44,6 +44,8 @@ public class Model {
     }
 
     public void readFiles(String filesPath, String stopWordsPath, String postingpath) {
+        indexer.initCurrentPostFile();
+        resetDictionaries();
         postingPathDestination = postingpath;
         long tStart = System.currentTimeMillis();
         stopWords = fileReader.readStopWords(stopWordsPath);
@@ -239,7 +241,6 @@ public class Model {
         indexer.addAllCities(postingPathDestination);
         indexer.addAllDocuments();
         System.out.println(totalAmountOfDocs);
-        documents.clear();
     }
 
     public void setStemming(boolean selected) {
@@ -282,15 +283,9 @@ public class Model {
         citiesDictionary.clear();
     }
 
-    public Integer getTotalDocuments() {
-        return documentsAmount;
-    }
+    public Integer getTotalDocuments() { return documentsAmount; }
 
-    public Integer getTotalTerms() {
-        return termsAmount;
-    }
+    public Integer getTotalTerms() { return termsAmount; }
 
-    public Double getTotalTime() {
-        return totalTime;
-    }
+    public Double getTotalTime() { return totalTime; }
 }
