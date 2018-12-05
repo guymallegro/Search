@@ -1,6 +1,7 @@
 package View;
 
 import Controller.Controller;
+import Model.Model;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -93,17 +94,27 @@ public class View {
     }
 
     public void loadDocsDictionary () {
-        docsDictionary = new ArrayList<>();
-        String path = postingPath + "/postDocuments.txt";
+        String path = postingPath + "/documentsDictionary.txt";
         if (stemming.isSelected())
-            path = postingPath + "/postDocumentsWithStemming.txt";
+            path = postingPath + "/documentsDictionaryWithStemming.txt";
         File file = new File(path);
         try {
             Scanner scanner = new Scanner(file);
+            HashMap<Integer, ArrayList<Object>> docsDictionary = new HashMap<>();
             while (scanner.hasNextLine()) {
-                String term = scanner.nextLine();
-                docsDictionary.add(term);
+                String line = scanner.nextLine();
+                int docIndex = Integer.parseInt(line.substring(1, line.indexOf(":")));
+                String [] info = line.substring(line.indexOf(":")).split(",");
+                ArrayList<Object> attributes = new ArrayList<>();
+                attributes.add(0, info[0]);
+                attributes.add(1, info[1]);
+                if (info.length == 3)
+                    attributes.add(2, info[2]);
+                else
+                    attributes.add(2, "");
+                docsDictionary.put(docIndex, attributes);
             }
+            controller.setDocsDictionary(docsDictionary);
         } catch (FileNotFoundException e) {
             System.out.println("Cannot open the documents dictionary");
         }

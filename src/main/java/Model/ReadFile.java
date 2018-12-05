@@ -10,9 +10,6 @@ public class ReadFile {
     private File currentFile;
     private String allFiles;
     private ArrayList<Document> documents;
-    private Document currentDocument;
-    private int numOfDocs = 1000;
-    private int total;
 
     public ReadFile(Model model) {
         this.model = model;

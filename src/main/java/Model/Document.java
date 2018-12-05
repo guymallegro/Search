@@ -5,7 +5,7 @@ import java.util.HashMap;
 public class Document {
     private String id;
     private int indexId;
-    public static int doccumentsAmount = 1;
+    public static int documentsAmount = 1;
     private int max_tf;
     private HashMap<Term, Integer> textTerms;
     private HashMap<String, String> cities;
@@ -23,7 +23,7 @@ public class Document {
         textTerms = new HashMap<>();
         cities = new HashMap<>();
         max_tf = 0;
-        indexId = doccumentsAmount++;
+        indexId = documentsAmount++;
         content = "";
     }
 
@@ -89,17 +89,13 @@ public class Document {
         return cities;
     }
 
-
-    public void print() {
-        System.out.println("id :" + id);
-        System.out.println("title :" + title);
-        System.out.println("date :" + date);
-        System.out.println("city :" + city);
-        System.out.println("Text :" + content);
-        System.out.println("-------------------------------------------------");
-    }
-
     public int getIndexId() {
         return indexId;
     }
+
+    public void initialize (){
+        documentsAmount = 1;
+        indexId = documentsAmount;
+    }
+
 }

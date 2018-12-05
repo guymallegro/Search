@@ -1,7 +1,5 @@
 package Model;
 
-import Controller.Controller;
-
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,6 +14,7 @@ public class Model {
     private Parse parse;
     private ReadFile fileReader;
     private Indexer indexer;
+    private Document document;
     private CityChecker cityChecker;
     private String postingPathDestination;
     private int nomOfDocs = 11800; //@TODO Need to find the best amount
@@ -23,16 +22,16 @@ public class Model {
     private HashSet<String> languages;
     private ArrayList<Document> documents;
     private HashSet<String> stopWords;
-    static HashMap<String, ArrayList<Object>> termsDictionary;
-    static HashMap<Integer, ArrayList<Object>> documentsDictionary;
-    private boolean isStemming;
-    static HashMap<String, CityInfo> citiesDictionary;
+    private HashMap<String, ArrayList<Object>> termsDictionary;
+    private HashMap<Integer, ArrayList<Object>> documentsDictionary;
+    private HashMap<String, CityInfo> citiesDictionary;
+    private boolean isStemming = false;
     private int documentsAmount;
     private int termsAmount;
     private double totalTime;
 
     public Model() {
-        parse = new Parse();
+        parse = new Parse(this);
         citiesDictionary = new HashMap<>();
         cityChecker = new CityChecker(Main.citiesUrl, citiesDictionary);
         fileReader = new ReadFile(this);
@@ -40,12 +39,14 @@ public class Model {
         languages = new HashSet<>();
         termsDictionary = new HashMap<>();
         documentsDictionary = new HashMap<>();
-        indexer = new Indexer(parse.getAllTerms(), documents);
+        indexer = new Indexer(this, parse.getAllTerms(), documents);
+        document = new Document();
     }
 
     public void readFiles(String filesPath, String stopWordsPath, String postingpath) {
         indexer.initCurrentPostFile();
         resetDictionaries();
+        document.initialize();
         postingPathDestination = postingpath;
         long tStart = System.currentTimeMillis();
         stopWords = fileReader.readStopWords(stopWordsPath);
@@ -56,9 +57,9 @@ public class Model {
         termsAmount = termsDictionary.size();
         documentsAmount = documentsDictionary.size();
         parse.getAllTerms().clear();
-        writeTermsDictionary();
-        writeDocsDictionary();
-        writeCitiesDictionary();
+        writeTermsDictionary ();
+        writeDocsDictionary ();
+        writeCitiesDictionary ();
         System.out.println("--------------------------------------");
         System.out.println("-----------------Complete-------------");
         long tEnd = System.currentTimeMillis();
@@ -98,14 +99,16 @@ public class Model {
         StringBuilder line = new StringBuilder();
         List<String> lines = new LinkedList<>();
         int size = sortedTerms.length;
-        for (int i = 1; i < size; i++) {
-            line.append(sortedTerms[i]).append(": ");
-            line.append("maxTF: ");
-            line.append(documentsDictionary.get(i).get(0));
-            line.append(", terms: ");
-            line.append(documentsDictionary.get(i).get(1));
-            line.append(", city:");
-            line.append(documentsDictionary.get(i).get(2));
+        for (int i = 0; i < size; i++) {
+            line.append("<");
+            line.append(sortedTerms[i]).append(":");
+            line.append(documentsDictionary.get(sortedTerms[i]).get(0));
+            line.append(",");
+            line.append(documentsDictionary.get(sortedTerms[i]).get(1));
+            if (!documentsDictionary.get(sortedTerms[i]).get(2).equals("")) {
+                line.append(",");
+                line.append(documentsDictionary.get(sortedTerms[i]).get(2));
+            }
             lines.add(line.toString());
             line.setLength(0);
         }
@@ -244,6 +247,8 @@ public class Model {
         parse.setStemming(selected);
     }
 
+    public void setDocsDictionary (HashMap<Integer, ArrayList<Object>> docsDictionary) {documentsDictionary = docsDictionary;}
+
     private String cleanString(String str) {
         if (str.length() == 0)
             return "";
@@ -268,13 +273,13 @@ public class Model {
         return str;
     }
 
-    public HashSet<String> getLanguages() {
-        return languages;
-    }
+    public HashSet<String> getLanguages() { return languages; }
 
-    public static HashMap<String, ArrayList<Object>> getTermsDictionary() {
-        return termsDictionary;
-    }
+    public HashMap<String, ArrayList<Object>> getTermsDictionary() { return termsDictionary; }
+
+    public HashMap<Integer, ArrayList<Object>> getDocsDictionary() { return documentsDictionary; }
+
+    public HashMap<String, CityInfo> getCitiesDictionary() { return citiesDictionary; }
 
     public void resetDictionaries() {
         termsDictionary.clear();
@@ -282,15 +287,9 @@ public class Model {
         citiesDictionary.clear();
     }
 
-    public Integer getTotalDocuments() {
-        return documentsAmount;
-    }
+    public Integer getTotalDocuments() { return documentsAmount; }
 
-    public Integer getTotalTerms() {
-        return termsAmount;
-    }
+    public Integer getTotalTerms() { return termsAmount; }
 
-    public Double getTotalTime() {
-        return totalTime;
-    }
+    public Double getTotalTime() { return totalTime; }
 }

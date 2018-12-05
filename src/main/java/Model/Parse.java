@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 class Parse {
+    private Model model;
     private Stemmer stemmer;
     private boolean doStemming = true; //@TODO change the name of the postfile if true
     private HashSet<String> stopWords;
@@ -24,7 +25,8 @@ class Parse {
     private Document currentDocument;
     private boolean toTest = false;
 
-    Parse() {
+    Parse(Model model) {
+        this.model = model;
         tokens = new ArrayList<>();
         stemmer = new Stemmer();
         numbers = new HashMap<>();
@@ -96,8 +98,8 @@ class Parse {
     }
 
     private void checkCity(int i) {
-        if (Model.citiesDictionary.containsKey(tokens.get(i)))
-            Model.citiesDictionary.get(tokens.get(i)).addLocation(currentDocument.getIndexId(), i);
+        if (model.getCitiesDictionary().containsKey(tokens.get(i)))
+            model.getCitiesDictionary().get(tokens.get(i)).addLocation(currentDocument.getIndexId(), i);
     }
 
     private boolean checkRange(int i) {
@@ -301,7 +303,7 @@ class Parse {
             if (allTerms.containsKey(lowerCase)) {
                 tokens.set(i, lowerCase);
                 return;
-            } else if (Model.termsDictionary.containsKey(lowerCase)) {
+            } else if (model.getTermsDictionary().containsKey(lowerCase)) {
                 if (allTerms.containsKey(upper)) {
                     Term value = allTerms.remove(upper);
                     allTerms.put(lowerCase, value);
@@ -360,7 +362,7 @@ class Parse {
             } else {
                 if (Character.isUpperCase(term.charAt(0))) {
                     Term newTerm;
-                    if (Model.termsDictionary.containsKey(lowerCase))
+                    if (model.getTermsDictionary().containsKey(lowerCase))
                         newTerm = new Term(lowerCase);
                     else
                         newTerm = new Term(upper);

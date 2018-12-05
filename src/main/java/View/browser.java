@@ -55,7 +55,7 @@ public class browser {
             window.close();
             myController.readFiles();
             myView.initializeLanguages();
-            myView.reset.setVisible(true);
+            myView.reset.setDisable(false);
         }
     }
 

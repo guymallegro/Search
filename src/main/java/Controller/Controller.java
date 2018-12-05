@@ -3,6 +3,8 @@ package Controller;
 import Model.Model;
 import View.View;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 
 public class Controller {
@@ -32,6 +34,8 @@ public class Controller {
     public void setStopWordsPath(String stopWordsPath) { this.stopWordsPath = stopWordsPath; }
 
     public void setPostingPath(String postingPath) { this.postingPath = postingPath; }
+
+    public void setDocsDictionary (HashMap<Integer, ArrayList<Object>> docsDictionary) { model.setDocsDictionary(docsDictionary); }
 
     public Integer getTotalDocuments() {
         return model.getTotalDocuments();

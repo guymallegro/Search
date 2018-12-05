@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.util.*;
 
 class Indexer {
+    private Model model;
     private HashMap<String, Term> allTerms;
     private HashMap<String, String> capitalLetters;
     private ArrayList<Document> documents;
@@ -19,8 +20,9 @@ class Indexer {
     private String postingPath;
     private boolean isStemming;
 
-    Indexer(HashMap<String, Term> allTerms, ArrayList<Document> documents) {
+    Indexer(Model model, HashMap<String, Term> allTerms, ArrayList<Document> documents) {
         currentPostFile = 0;
+        this.model = model;
         this.allTerms = allTerms;
         this.documents = documents;
         capitalLetters = new HashMap<>();
@@ -133,16 +135,17 @@ class Indexer {
                     //      changePostFile(toWrite.charAt(1));
                 }
                 String current = toWrite.toString().substring(1, toWrite.toString().indexOf('^'));
-                if (Character.isUpperCase(current.charAt(0))) {
-                    if (Model.termsDictionary.containsKey(current.toLowerCase())) {
+                if (Character.isUpperCase(current.charAt(0))){
+                    if (model.getTermsDictionary().containsKey(current.toLowerCase())) {
                         capitalLetters.put(current.toLowerCase(), toWrite.toString().toLowerCase());
-                        int toAdd = (int) Model.termsDictionary.get(current).get(0);
-                        int amount = (int) Model.termsDictionary.get(current.toLowerCase()).get(0);
-                        Model.termsDictionary.get(current.toLowerCase()).set(0, amount + toAdd);
-                        Model.termsDictionary.remove(current);
+                        int toAdd = (int)model.getTermsDictionary().get(current).get(0);
+                        int amount = (int)model.getTermsDictionary().get(current.toLowerCase()).get(0);
+                        model.getTermsDictionary().get(current.toLowerCase()).set(0, amount + toAdd);
+                        model.getTermsDictionary().remove(current);
                         toWrite.setLength(0);
                     }
-                } else if (Character.isLowerCase(current.charAt(0))) {
+                }
+                else if (Character.isLowerCase(current.charAt(0))){
                     if (capitalLetters.containsKey(current))
                         toWrite = calculateGaps(capitalLetters.get(current), toWrite.toString());
                 }
@@ -159,7 +162,7 @@ class Indexer {
         out.close();
     }
 
-    private StringBuilder lastLineVersion(String line) {
+    private StringBuilder lastLineVersion (String line){
         StringBuilder ans = new StringBuilder();
         if (line.length() == 0)
             return ans;
@@ -203,26 +206,30 @@ class Indexer {
     }
 
     private void addTermToDictionary(String term, char path) {
-        if (Model.termsDictionary.containsKey(term)) {
-            int numOfDocuments = (int) Model.termsDictionary.get(term).get(0);
-            Model.termsDictionary.get(term).set(0, numOfDocuments + allTerms.get(term).getInDocuments().length);
+        if (model.getTermsDictionary().containsKey(term)) {
+            int numOfDocuments = (int) model.getTermsDictionary().get(term).get(0);
+            model.getTermsDictionary().get(term).set(0, numOfDocuments + allTerms.get(term).getInDocuments().length);
         } else {
             ArrayList<Object> attributes = new ArrayList<>();
             attributes.add(allTerms.get(term).getInDocuments().length);
             attributes.add(path);
-            Model.termsDictionary.put(term, attributes);
+            model.getTermsDictionary().put(term, attributes);
         }
     }
 
     void addAllDocuments() {
         int size = documents.size();
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < size; i ++) {
             ArrayList<Object> attributes = new ArrayList<>();
             attributes.add(0, documents.get(i).getMax_tf());
             attributes.add(1, documents.get(i).getTextTerms().size());
-            attributes.add(2, documents.get(i).getCity());
-            Model.documentsDictionary.put(documents.get(i).getIndexId(), attributes);
+            if (documents.get(i).getCity() != null)
+                attributes.add(2, documents.get(i).getCity());
+            else
+                attributes.add(2, "");
+            model.getDocsDictionary().put(documents.get(i).getIndexId(), attributes);
         }
+        documents.clear();
     }
 
     public void addAllCities(String path) {
@@ -233,17 +240,17 @@ class Indexer {
             path += "/postCities.txt";
         Path file = Paths.get(path);
         ArrayList<String> toPrint = new ArrayList<>();
-        Object[] sortedTerms = Model.citiesDictionary.keySet().toArray();
+        Object[] sortedTerms = model.getCitiesDictionary().keySet().toArray();
         Arrays.sort(sortedTerms);
         int size = sortedTerms.length;
         for (int i = 0; i < size; i++) {
             String key = (String) sortedTerms[i];
             String value = "";
-            if (Model.citiesDictionary.get(key).getCurrency() != null && Model.citiesDictionary.get(key).getLocationsInDocuments().size() == 0) {
-                Model.citiesDictionary.put(key, null);
+            if (model.getCitiesDictionary().get(key).getCurrency() != null && model.getCitiesDictionary().get(key).getLocationsInDocuments().size() == 0) {
+                model.getCitiesDictionary().put(key, null);
                 continue;
             } else {
-                Iterator it = Model.citiesDictionary.get(key).getLocationsInDocuments().entrySet().iterator();
+                Iterator it = model.getCitiesDictionary().get(key).getLocationsInDocuments().entrySet().iterator();
                 while (it.hasNext()) {
                     Map.Entry pair = (Map.Entry) it.next();
                     value += pair.getKey() + " [ " + pair.getValue() + "]";
@@ -259,11 +266,7 @@ class Indexer {
         }
     }
 
-    public void initCurrentPostFile() {
-        currentPostFile = 0;
-    }
+    public void initCurrentPostFile() { currentPostFile = 0; }
 
-    public void setStemming(boolean stemming) {
-        isStemming = stemming;
-    }
+    public void setStemming(boolean stemming) { isStemming = stemming; }
 }
