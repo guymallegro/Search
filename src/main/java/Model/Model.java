@@ -25,7 +25,7 @@ public class Model {
     private HashSet<String> stopWords;
     static HashMap<String, ArrayList<Object>> termsDictionary;
     static HashMap<Integer, ArrayList<Object>> documentsDictionary;
-    private boolean isStemming = false;
+    private boolean isStemming;
     static HashMap<String, CityInfo> citiesDictionary;
     private int documentsAmount;
     private int termsAmount;
@@ -56,9 +56,9 @@ public class Model {
         termsAmount = termsDictionary.size();
         documentsAmount = documentsDictionary.size();
         parse.getAllTerms().clear();
-        writeTermsDictionary ();
-        writeDocsDictionary ();
-        writeCitiesDictionary ();
+        writeTermsDictionary();
+        writeDocsDictionary();
+        writeCitiesDictionary();
         System.out.println("--------------------------------------");
         System.out.println("-----------------Complete-------------");
         long tEnd = System.currentTimeMillis();
@@ -146,11 +146,6 @@ public class Model {
         } catch (Exception e) {
             System.out.println("cannot write to dictionary");
         }
-    }
-
-    private void printCities(Object[] cities) {
-        for (int i = 0; i < cities.length; i++)
-            System.out.println(cities[i] + " : " + citiesDictionary.get(cities[i]));
     }
 
     void processFile(String fileAsString) {
@@ -273,9 +268,13 @@ public class Model {
         return str;
     }
 
-    public HashSet<String> getLanguages() { return languages; }
+    public HashSet<String> getLanguages() {
+        return languages;
+    }
 
-    public static HashMap<String, ArrayList<Object>> getTermsDictionary() { return termsDictionary; }
+    public static HashMap<String, ArrayList<Object>> getTermsDictionary() {
+        return termsDictionary;
+    }
 
     public void resetDictionaries() {
         termsDictionary.clear();
@@ -283,9 +282,15 @@ public class Model {
         citiesDictionary.clear();
     }
 
-    public Integer getTotalDocuments() { return documentsAmount; }
+    public Integer getTotalDocuments() {
+        return documentsAmount;
+    }
 
-    public Integer getTotalTerms() { return termsAmount; }
+    public Integer getTotalTerms() {
+        return termsAmount;
+    }
 
-    public Double getTotalTime() { return totalTime; }
+    public Double getTotalTime() {
+        return totalTime;
+    }
 }

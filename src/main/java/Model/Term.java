@@ -1,7 +1,6 @@
 package Model;
 
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
 
 public class Term {
 
@@ -46,7 +45,20 @@ public class Term {
         return sortedterms;
     }
 
-    public void clear(){
+    public String getAmountInDocuments() {
+        StringBuilder sb = new StringBuilder();
+        Map<Integer, Integer> map = new TreeMap(inDocuments);
+        Set set2 = map.entrySet();
+        Iterator iterator2 = set2.iterator();
+        while (iterator2.hasNext()) {
+            Map.Entry me2 = (Map.Entry) iterator2.next();
+            sb.append(me2.getValue()).append(",");
+        }
+        return sb.toString();
+    }
+
+
+    public void clear() {
         inDocuments.clear();
     }
 }
