@@ -16,6 +16,7 @@ public class CityInfo {
         countryName = data.get("name").toString();
         cityName = data.get("capital").toString();
         population = data.get("population").toString();
+        parsePopulation();
         currency = data.getJSONArray("currencies").getJSONObject(0).get("name").toString();
         locationsInDocuments = new HashMap<>();
     }
@@ -50,6 +51,26 @@ public class CityInfo {
 
     public HashMap<Integer, String> getLocationsInDocuments() {
         return locationsInDocuments;
+    }
+
+    private void parsePopulation() {
+        System.out.println("Before : " + population);
+        Character remember;
+        if (population.length() > 9) {
+            double newPopulation = (Double.parseDouble(population)) / 1000000000;
+            population = "" + newPopulation;
+            remember = 'B';
+        } else if (population.length() > 6) {
+            double newPopulation = (Double.parseDouble(population)) / 1000000;
+            population = "" + newPopulation;
+            remember = 'M';
+        } else if (population.length() > 3) {
+            double newPopulation = (Double.parseDouble(population)) / 1000;
+            population = "" + newPopulation;
+            remember = 'K';
+        } else
+            return;
+        population += remember;
     }
 
     public void setCityName(String cityName) {
