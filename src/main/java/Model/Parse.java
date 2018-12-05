@@ -89,7 +89,7 @@ class Parse {
                         parseByLetters(i);
                     }
                     removeRedundantZero(i);
-                    addTerm(tokens.get(i));
+                    addTerm(tokens.get(i), i);
                 }
             }
         }
@@ -183,7 +183,7 @@ class Parse {
                 tokens.set(i, date.get(tokens.get(i + 1)) + "-" + String.format("%02d", Integer.parseInt(tokens.get(i))));
                 if (i + 2 < tokens.size()) {
                     if (tokens.get(i + 2).matches("[0-9][0-9][0-9][0-9]")) {
-                        addTerm(tokens.get(i + 2) + "-" + date.get(tokens.get(i + 1)));
+                        addTerm(tokens.get(i + 2) + "-" + date.get(tokens.get(i + 1)), i);
                         tokens.set(i + 2, "");
                     }
                 }
@@ -297,12 +297,11 @@ class Parse {
     private void parseByLetters(int i) {
         String upper = tokens.get(i).toUpperCase();
         String lowerCase = tokens.get(i).toLowerCase();
-        if (Character.isUpperCase(tokens.get(i).charAt(0))){
+        if (Character.isUpperCase(tokens.get(i).charAt(0))) {
             if (allTerms.containsKey(lowerCase)) {
                 tokens.set(i, lowerCase);
                 return;
-            }
-            else if (Model.termsDictionary.containsKey(lowerCase)){
+            } else if (Model.termsDictionary.containsKey(lowerCase)) {
                 if (allTerms.containsKey(upper)) {
                     Term value = allTerms.remove(upper);
                     allTerms.put(lowerCase, value);
@@ -310,11 +309,10 @@ class Parse {
 
                 }
             }
-        }
-        else if (Character.isLowerCase(tokens.get(i).charAt(0))) {
+        } else if (Character.isLowerCase(tokens.get(i).charAt(0))) {
             if (allTerms.containsKey(lowerCase))
                 return;
-            if (allTerms.containsKey(upper)){
+            if (allTerms.containsKey(upper)) {
                 Term value = allTerms.remove(upper);
                 allTerms.put(lowerCase, value);
             }
@@ -351,16 +349,15 @@ class Parse {
         return false;
     }
 
-    private void addTerm(String term) {
+    private void addTerm(String term, int i) {
         if (term.length() > 1 || (term.length() == 1 && Character.isDigit(term.charAt(0)))) {
             String upper = term.toUpperCase();
             String lowerCase = term.toLowerCase();
             if (allTerms.containsKey(term)) {
                 allTerms.get(term).increaseAmount();
-                allTerms.get(term).addInDocument(currentDocument.getIndexId());
+                allTerms.get(term).addInDocument(currentDocument.getIndexId(), ((double) i) / tokens.size());
                 currentDocument.addTermToText(allTerms.get(term));
-            }
-            else {
+            } else {
                 if (Character.isUpperCase(term.charAt(0))) {
                     Term newTerm;
                     if (Model.termsDictionary.containsKey(lowerCase))
@@ -368,12 +365,12 @@ class Parse {
                     else
                         newTerm = new Term(upper);
                     allTerms.put(term, newTerm);
-                    newTerm.addInDocument(currentDocument.getIndexId());
+                    newTerm.addInDocument(currentDocument.getIndexId(), ((double) i) / tokens.size());
                     currentDocument.addTermToText(newTerm);
                 } else {
                     Term newTerm = new Term(lowerCase);
                     allTerms.put(term, newTerm);
-                    newTerm.addInDocument(currentDocument.getIndexId());
+                    newTerm.addInDocument(currentDocument.getIndexId(), ((double) i) / tokens.size());
                     currentDocument.addTermToText(newTerm);
                 }
             }
@@ -409,7 +406,9 @@ class Parse {
         }
     }
 
-    void setStopWords(HashSet<String> stopWords) { this.stopWords = stopWords; }
+    void setStopWords(HashSet<String> stopWords) {
+        this.stopWords = stopWords;
+    }
 
     private boolean checkIfContainsLetters(String s) {
         for (int i = 0; i < s.length(); i++) {
@@ -552,7 +551,7 @@ class Parse {
     }
 
     private void removeRedundantZero(int i) {
-        if (tokens.get(i).length()>2&&tokens.get(i).charAt(0) == '0' && tokens.get(i).charAt(1) == '.')
+        if (tokens.get(i).length() > 2 && tokens.get(i).charAt(0) == '0' && tokens.get(i).charAt(1) == '.')
             tokens.set(i, tokens.get(i).substring(1));
     }
 

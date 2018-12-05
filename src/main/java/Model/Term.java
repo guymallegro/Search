@@ -7,11 +7,13 @@ public class Term {
     private String value;
     private int amount;
     private HashMap<Integer, Integer> inDocuments;
+    private HashMap<Integer, Character> positionInDocument;
 
     public Term(String value) {
         this.value = value;
         amount = 1;
         inDocuments = new HashMap<>();
+        positionInDocument = new HashMap<>();
     }
 
     public void increaseAmount() {
@@ -30,12 +32,17 @@ public class Term {
         amount = newAmount;
     }
 
-    public void addInDocument(int documentId) {
+    public void addInDocument(int documentId, double position) {
         if (inDocuments.containsKey(documentId)) {
-            //inDocuments.put(documentId, inDocuments.get(documentId)+1);
             inDocuments.replace(documentId, inDocuments.get(documentId) + 1);
         } else {
             inDocuments.put(documentId, 1);
+            if (position < 0.33) {
+                positionInDocument.put(documentId, 'a');
+            } else if (position < 0.66) {
+                positionInDocument.put(documentId, 'b');
+            } else
+                positionInDocument.put(documentId, 'c');
         }
     }
 
@@ -52,6 +59,7 @@ public class Term {
         Iterator iterator2 = set2.iterator();
         while (iterator2.hasNext()) {
             Map.Entry me2 = (Map.Entry) iterator2.next();
+            sb.append(positionInDocument.get(me2.getKey()));
             sb.append(me2.getValue()).append(",");
         }
         return sb.toString();
