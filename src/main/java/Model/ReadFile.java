@@ -5,8 +5,8 @@ import java.util.HashSet;
 import java.util.Scanner;
 
 /*
-This class responsible to
- */
+This class responsible for the reading of the files in the corpus contains documents and the stop words file.
+*/
 public class ReadFile {
     private Model model;
     private File currentFile;
@@ -15,6 +15,10 @@ public class ReadFile {
     public ReadFile(Model model) {
         this.model = model;
     }
+
+    /*
+
+     */
 
     public void readFile(String path, boolean onlyCities) {
         File currentDirectory = new File(path);

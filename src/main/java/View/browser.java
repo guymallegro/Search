@@ -6,7 +6,6 @@ import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
-
 import java.io.File;
 
 
@@ -55,6 +54,7 @@ public class browser {
             Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
             myController.readFiles();
             myView.initializeLanguages();
+            myView.loadDictionaries.setDisable(false);
             showFinishMessage();
             window.close();
 

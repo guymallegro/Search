@@ -161,6 +161,10 @@ class Indexer {
         out.close();
     }
 
+
+    /*
+    This function use the relevant information to
+     */
     private StringBuilder lastLineVersion(String line) {
         StringBuilder ans = new StringBuilder();
         if (line.length() == 0)
@@ -177,6 +181,9 @@ class Indexer {
         return ans;
     }
 
+    /*
+    This function merge for each term the documents it appeared in, and the frequency in each document.
+     */
     private StringBuilder calculateGaps(String toWrite, String next) {
         String[] term = toWrite.split(";");
         term[2] = term[2].substring(0, term[2].indexOf('!'));
@@ -188,9 +195,12 @@ class Indexer {
         ans.append(Integer.parseInt(firstDoc) - Integer.valueOf(term[2]));
         int comma = next.indexOf(",", next.indexOf(";"));
         if (comma != -1) {
-            ans.append(next.substring(comma));
+            int index = next.indexOf("!");
+            String last = next.substring(comma, index);
+            ans.append(last);
         } else {
-            String last = next.substring(next.lastIndexOf(";"), next.indexOf("!"));
+            int index = next.indexOf("!");
+            String last = next.substring(next.lastIndexOf(";"), index);
             ans.append(last);
         }
         ans.append(toWrite.substring(toWrite.indexOf("!")));
@@ -210,6 +220,11 @@ class Indexer {
         out = new PrintWriter(bw);
     }
 
+    /*
+    This function sort the terms dictionary and write to file the term, the documents it appeared in,
+    and the frequency in each document.
+     */
+
     private void addTermToDictionary(String term, char path) {
         if (model.getTermsDictionary().containsKey(term)) {
             int numOfDocuments = (int) model.getTermsDictionary().get(term).get(0);
@@ -222,6 +237,11 @@ class Indexer {
             model.getTermsDictionary().put(term, attributes);
         }
     }
+
+    /*
+    This function sort the documents dictionary and write to file the index of the document,
+    the frequency of the most popular term and the origin city of the document.
+     */
 
     void addAllDocuments() {
         int size = documents.size();
@@ -238,6 +258,10 @@ class Indexer {
         }
         documents.clear();
     }
+
+    /*
+    This function sort the cities dictionary and write to file the city name, country and population.
+     */
 
     public void addAllCities(String path) {
         postingPath = path;
