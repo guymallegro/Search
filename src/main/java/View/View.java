@@ -79,14 +79,13 @@ public class View {
             Scanner scanner = new Scanner(file);
             HashMap<String, ArrayList<Object>> termsDictionary = new HashMap<>();
             while (scanner.hasNextLine()) {
-                String temp = scanner.nextLine();
-                String properties = temp.substring(temp.indexOf(':') + 1);
-                String termName = temp.substring(1, temp.indexOf(':'));
-//                String term = scanner.nextLine();
-//                String temp = term.substring(term.indexOf(':') + 1);
-//                term = term.substring(1, term.indexOf(':')) + " (";
-//                term += temp.substring(0, temp.indexOf(',')) + ")";
-//                termsDictionary.put(term);
+                String line = scanner.nextLine();
+                String term = line.substring(1, line.indexOf(":"));
+                String[] info = line.substring(line.indexOf(":")).split(",");
+                ArrayList<Object> attributes = new ArrayList<>();
+                attributes.add(0, info[0]);
+                attributes.add(1, info[1]);
+                termsDictionary.put(term, attributes);
             }
             controller.setTermsDictionary(termsDictionary);
         } catch (FileNotFoundException e) {
