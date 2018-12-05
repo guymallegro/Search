@@ -66,6 +66,10 @@ public class Term {
         return sb.toString();
     }
 
+    public String toString() {
+        return amount + "," + inDocuments.size();
+    }
+
 
     public void clear() {
         inDocuments.clear();

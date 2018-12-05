@@ -74,10 +74,10 @@ public class Model {
         List<String> lines = new LinkedList<>();
         int size = sortedTerms.length;
         for (int i = 1; i < size; i++) {
+            line.append("<");
             line.append(sortedTerms[i]);
-            line.append(" (");
-            line.append(termsDictionary.get(sortedTerms[i]).get(0));
-            line.append(")");
+            line.append(";");
+            line.append(parse.getAllTerms().get(sortedTerms[i]));
             lines.add(line.toString());
             line.setLength(0);
         }
