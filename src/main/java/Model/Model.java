@@ -93,20 +93,20 @@ public class Model {
     }
 
     private void writeDocsDictionary() {
-        Object[] sortedTerms = documentsDictionary.keySet().toArray();
-        Arrays.sort(sortedTerms);
+        Object[] sortedDocuments = documentsDictionary.keySet().toArray();
+        Arrays.sort(sortedDocuments);
         StringBuilder line = new StringBuilder();
         List<String> lines = new LinkedList<>();
-        int size = sortedTerms.length;
+        int size = sortedDocuments.length;
         for (int i = 0; i < size; i++) {
             line.append("<");
-            line.append(sortedTerms[i]).append(":");
-            line.append(documentsDictionary.get(sortedTerms[i]).get(0));
+            line.append(sortedDocuments[i]).append(":");
+            line.append(documentsDictionary.get(sortedDocuments[i]).get(0));
             line.append(",");
-            line.append(documentsDictionary.get(sortedTerms[i]).get(1));
-            if (!documentsDictionary.get(sortedTerms[i]).get(2).equals("")) {
+            line.append(documentsDictionary.get(sortedDocuments[i]).get(1));
+            if (!documentsDictionary.get(sortedDocuments[i]).get(2).equals("")) {
                 line.append(",");
-                line.append(documentsDictionary.get(sortedTerms[i]).get(2));
+                line.append(documentsDictionary.get(sortedDocuments[i]).get(2));
             }
             lines.add(line.toString());
             line.setLength(0);
