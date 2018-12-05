@@ -78,12 +78,14 @@ public class View {
             Scanner scanner = new Scanner(file);
             HashMap<String, ArrayList<Object>> termsDictionary = new HashMap<>();
             while (scanner.hasNextLine()) {
-                String term = scanner.nextLine();
-                String temp = term.substring(term.indexOf(':') + 1);
-                term = term.substring(1, term.indexOf(':')) + " (";
-                term += temp.substring(0, temp.indexOf(',')) + ")";
-
-                //termsDictionary.put(term, );
+                String temp = scanner.nextLine();
+                String properties = temp.substring(temp.indexOf(':') + 1);
+                String termName = temp.substring(1, temp.indexOf(':'));
+//                String term = scanner.nextLine();
+//                String temp = term.substring(term.indexOf(':') + 1);
+//                term = term.substring(1, term.indexOf(':')) + " (";
+//                term += temp.substring(0, temp.indexOf(',')) + ")";
+//                termsDictionary.put(term);
             }
             controller.setTermsDictionary(termsDictionary);
         } catch (FileNotFoundException e) {
@@ -172,16 +174,16 @@ public class View {
         postingPath = posting;
     }
 
-        public void initializeLanguages() {
-            HashSet<String> languageList = controller.getLanguages();
-            Object[] sortedterms = languageList.toArray();
-            Arrays.sort(sortedterms);
-            for (int i = 0; i < sortedterms.length; i++) {
-                languages.getItems().add(sortedterms[i]);
-            }
-            loadDictionaries();
-            languages.setDisable(false);
-            query.setDisable(false);
+    public void initializeLanguages() {
+        HashSet<String> languageList = controller.getLanguages();
+        Object[] sortedterms = languageList.toArray();
+        Arrays.sort(sortedterms);
+        for (int i = 0; i < sortedterms.length; i++) {
+            languages.getItems().add(sortedterms[i]);
         }
+        loadDictionaries();
+        languages.setDisable(false);
+        query.setDisable(false);
+    }
 
 }
