@@ -79,8 +79,8 @@ public class View {
             HashMap<String, ArrayList<Object>> termsDictionary = new HashMap<>();
             while (scanner.hasNextLine()) {
                 String term = scanner.nextLine();
-                String temp = term.substring(term.indexOf(';') + 1);
-                term = term.substring(1, term.indexOf(';')) + " (";
+                String temp = term.substring(term.indexOf(':') + 1);
+                term = term.substring(1, term.indexOf(':')) + " (";
                 term += temp.substring(0, temp.indexOf(',')) + ")";
 
                 //termsDictionary.put(term, );
