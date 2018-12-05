@@ -48,6 +48,7 @@ public class View {
         browser.setView(this);
         controller.setStemming(stemming.isSelected());
         stage.show();
+        loadDictionaries.setDisable(false);
     }
 
     public void reset(ActionEvent actionEvent) {
@@ -188,7 +189,6 @@ public class View {
         for (int i = 0; i < sortedterms.length; i++) {
             languages.getItems().add(sortedterms[i]);
         }
-        loadDictionaries();
         languages.setDisable(false);
         query.setDisable(false);
     }
