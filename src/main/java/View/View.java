@@ -17,13 +17,10 @@ public class View {
     private Controller controller;
     private String postingPath;
     ArrayList<String> termsDictionary;
-    ArrayList<String> docsDictionary;
     ArrayList<String> citiesDictionary;
     public javafx.scene.control.Button start;
     public javafx.scene.control.Button reset;
-    public javafx.scene.control.Button loadTermsDictionary;
-    public javafx.scene.control.Button loadDocsDictionary;
-    public javafx.scene.control.Button loadCitiesDictionary;
+    public javafx.scene.control.Button loadDictionaries;
     public javafx.scene.control.Button displayTermsDictionary;
     public javafx.scene.control.TextField query;
     public javafx.scene.control.CheckBox stemming;
@@ -86,7 +83,7 @@ public class View {
                 term = term.substring(1, term.indexOf(';')) + " (";
                 term += temp.substring(0, temp.indexOf(',')) + ")";
 
-                termsDictionary.put(term, null);
+                //termsDictionary.put(term, );
             }
             controller.setTermsDictionary(termsDictionary);
         } catch (FileNotFoundException e) {
@@ -182,9 +179,7 @@ public class View {
             for (int i = 0; i < sortedterms.length; i++) {
                 languages.getItems().add(sortedterms[i]);
             }
-            loadTermsDictionary.setDisable(false);
-            loadDocsDictionary.setDisable(false);
-            loadCitiesDictionary.setDisable(false);
+            loadDictionaries();
             languages.setDisable(false);
             query.setDisable(false);
         }
