@@ -1,8 +1,8 @@
 package Controller;
 
+import Model.CityInfo;
 import Model.Model;
 import View.View;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -51,7 +51,14 @@ public class Controller {
         this.postingPath = postingPath;
     }
 
-    public void setDocsDictionary (HashMap<Integer, ArrayList<Object>> docsDictionary) { model.setDocsDictionary(docsDictionary); }
+    public void setTermsDictionary (HashMap<String, ArrayList<Object>> termsDictionary) {
+        model.setTermsDictionary(termsDictionary); }
+
+    public void setDocsDictionary (HashMap<Integer, ArrayList<Object>> docsDictionary) {
+        model.setDocsDictionary(docsDictionary); }
+
+    public void setCitiesDictionary (HashMap<String, CityInfo> citiesDictionary) {
+        model.setCitiesDictionary(citiesDictionary); }
 
     public Integer getTotalDocuments() {
         return model.getTotalDocuments();

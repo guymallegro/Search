@@ -182,27 +182,19 @@ class Indexer {
         term[2] = term[2].substring(0, term[2].indexOf('!'));
         StringBuilder ans = new StringBuilder(term[0]);
         ans.append(";");
-        String a = ans.toString();
         if (!term[1].equals(""))
             ans.append(term[1]).append(",");
-        a = ans.toString();
         String firstDoc = next.substring(next.indexOf("^") + 1, next.indexOf(";"));
         ans.append(Integer.parseInt(firstDoc) - Integer.valueOf(term[2]));
-        a = ans.toString();
         int comma = next.indexOf(",", next.indexOf(";"));
         if (comma != -1) {
             ans.append(next.substring(comma));
-            a = ans.toString();
         } else {
             String last = next.substring(next.lastIndexOf(";"), next.indexOf("!"));
             ans.append(last);
-            a = ans.toString();
-
         }
         ans.append(toWrite.substring(toWrite.indexOf("!")));
-        a = ans.toString();
         ans.append(",").append(next.substring(next.indexOf("!") + 1));
-        a = ans.toString();
         return ans;
     }
 

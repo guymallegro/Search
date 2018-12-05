@@ -76,7 +76,7 @@ public class Model {
         for (int i = 1; i < size; i++) {
             line.append("<");
             line.append(sortedTerms[i]);
-            line.append(";");
+            line.append(":");
             line.append(parse.getAllTerms().get(sortedTerms[i]));
             lines.add(line.toString());
             line.setLength(0);
@@ -95,7 +95,6 @@ public class Model {
     private void writeDocsDictionary() {
         Object[] sortedTerms = documentsDictionary.keySet().toArray();
         Arrays.sort(sortedTerms);
-        long tStart = System.currentTimeMillis();
         StringBuilder line = new StringBuilder();
         List<String> lines = new LinkedList<>();
         int size = sortedTerms.length;
@@ -121,9 +120,6 @@ public class Model {
         } catch (Exception e) {
             System.out.println("cannot write to dictionary");
         }
-        long tEnd = System.currentTimeMillis();
-        long tDelta = tEnd - tStart;
-        totalTime = tDelta / 1000.0;
     }
 
     private void writeCitiesDictionary() {
@@ -243,9 +239,19 @@ public class Model {
         parse.setStemming(selected);
     }
 
+    public void setTermsDictionary(HashMap<String, ArrayList<Object>> termsDictionary) {
+        this.termsDictionary = termsDictionary;
+    }
+
     public void setDocsDictionary(HashMap<Integer, ArrayList<Object>> docsDictionary) {
         documentsDictionary = docsDictionary;
     }
+
+    public void setCitiesDictionary(HashMap<String, CityInfo> citiesDictionary) {
+        this.citiesDictionary = citiesDictionary;
+    }
+
+
 
     private String cleanString(String str) {
         if (str.length() == 0)

@@ -1,9 +1,6 @@
 package View;
 
 import Controller.Controller;
-import Model.Model;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -62,19 +59,16 @@ public class View {
             File currentFile = new File(postingPath + "\\" + file);
             if (currentFile.delete())
                 System.out.println("Current file " + file + " is closed");
-            else // @TODO dont forget to close the posting temporary files
+            else
                 System.out.println("no deletion");
         }
         controller.resetDictionaries(true);
     }
 
-    public void setPostingPath(String posting) {
-        postingPath = posting;
-    }
-
-    public void setController(Controller controller) {
-        this.controller = controller;
-        this.controller.setView(this);
+    public void loadDictionaries() {
+        loadTermsDictionary();
+        loadDocsDictionary();
+        loadCitiesDictionary();
     }
 
     public void loadTermsDictionary() {
@@ -85,18 +79,19 @@ public class View {
         File file = new File(path);
         try {
             Scanner scanner = new Scanner(file);
+            HashMap<String, ArrayList<Object>> termsDictionary = new HashMap<>();
             while (scanner.hasNextLine()) {
                 String term = scanner.nextLine();
                 String temp = term.substring(term.indexOf(';') + 1);
                 term = term.substring(1, term.indexOf(';')) + " (";
                 term += temp.substring(0, temp.indexOf(',')) + ")";
 
-                termsDictionary.add(term);
+                termsDictionary.put(term, null);
             }
+            controller.setTermsDictionary(termsDictionary);
         } catch (FileNotFoundException e) {
             System.out.println("Cannot open the terms dictionary");
         }
-        loadTermsDictionary.setDisable(true);
         displayTermsDictionary.setDisable(false);
     }
 
@@ -125,7 +120,6 @@ public class View {
         } catch (FileNotFoundException e) {
             System.out.println("Cannot open the documents dictionary");
         }
-        loadDocsDictionary.setDisable(true);
     }
 
     public void loadCitiesDictionary() {
@@ -143,7 +137,6 @@ public class View {
         } catch (FileNotFoundException e) {
             System.out.println("Cannot open the cities dictionary");
         }
-        loadCitiesDictionary.setDisable(true);
     }
 
     public void displayTermsDictionary(ActionEvent actionEvent) {
@@ -173,18 +166,27 @@ public class View {
         stage.show();
     }
 
-    public void initializeLanguages() {
-        HashSet<String> languageList = controller.getLanguages();
-        Object[] sortedterms = languageList.toArray();
-        Arrays.sort(sortedterms);
-        for (int i = 0; i < sortedterms.length; i++) {
-            languages.getItems().add(sortedterms[i]);
-        }
-        loadTermsDictionary.setDisable(false);
-        loadDocsDictionary.setDisable(false);
-        loadCitiesDictionary.setDisable(false);
-        languages.setDisable(false);
-        query.setDisable(false);
+    public void setController(Controller controller) {
+        this.controller = controller;
+        this.controller.setView(this);
     }
+
+    public void setPostingPath(String posting) {
+        postingPath = posting;
+    }
+
+        public void initializeLanguages() {
+            HashSet<String> languageList = controller.getLanguages();
+            Object[] sortedterms = languageList.toArray();
+            Arrays.sort(sortedterms);
+            for (int i = 0; i < sortedterms.length; i++) {
+                languages.getItems().add(sortedterms[i]);
+            }
+            loadTermsDictionary.setDisable(false);
+            loadDocsDictionary.setDisable(false);
+            loadCitiesDictionary.setDisable(false);
+            languages.setDisable(false);
+            query.setDisable(false);
+        }
 
 }
