@@ -1,8 +1,4 @@
 package Model;
-
-import com.sun.org.apache.xpath.internal.operations.Mod;
-
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,7 +6,7 @@ import java.util.HashSet;
 class Parse {
     private Model model;
     private Stemmer stemmer;
-    private boolean doStemming = true; //@TODO change the name of the postfile if true
+    private boolean doStemming = true;
     private HashSet<String> stopWords;
     private HashMap<String, String> numbers;
     private HashMap<String, String> percents;

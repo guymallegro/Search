@@ -62,6 +62,7 @@ public class Term {
             sb.append(positionInDocument.get(me2.getKey()));
             sb.append(me2.getValue()).append(",");
         }
+        sb.deleteCharAt(sb.toString().length() - 1);
         return sb.toString();
     }
 

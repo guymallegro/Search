@@ -46,7 +46,7 @@ class Indexer {
             }
             line.deleteCharAt(line.toString().length() - 1);
             line.append(";").append((int) documentsOfTerm[size - 1]);
-            line.append(";");
+            line.append("!");
             line.append(allTerms.get(sortedTerm).getAmountInDocuments());
             lines.add(line.toString());
             line.setLength(0);
@@ -172,23 +172,37 @@ class Indexer {
             ans.append(line.substring(line.lastIndexOf(";") + 1));
         else
             ans.append(temp);
+        ans.append(" (");
+        ans.append(line.substring(line.indexOf("!") + 1)).append(")");
         return ans;
     }
 
     private StringBuilder calculateGaps(String toWrite, String next) {
         String[] term = toWrite.split(";");
+        term[2] = term[2].substring(0, term[2].indexOf('!'));
         StringBuilder ans = new StringBuilder(term[0]);
         ans.append(";");
+        String a = ans.toString();
         if (!term[1].equals(""))
             ans.append(term[1]).append(",");
+        a = ans.toString();
         String firstDoc = next.substring(next.indexOf("^") + 1, next.indexOf(";"));
         ans.append(Integer.parseInt(firstDoc) - Integer.valueOf(term[2]));
+        a = ans.toString();
         int comma = next.indexOf(",", next.indexOf(";"));
         if (comma != -1) {
             ans.append(next.substring(comma));
+            a = ans.toString();
         } else {
-            ans.append(next.substring(next.lastIndexOf(";")));
+            String last = next.substring(next.lastIndexOf(";"), next.indexOf("!"));
+            ans.append(last);
+            a = ans.toString();
+
         }
+        ans.append(toWrite.substring(toWrite.indexOf("!")));
+        a = ans.toString();
+        ans.append(",").append(next.substring(next.indexOf("!") + 1));
+        a = ans.toString();
         return ans;
     }
 
