@@ -188,7 +188,6 @@ public class Model {
                     parse.parseDocument(doc);
                 }
                 index();
-                documents.clear();
                 nomOfDocs = 11800;
             }
         }
@@ -225,6 +224,8 @@ public class Model {
     private void index() {
         indexer.addAllTerms(postingPathDestination);
         indexer.addAllDocuments();
+        parse.getAllTerms().clear();
+        documents.clear();
     }
 
     void finishReading() {
