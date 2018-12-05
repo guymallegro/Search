@@ -1,5 +1,4 @@
 package Model;
-
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -104,9 +103,11 @@ public class Model {
             line.append(documentsDictionary.get(sortedDocuments[i]).get(0));
             line.append(",");
             line.append(documentsDictionary.get(sortedDocuments[i]).get(1));
-            if (!documentsDictionary.get(sortedDocuments[i]).get(2).equals("")) {
+            line.append(",");
+            line.append(documentsDictionary.get(sortedDocuments[i]).get(2));
+            if (!documentsDictionary.get(sortedDocuments[i]).get(3).equals("")) {
                 line.append(",");
-                line.append(documentsDictionary.get(sortedDocuments[i]).get(2));
+                line.append(documentsDictionary.get(sortedDocuments[i]).get(3));
             }
             lines.add(line.toString());
             line.setLength(0);

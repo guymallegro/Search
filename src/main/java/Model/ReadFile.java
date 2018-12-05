@@ -1,19 +1,19 @@
 package Model;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Scanner;
 
+/*
+This class responsible to
+ */
 public class ReadFile {
     private Model model;
     private File currentFile;
     private String allFiles;
-    private ArrayList<Document> documents;
 
     public ReadFile(Model model) {
         this.model = model;
-        documents = new ArrayList<>();
     }
 
     public void readFile(String path, boolean onlyCities) {
