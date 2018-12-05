@@ -87,6 +87,10 @@ public class View {
             Scanner scanner = new Scanner(file);
             while (scanner.hasNextLine()) {
                 String term = scanner.nextLine();
+                String temp = term.substring(term.indexOf(';') + 1);
+                term = term.substring(1, term.indexOf(';')) + " (";
+                term += temp.substring(0, temp.indexOf(',')) + ")";
+
                 termsDictionary.add(term);
             }
         } catch (FileNotFoundException e) {
