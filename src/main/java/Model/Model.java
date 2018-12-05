@@ -77,7 +77,7 @@ public class Model {
             line.append("<");
             line.append(sortedTerms[i]);
             line.append(":");
-            line.append(parse.getAllTerms().get(sortedTerms[i]));
+            line.append(termsDictionary.get(sortedTerms[i]).get(0)).append(",").append(termsDictionary.get(sortedTerms[i]).get(1));
             lines.add(line.toString());
             line.setLength(0);
         }

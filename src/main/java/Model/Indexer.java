@@ -216,6 +216,7 @@ class Indexer {
             model.getTermsDictionary().get(term).set(0, numOfDocuments + allTerms.get(term).getInDocuments().length);
         } else {
             ArrayList<Object> attributes = new ArrayList<>();
+            attributes.add(allTerms.get(term).getAmount());
             attributes.add(allTerms.get(term).getInDocuments().length);
             attributes.add(path);
             model.getTermsDictionary().put(term, attributes);
