@@ -10,6 +10,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -18,9 +19,9 @@ import java.util.*;
 public class View {
     private Controller controller;
     private String postingPath;
-    ArrayList <String> termsDictionary;
-    ArrayList <String> docsDictionary;
-    ArrayList <String> citiesDictionary;
+    ArrayList<String> termsDictionary;
+    ArrayList<String> docsDictionary;
+    ArrayList<String> citiesDictionary;
     public javafx.scene.control.Button start;
     public javafx.scene.control.Button reset;
     public javafx.scene.control.Button loadTermsDictionary;
@@ -50,7 +51,7 @@ public class View {
         browser browser = myLoader.getController();
         browser.setController(controller);
         browser.setView(this);
-        controller.setStemming (stemming.isSelected());
+        controller.setStemming(stemming.isSelected());
         stage.show();
     }
 
@@ -64,17 +65,19 @@ public class View {
             else // @TODO dont forget to close the posting temporary files
                 System.out.println("no deletion");
         }
-        controller.resetDictionaries();
+        controller.resetDictionaries(true);
     }
 
-    public void setPostingPath (String posting){ postingPath = posting; }
+    public void setPostingPath(String posting) {
+        postingPath = posting;
+    }
 
     public void setController(Controller controller) {
         this.controller = controller;
         this.controller.setView(this);
     }
 
-    public void loadTermsDictionary () {
+    public void loadTermsDictionary() {
         termsDictionary = new ArrayList<>();
         String path = postingPath + "/termsDictionary.txt";
         if (stemming.isSelected())
@@ -93,7 +96,7 @@ public class View {
         displayTermsDictionary.setDisable(false);
     }
 
-    public void loadDocsDictionary () {
+    public void loadDocsDictionary() {
         String path = postingPath + "/documentsDictionary.txt";
         if (stemming.isSelected())
             path = postingPath + "/documentsDictionaryWithStemming.txt";
@@ -104,7 +107,7 @@ public class View {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
                 int docIndex = Integer.parseInt(line.substring(1, line.indexOf(":")));
-                String [] info = line.substring(line.indexOf(":")).split(",");
+                String[] info = line.substring(line.indexOf(":")).split(",");
                 ArrayList<Object> attributes = new ArrayList<>();
                 attributes.add(0, info[0]);
                 attributes.add(1, info[1]);
@@ -121,7 +124,7 @@ public class View {
         loadDocsDictionary.setDisable(true);
     }
 
-    public void loadCitiesDictionary () {
+    public void loadCitiesDictionary() {
         citiesDictionary = new ArrayList<>();
         String path = postingPath + "/postCities.txt";
         if (stemming.isSelected())
@@ -158,7 +161,7 @@ public class View {
         dic.setView(this);
         StringBuilder lines = new StringBuilder();
         int size = termsDictionary.size();
-        for (int i = 0; i < size; i ++) {
+        for (int i = 0; i < size; i++) {
             lines.append(termsDictionary.get(i));
             lines.append("\n");
         }
@@ -166,11 +169,11 @@ public class View {
         stage.show();
     }
 
-    public void initializeLanguages (){
-        HashSet <String> languageList = controller.getLanguages();
+    public void initializeLanguages() {
+        HashSet<String> languageList = controller.getLanguages();
         Object[] sortedterms = languageList.toArray();
         Arrays.sort(sortedterms);
-        for (int i = 0; i < sortedterms.length; i ++) {
+        for (int i = 0; i < sortedterms.length; i++) {
             languages.getItems().add(sortedterms[i]);
         }
         loadTermsDictionary.setDisable(false);

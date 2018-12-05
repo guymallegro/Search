@@ -45,7 +45,7 @@ public class CityInfo {
     }
 
     public String toString() {
-        return "population " + population + ", currency " + currency;
+        return countryName + "," + currency + "," + population;
     }
 
     public HashMap<Integer, String> getLocationsInDocuments() {

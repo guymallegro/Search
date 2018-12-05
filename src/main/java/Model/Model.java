@@ -45,7 +45,7 @@ public class Model {
 
     public void readFiles(String filesPath, String stopWordsPath, String postingpath) {
         indexer.initCurrentPostFile();
-        resetDictionaries();
+        resetDictionaries(false);
         document.initialize();
         postingPathDestination = postingpath;
         long tStart = System.currentTimeMillis();
@@ -56,10 +56,10 @@ public class Model {
         indexer.mergeAllPostFiles();
         termsAmount = termsDictionary.size();
         documentsAmount = documentsDictionary.size();
+        writeTermsDictionary();
+        writeDocsDictionary();
+        writeCitiesDictionary();
         parse.getAllTerms().clear();
-        writeTermsDictionary ();
-        writeDocsDictionary ();
-        writeCitiesDictionary ();
         System.out.println("--------------------------------------");
         System.out.println("-----------------Complete-------------");
         long tEnd = System.currentTimeMillis();
@@ -127,22 +127,19 @@ public class Model {
     }
 
     private void writeCitiesDictionary() {
-        Object[] sortedTerms = termsDictionary.keySet().toArray();
-        Arrays.sort(sortedTerms);
+        Object[] sortedCities = citiesDictionary.keySet().toArray();
+        Arrays.sort(sortedCities);
         StringBuilder line = new StringBuilder();
         List<String> lines = new LinkedList<>();
-        int size = sortedTerms.length;
+        int size = sortedCities.length;
         for (int i = 1; i < size; i++) {
-            line.append(sortedTerms[i]);
-            line.append(" (");
-            line.append(termsDictionary.get(sortedTerms[i]).get(0));
-            line.append(")");
+            line.append("<");
+            line.append(sortedCities[i]).append(":");
+            line.append(citiesDictionary.get(sortedCities[i]));
             lines.add(line.toString());
             line.setLength(0);
         }
-        String path = postingPathDestination + "/termsDictionary.txt";
-        if (isStemming)
-            path = postingPathDestination + "/termsDictionaryWithStemming.txt";
+        String path = postingPathDestination + "/citiesDictionary.txt";
         Path file = Paths.get(path);
         try {
             Files.write(file, lines, Charset.forName("UTF-8"));
@@ -228,7 +225,6 @@ public class Model {
     private void index() {
         indexer.addAllTerms(postingPathDestination);
         indexer.addAllDocuments();
-        parse.getAllTerms().clear();
     }
 
     void finishReading() {
@@ -238,7 +234,6 @@ public class Model {
         index();
         indexer.addAllCities(postingPathDestination);
         indexer.addAllDocuments();
-        System.out.println(totalAmountOfDocs);
     }
 
     public void setStemming(boolean selected) {
@@ -247,7 +242,9 @@ public class Model {
         parse.setStemming(selected);
     }
 
-    public void setDocsDictionary (HashMap<Integer, ArrayList<Object>> docsDictionary) {documentsDictionary = docsDictionary;}
+    public void setDocsDictionary(HashMap<Integer, ArrayList<Object>> docsDictionary) {
+        documentsDictionary = docsDictionary;
+    }
 
     private String cleanString(String str) {
         if (str.length() == 0)
@@ -273,23 +270,38 @@ public class Model {
         return str;
     }
 
-    public HashSet<String> getLanguages() { return languages; }
-
-    public HashMap<String, ArrayList<Object>> getTermsDictionary() { return termsDictionary; }
-
-    public HashMap<Integer, ArrayList<Object>> getDocsDictionary() { return documentsDictionary; }
-
-    public HashMap<String, CityInfo> getCitiesDictionary() { return citiesDictionary; }
-
-    public void resetDictionaries() {
-        termsDictionary.clear();
-        documentsDictionary.clear();
-        citiesDictionary.clear();
+    public HashSet<String> getLanguages() {
+        return languages;
     }
 
-    public Integer getTotalDocuments() { return documentsAmount; }
+    public HashMap<String, ArrayList<Object>> getTermsDictionary() {
+        return termsDictionary;
+    }
 
-    public Integer getTotalTerms() { return termsAmount; }
+    public HashMap<Integer, ArrayList<Object>> getDocsDictionary() {
+        return documentsDictionary;
+    }
 
-    public Double getTotalTime() { return totalTime; }
+    public HashMap<String, CityInfo> getCitiesDictionary() {
+        return citiesDictionary;
+    }
+
+    public void resetDictionaries(boolean resetCities) {
+        termsDictionary.clear();
+        documentsDictionary.clear();
+        if (resetCities)
+            citiesDictionary.clear();
+    }
+
+    public Integer getTotalDocuments() {
+        return documentsAmount;
+    }
+
+    public Integer getTotalTerms() {
+        return termsAmount;
+    }
+
+    public Double getTotalTime() {
+        return totalTime;
+    }
 }

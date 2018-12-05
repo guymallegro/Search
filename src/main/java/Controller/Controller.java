@@ -19,8 +19,8 @@ public class Controller {
         model = new Model();
     }
 
-    public void resetDictionaries() {
-        model.resetDictionaries();
+    public void resetDictionaries(boolean resetCities) {
+        model.resetDictionaries(resetCities);
     }
 
     public void readFiles() {
