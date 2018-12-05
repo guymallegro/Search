@@ -6,6 +6,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
+
 import java.io.File;
 
 
@@ -51,13 +52,15 @@ public class browser {
             myController.setStopWordsPath(corpusPath.getText() + "\\stop_words.txt");
             myController.setPostingPath(postingPath.getText());
             myView.setPostingPath(postingPath.getText());
-            Stage window = (Stage)((Node)actionEvent.getSource()).getScene().getWindow();
-            window.close();
+            Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
             myController.readFiles();
             myView.initializeLanguages();
-            myView.reset.setDisable(false);
+            showFinishMessage();
+            window.close();
+
         }
     }
+
 
     public void showAlert(String property) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -66,16 +69,20 @@ public class browser {
     }
 
     private void showFinishMessage() {
-        String property = "Documents : " + myController.getTotalDocuments() + ", terms : " + myController.getTotalTerms() + ", time : " + myController.getTotalTime() + " seconds";
+        String property = "Documents : " + myController.getTotalDocuments() + ", terms : " + myController.getTotalTerms() + "\ntime : " + myController.getTotalTime() + " seconds";
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setContentText(property);
         alert.showAndWait();
 
     }
 
-    public void setView(View view) { myView = view; }
+    public void setView(View view) {
+        myView = view;
+    }
 
-    public void setController(Controller controller) { myController = controller; }
+    public void setController(Controller controller) {
+        myController = controller;
+    }
 
 }
 
