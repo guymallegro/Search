@@ -54,7 +54,6 @@ public class CityInfo {
     }
 
     private void parsePopulation() {
-        System.out.println("Before : " + population);
         Character remember;
         if (population.length() > 9) {
             double newPopulation = (Double.parseDouble(population)) / 1000000000;

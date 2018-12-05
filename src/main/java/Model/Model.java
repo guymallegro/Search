@@ -1,4 +1,5 @@
 package Model;
+
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -173,7 +174,7 @@ public class Model {
             startTagIndex = document.indexOf("<F P=104>");
             endTagIndex = document.indexOf("</F>", startTagIndex);
             if (startTagIndex != -1 && endTagIndex != -1)
-                currentDocument.setCity(document.substring(startTagIndex + 9, endTagIndex));
+                currentDocument.setCity(getFirstWord(document.substring(startTagIndex + 9, endTagIndex)));
             startTagIndex = document.indexOf("<F P=105>");
             endTagIndex = document.indexOf("</F>", startTagIndex);
             if (startTagIndex != -1 && endTagIndex != -1) {
@@ -204,20 +205,26 @@ public class Model {
     }
 
     private void addCityToDictionary(String city) {
-        if (city.contains(" ")) {
-            int counter;
-            for (counter = 0; counter < city.length(); counter++) {
-                if (city.charAt(counter) != ' ')
-                    break;
-            }
-            city = city.substring(counter);
-            city = city.substring(0, city.indexOf(' '));
-        }
+        city = getFirstWord(city);
         if (city.length() > 1 && !stopWords.contains(city)) {
             if (!citiesDictionary.containsKey(city) && !stopWords.contains(city.toLowerCase())) {
                 citiesDictionary.put(city, cityChecker.getCityInfo(city));
             }
         }
+    }
+
+    private String getFirstWord(String str) {
+        String ans = "";
+        if (str.contains(" ")) {
+            int counter;
+            for (counter = 0; counter < str.length(); counter++) {
+                if (str.charAt(counter) != ' ')
+                    break;
+            }
+            ans = str.substring(counter);
+            ans = ans.substring(0, ans.indexOf(' '));
+        }
+        return ans;
     }
 
     private void index() {
@@ -253,7 +260,6 @@ public class Model {
     public void setCitiesDictionary(HashMap<String, CityInfo> citiesDictionary) {
         this.citiesDictionary = citiesDictionary;
     }
-
 
 
     private String cleanString(String str) {
