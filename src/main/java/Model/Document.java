@@ -7,6 +7,7 @@ public class Document {
     private int indexId;
     public static int documentsAmount = 1;
     private int max_tf;
+    private int length;
     private HashMap<Term, Integer> textTerms;
     private HashMap<String, String> cities;
     private String date;
@@ -93,9 +94,16 @@ public class Document {
         return indexId;
     }
 
-    public void initialize (){
+    public void initialize() {
         documentsAmount = 1;
         indexId = documentsAmount;
     }
 
+    public int getLength() {
+        return length;
+    }
+
+    public void setLength(int length) {
+        this.length = length;
+    }
 }

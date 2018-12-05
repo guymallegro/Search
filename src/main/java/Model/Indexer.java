@@ -135,17 +135,16 @@ class Indexer {
                     //      changePostFile(toWrite.charAt(1));
                 }
                 String current = toWrite.toString().substring(1, toWrite.toString().indexOf('^'));
-                if (Character.isUpperCase(current.charAt(0))){
+                if (Character.isUpperCase(current.charAt(0))) {
                     if (model.getTermsDictionary().containsKey(current.toLowerCase())) {
                         capitalLetters.put(current.toLowerCase(), toWrite.toString().toLowerCase());
-                        int toAdd = (int)model.getTermsDictionary().get(current).get(0);
-                        int amount = (int)model.getTermsDictionary().get(current.toLowerCase()).get(0);
+                        int toAdd = (int) model.getTermsDictionary().get(current).get(0);
+                        int amount = (int) model.getTermsDictionary().get(current.toLowerCase()).get(0);
                         model.getTermsDictionary().get(current.toLowerCase()).set(0, amount + toAdd);
                         model.getTermsDictionary().remove(current);
                         toWrite.setLength(0);
                     }
-                }
-                else if (Character.isLowerCase(current.charAt(0))){
+                } else if (Character.isLowerCase(current.charAt(0))) {
                     if (capitalLetters.containsKey(current))
                         toWrite = calculateGaps(capitalLetters.get(current), toWrite.toString());
                 }
@@ -162,7 +161,7 @@ class Indexer {
         out.close();
     }
 
-    private StringBuilder lastLineVersion (String line){
+    private StringBuilder lastLineVersion(String line) {
         StringBuilder ans = new StringBuilder();
         if (line.length() == 0)
             return ans;
@@ -219,14 +218,15 @@ class Indexer {
 
     void addAllDocuments() {
         int size = documents.size();
-        for (int i = 0; i < size; i ++) {
+        for (int i = 0; i < size; i++) {
             ArrayList<Object> attributes = new ArrayList<>();
             attributes.add(0, documents.get(i).getMax_tf());
             attributes.add(1, documents.get(i).getTextTerms().size());
+            attributes.add(2, documents.get(i).getLength());
             if (documents.get(i).getCity() != null)
-                attributes.add(2, documents.get(i).getCity());
+                attributes.add(3, documents.get(i).getCity());
             else
-                attributes.add(2, "");
+                attributes.add(3, "");
             model.getDocsDictionary().put(documents.get(i).getIndexId(), attributes);
         }
         documents.clear();
@@ -266,7 +266,11 @@ class Indexer {
         }
     }
 
-    public void initCurrentPostFile() { currentPostFile = 0; }
+    public void initCurrentPostFile() {
+        currentPostFile = 0;
+    }
 
-    public void setStemming(boolean stemming) { isStemming = stemming; }
+    public void setStemming(boolean stemming) {
+        isStemming = stemming;
+    }
 }
