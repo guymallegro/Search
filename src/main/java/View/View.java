@@ -141,7 +141,7 @@ public class View {
             }
             controller.setCitiesDictionary(citiesDictionary);
         } catch (FileNotFoundException e) {
-            System.out.println("Cannot open the documents dictionary");
+            System.out.println("Cannot open the city dictionary");
         }
     }
 

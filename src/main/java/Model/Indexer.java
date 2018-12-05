@@ -247,23 +247,23 @@ class Indexer {
             path += "/postCities.txt";
         Path file = Paths.get(path);
         ArrayList<String> toPrint = new ArrayList<>();
-        Object[] sortedTerms = model.getCitiesDictionary().keySet().toArray();
-        Arrays.sort(sortedTerms);
-        int size = sortedTerms.length;
+        Object[] sortedCities = model.getCitiesDictionary().keySet().toArray();
+        Arrays.sort(sortedCities);
+        int size = sortedCities.length;
         for (int i = 0; i < size; i++) {
-            String key = (String) sortedTerms[i];
+            String key = (String) sortedCities[i];
             String value = "";
             if (model.getCitiesDictionary().get(key).getCurrency() != null && model.getCitiesDictionary().get(key).getLocationsInDocuments().size() == 0) {
-                model.getCitiesDictionary().put(key, null);
+                model.getCitiesDictionary().remove(key);
                 continue;
             } else {
                 Iterator it = model.getCitiesDictionary().get(key).getLocationsInDocuments().entrySet().iterator();
                 while (it.hasNext()) {
                     Map.Entry pair = (Map.Entry) it.next();
-                    value += pair.getKey() + " [ " + pair.getValue() + "]";
+                    value += pair.getKey() + "(" + pair.getValue() + ")";
                     it.remove();
                 }
-                toPrint.add(key + " " + value);
+                toPrint.add("<" + key + ": " + value);
             }
         }
         try {
