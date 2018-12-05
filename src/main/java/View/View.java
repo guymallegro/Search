@@ -1,5 +1,6 @@
 package View;
 
+import Model.CityInfo;
 import Controller.Controller;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
@@ -120,19 +121,26 @@ public class View {
     }
 
     public void loadCitiesDictionary() {
-        citiesDictionary = new ArrayList<>();
-        String path = postingPath + "/postCities.txt";
+        String path = postingPath + "/citiesDictionary.txt";
         if (stemming.isSelected())
-            path = postingPath + "/postCitiesWithStemming.txt";
+            path = postingPath + "/citiesDictionaryWithStemming.txt";
         File file = new File(path);
         try {
             Scanner scanner = new Scanner(file);
+            HashMap<String, CityInfo> citiesDictionary = new HashMap<>();
             while (scanner.hasNextLine()) {
-                String term = scanner.nextLine();
-                citiesDictionary.add(term);
+                String line = scanner.nextLine();
+                String[] info = line.substring(line.indexOf(":")).split(",");
+                String city = line.substring(1, line.indexOf(":"));
+                CityInfo cityInfo = new CityInfo(city);
+                cityInfo.setCountryName(info[0]);
+                cityInfo.setCurrency(info[1]);
+                cityInfo.setPopulation(info[2]);
+                citiesDictionary.put(city, cityInfo);
             }
+            controller.setCitiesDictionary(citiesDictionary);
         } catch (FileNotFoundException e) {
-            System.out.println("Cannot open the cities dictionary");
+            System.out.println("Cannot open the documents dictionary");
         }
     }
 

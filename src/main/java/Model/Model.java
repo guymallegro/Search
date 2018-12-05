@@ -136,6 +136,8 @@ public class Model {
             line.setLength(0);
         }
         String path = postingPathDestination + "/citiesDictionary.txt";
+        if (isStemming)
+            path = postingPathDestination + "/citiesDictionaryWithStemming.txt";
         Path file = Paths.get(path);
         try {
             Files.write(file, lines, Charset.forName("UTF-8"));

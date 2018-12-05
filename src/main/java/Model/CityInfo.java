@@ -52,4 +52,20 @@ public class CityInfo {
         return locationsInDocuments;
     }
 
+    public void setCityName(String cityName) {
+        this.cityName = cityName;
+    }
+
+    public void setCountryName(String countryName) {
+        this.countryName = countryName;
+    }
+
+    public void setPopulation(String population) {
+        this.population = population;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
 }

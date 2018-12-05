@@ -69,9 +69,4 @@ public class Term {
     public String toString() {
         return amount + "," + inDocuments.size();
     }
-
-
-    public void clear() {
-        inDocuments.clear();
-    }
 }
