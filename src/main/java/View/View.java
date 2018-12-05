@@ -17,11 +17,15 @@ import java.util.*;
 public class View {
     private Controller controller;
     private String postingPath;
-    ArrayList <String> dictionary;
+    ArrayList <String> termsDictionary;
+    ArrayList <String> docsDictionary;
+    ArrayList <String> citiesDictionary;
     public javafx.scene.control.Button start;
     public javafx.scene.control.Button reset;
-    public javafx.scene.control.Button displayDictionary;
-    public javafx.scene.control.Button loadDictionary;
+    public javafx.scene.control.Button loadTermsDictionary;
+    public javafx.scene.control.Button loadDocsDictionary;
+    public javafx.scene.control.Button loadCitiesDictionary;
+    public javafx.scene.control.Button displayTermsDictionary;
     public javafx.scene.control.TextField query;
     public javafx.scene.control.CheckBox stemming;
     public javafx.scene.control.ComboBox languages;
@@ -69,8 +73,8 @@ public class View {
         this.controller.setView(this);
     }
 
-    public void loadDictionary () {
-        dictionary = new ArrayList<>();
+    public void loadTermsDictionary () {
+        termsDictionary = new ArrayList<>();
         String path = postingPath + "/termsDictionary.txt";
         if (stemming.isSelected())
             path = postingPath + "/termsDictionaryWithStemming.txt";
@@ -79,16 +83,52 @@ public class View {
             Scanner scanner = new Scanner(file);
             while (scanner.hasNextLine()) {
                 String term = scanner.nextLine();
-                dictionary.add(term);
+                termsDictionary.add(term);
             }
         } catch (FileNotFoundException e) {
             System.out.println("Cannot open the terms dictionary");
         }
-        loadDictionary.setDisable(true);
-        displayDictionary.setDisable(false);
+        loadTermsDictionary.setDisable(true);
+        displayTermsDictionary.setDisable(false);
     }
 
-    public void displayDictionary(ActionEvent actionEvent) {
+    public void loadDocsDictionary () {
+        docsDictionary = new ArrayList<>();
+        String path = postingPath + "/postDocuments.txt";
+        if (stemming.isSelected())
+            path = postingPath + "/postDocumentsWithStemming.txt";
+        File file = new File(path);
+        try {
+            Scanner scanner = new Scanner(file);
+            while (scanner.hasNextLine()) {
+                String term = scanner.nextLine();
+                docsDictionary.add(term);
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("Cannot open the documents dictionary");
+        }
+        loadDocsDictionary.setDisable(true);
+    }
+
+    public void loadCitiesDictionary () {
+        citiesDictionary = new ArrayList<>();
+        String path = postingPath + "/postCities.txt";
+        if (stemming.isSelected())
+            path = postingPath + "/postCitiesWithStemming.txt";
+        File file = new File(path);
+        try {
+            Scanner scanner = new Scanner(file);
+            while (scanner.hasNextLine()) {
+                String term = scanner.nextLine();
+                citiesDictionary.add(term);
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("Cannot open the cities dictionary");
+        }
+        loadCitiesDictionary.setDisable(true);
+    }
+
+    public void displayTermsDictionary(ActionEvent actionEvent) {
         Parent root = null;
         FXMLLoader myLoader = new FXMLLoader();
         try {
@@ -104,10 +144,15 @@ public class View {
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setTitle("Start");
         Dictionary dic = myLoader.getController();
-        dic.setDictionary(dictionary);
         dic.setView(this);
+        StringBuilder lines = new StringBuilder();
+        int size = termsDictionary.size();
+        for (int i = 0; i < size; i ++) {
+            lines.append(termsDictionary.get(i));
+            lines.append("\n");
+        }
+        dic.displayDictionary(size, lines.toString());
         stage.show();
-        dic.displayDictionary();
     }
 
     public void initializeLanguages (){
@@ -117,7 +162,9 @@ public class View {
         for (int i = 0; i < sortedterms.length; i ++) {
             languages.getItems().add(sortedterms[i]);
         }
-        loadDictionary.setDisable(false);
+        loadTermsDictionary.setDisable(false);
+        loadDocsDictionary.setDisable(false);
+        loadCitiesDictionary.setDisable(false);
         languages.setDisable(false);
         query.setDisable(false);
     }

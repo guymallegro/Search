@@ -6,7 +6,6 @@ import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
-
 import java.io.File;
 
 
@@ -52,12 +51,11 @@ public class browser {
             myController.setStopWordsPath(corpusPath.getText() + "\\stop_words");
             myController.setPostingPath(postingPath.getText());
             myView.setPostingPath(postingPath.getText());
-            Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+            Stage window = (Stage)((Node)actionEvent.getSource()).getScene().getWindow();
+            window.close();
             myController.readFiles();
             myView.initializeLanguages();
-            showFinishMessage();
-            window.close();
-
+            myView.reset.setVisible(true);
         }
     }
 
@@ -75,13 +73,9 @@ public class browser {
 
     }
 
-    public void setView(View view) {
-        myView = view;
-    }
+    public void setView(View view) { myView = view; }
 
-    public void setController(Controller controller) {
-        myController = controller;
-    }
+    public void setController(Controller controller) { myController = controller; }
 
 }
 

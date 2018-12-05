@@ -54,13 +54,17 @@ public class Model {
         termsAmount = termsDictionary.size();
         documentsAmount = documentsDictionary.size();
         parse.getAllTerms().clear();
-        writeDictionary();
+        writeTermsDictionary ();
+        writeDocsDictionary ();
+        writeCitiesDictionary ();
+        System.out.println("--------------------------------------");
+        System.out.println("-----------------Complete-------------");
         long tEnd = System.currentTimeMillis();
         long tDelta = tEnd - tStart;
         totalTime = tDelta / 1000.0;
     }
 
-    private void writeDictionary() {
+    private void writeTermsDictionary() {
         Object[] sortedTerms = termsDictionary.keySet().toArray();
         Arrays.sort(sortedTerms);
         StringBuilder line = new StringBuilder();
@@ -83,7 +87,68 @@ public class Model {
         } catch (Exception e) {
             System.out.println("cannot write to dictionary");
         }
-        termsDictionary.clear();
+    }
+
+    private void writeDocsDictionary() {
+        Object[] sortedTerms = documentsDictionary.keySet().toArray();
+        Arrays.sort(sortedTerms);
+        long tStart = System.currentTimeMillis();
+        StringBuilder line = new StringBuilder();
+        List<String> lines = new LinkedList<>();
+        int size = sortedTerms.length;
+        for (int i = 1; i < size; i++) {
+            line.append(sortedTerms[i]).append(": ");
+            line.append("maxTF: ");
+            line.append(documentsDictionary.get(i).get(0));
+            line.append(", terms: ");
+            line.append(documentsDictionary.get(i).get(1));
+            line.append(", city:");
+            line.append(documentsDictionary.get(i).get(2));
+            lines.add(line.toString());
+            line.setLength(0);
+        }
+        String path = postingPathDestination + "/documentsDictionary.txt";
+        if (isStemming)
+            path = postingPathDestination + "/documentsDictionaryWithStemming.txt";
+        Path file = Paths.get(path);
+        try {
+            Files.write(file, lines, Charset.forName("UTF-8"));
+        } catch (Exception e) {
+            System.out.println("cannot write to dictionary");
+        }
+        long tEnd = System.currentTimeMillis();
+        long tDelta = tEnd - tStart;
+        totalTime = tDelta / 1000.0;
+    }
+
+    private void writeCitiesDictionary() {
+        Object[] sortedTerms = termsDictionary.keySet().toArray();
+        Arrays.sort(sortedTerms);
+        StringBuilder line = new StringBuilder();
+        List<String> lines = new LinkedList<>();
+        int size = sortedTerms.length;
+        for (int i = 1; i < size; i++) {
+            line.append(sortedTerms[i]);
+            line.append(" (");
+            line.append(termsDictionary.get(sortedTerms[i]).get(0));
+            line.append(")");
+            lines.add(line.toString());
+            line.setLength(0);
+        }
+        String path = postingPathDestination + "/termsDictionary.txt";
+        if (isStemming)
+            path = postingPathDestination + "/termsDictionaryWithStemming.txt";
+        Path file = Paths.get(path);
+        try {
+            Files.write(file, lines, Charset.forName("UTF-8"));
+        } catch (Exception e) {
+            System.out.println("cannot write to dictionary");
+        }
+    }
+
+    private void printCities(Object[] cities) {
+        for (int i = 0; i < cities.length; i++)
+            System.out.println(cities[i] + " : " + citiesDictionary.get(cities[i]));
     }
 
     void processFile(String fileAsString) {
@@ -172,8 +237,9 @@ public class Model {
             parse.parseDocument(documents.get(i));
         index();
         indexer.addAllCities(postingPathDestination);
-        documents.clear();
+        indexer.addAllDocuments();
         System.out.println(totalAmountOfDocs);
+        documents.clear();
     }
 
     public void setStemming(boolean selected) {
@@ -206,13 +272,9 @@ public class Model {
         return str;
     }
 
-    public HashSet<String> getLanguages() {
-        return languages;
-    }
+    public HashSet<String> getLanguages() { return languages; }
 
-    public static HashMap<String, ArrayList<Object>> getTermsDictionary() {
-        return termsDictionary;
-    }
+    public static HashMap<String, ArrayList<Object>> getTermsDictionary() { return termsDictionary; }
 
     public void resetDictionaries() {
         termsDictionary.clear();

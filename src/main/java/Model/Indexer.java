@@ -209,32 +209,35 @@ class Indexer {
     }
 
     void addAllDocuments() {
-        for (Document doc : documents) {
+        int size = documents.size();
+        for (int i = 0; i < size; i ++) {
             ArrayList<Object> attributes = new ArrayList<>();
-            attributes.add(0, doc.getMax_tf());
-            attributes.add(1, doc.getTextTerms().size());
-            attributes.add(2, doc.getCity());
-            Model.documentsDictionary.put(doc.getIndexId(), attributes);
+            attributes.add(0, documents.get(i).getMax_tf());
+            attributes.add(1, documents.get(i).getTextTerms().size());
+            attributes.add(2, documents.get(i).getCity());
+            Model.documentsDictionary.put(documents.get(i).getIndexId(), attributes);
         }
-    }
-
-    public void setStemming(boolean stemming) {
-        isStemming = stemming;
     }
 
     public void addAllCities(String path) {
         postingPath = path;
-        path += "/postCities.txt";
+        if (isStemming)
+            path += "/postCitiesWithStemming.txt";
+        else
+            path += "/postCities.txt";
         Path file = Paths.get(path);
         ArrayList<String> toPrint = new ArrayList<>();
-        for (String name : Model.citiesDictionary.keySet()) {
-            String key = name;
+        Object[] sortedTerms = Model.citiesDictionary.keySet().toArray();
+        Arrays.sort(sortedTerms);
+        int size = sortedTerms.length;
+        for (int i = 0; i < size; i++) {
+            String key = (String) sortedTerms[i];
             String value = "";
-            if (Model.citiesDictionary.get(name).getCurrency() != null && Model.citiesDictionary.get(name).getLocationsInDocuments().size() == 0) {
-                Model.citiesDictionary.put(name, null);
+            if (Model.citiesDictionary.get(key).getCurrency() != null && Model.citiesDictionary.get(key).getLocationsInDocuments().size() == 0) {
+                Model.citiesDictionary.put(key, null);
                 continue;
             } else {
-                Iterator it = Model.citiesDictionary.get(name).getLocationsInDocuments().entrySet().iterator();
+                Iterator it = Model.citiesDictionary.get(key).getLocationsInDocuments().entrySet().iterator();
                 while (it.hasNext()) {
                     Map.Entry pair = (Map.Entry) it.next();
                     value += pair.getKey() + " [ " + pair.getValue() + "]";
@@ -249,4 +252,6 @@ class Indexer {
             System.out.println("cannot write");
         }
     }
+
+    public void setStemming(boolean stemming) { isStemming = stemming; }
 }
