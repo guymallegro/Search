@@ -6,8 +6,8 @@ import java.util.HashSet;
 class Parse {
     private Model model;
     private Stemmer stemmer;
-    private boolean doStemming = true;
     private HashSet<String> stopWords;
+    private boolean doStemming = true;
     private HashMap<String, String> numbers;
     private HashMap<String, String> percents;
     private HashMap<String, String> money;

@@ -1,6 +1,5 @@
 package Controller;
 
-import Model.CityInfo;
 import Model.Model;
 import View.View;
 import java.util.ArrayList;
@@ -55,14 +54,6 @@ public class Controller {
 
     public HashMap<String, ArrayList<Object>> getTermsDictionary () {
         return model.getTermsDictionary();
-    }
-
-    public HashMap<Integer, ArrayList<Object>> getDocsDictionary (){
-        return model.getDocsDictionary();
-    }
-
-    public HashMap<String, CityInfo> getCitiesDictionary (){
-        return model.getCitiesDictionary();
     }
 
     public void setView(View view) {

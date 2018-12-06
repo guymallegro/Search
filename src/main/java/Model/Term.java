@@ -4,8 +4,8 @@ import java.util.*;
 
 public class Term {
 
-    private String value;
     private int amount;
+    private String value;
     private HashMap<Integer, Integer> inDocuments;
     private HashMap<Integer, Character> positionInDocument;
 

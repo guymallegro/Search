@@ -9,11 +9,11 @@ public class Document {
     private int max_tf;
     private int length;
     private HashMap<Term, Integer> textTerms;
+    private String content;
+    private String city;
     private HashMap<String, String> cities;
     private String date;
     private String title;
-    private String content;
-    private String city;
     private HashMap<Term, Integer> titleTerms;
     private HashMap<Term, Integer> dateTerms;
 

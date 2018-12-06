@@ -9,8 +9,8 @@ This class responsible for the reading of the files in the corpus contains docum
 */
 public class ReadFile {
     private Model model;
-    private File currentFile;
     private String allFiles;
+    private File currentFile;
 
     public ReadFile(Model model) {
         this.model = model;

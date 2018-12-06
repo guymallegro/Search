@@ -10,7 +10,6 @@ import java.util.*;
 class Indexer {
     private Model model;
     private HashMap<String, Term> allTerms;
-    private HashMap<String, String> capitalLetters;
     private ArrayList<Document> documents;
     private int currentPostFile;
     private BufferedWriter bw;
@@ -19,6 +18,7 @@ class Indexer {
     private FileWriter fw;
     private String postingPath;
     private boolean isStemming;
+    private HashMap<String, String> capitalLetters;
 
     Indexer(Model model, HashMap<String, Term> allTerms, ArrayList<Document> documents) {
         currentPostFile = 0;

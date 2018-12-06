@@ -10,9 +10,9 @@ import java.util.HashMap;
 public class Dictionary {
 
     public View view;
-    public javafx.scene.control.ScrollPane scrollPane;
-    public javafx.scene.control.TextArea allTerms;
     public javafx.scene.control.Button back;
+    public javafx.scene.control.TextArea allTerms;
+    public javafx.scene.control.ScrollPane scrollPane;
 
     public void displayDictionary(int height, String content) {
         scrollPane.setHmax(height);

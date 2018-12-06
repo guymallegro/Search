@@ -1,12 +1,12 @@
 package Model;
 
+import java.util.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,10 +17,10 @@ public class Model {
     private ReadFile fileReader;
     private Indexer indexer;
     private Document document;
+    StringBuilder lines;
     private CityChecker cityChecker;
     private String postingPathDestination;
     private int nomOfDocs = 11800;
-    StringBuilder lines;
     private HashSet<String> languages;
     private ArrayList<Document> documents;
     private HashSet<String> stopWords;

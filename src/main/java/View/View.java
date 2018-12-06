@@ -12,13 +12,13 @@ import java.io.IOException;
 import java.util.*;
 
 public class View {
-    private Controller controller;
     private String postingPath;
+    private Controller controller;
+    public javafx.scene.control.Button exit;
     public javafx.scene.control.Button start;
     public javafx.scene.control.Button reset;
     public javafx.scene.control.Button loadDictionaries;
     public javafx.scene.control.Button displayTermsDictionary;
-    public javafx.scene.control.Button exit;
     public javafx.scene.control.TextField query;
     public javafx.scene.control.CheckBox stemming;
     public javafx.scene.control.ComboBox languages;
