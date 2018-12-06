@@ -27,6 +27,28 @@ public class Controller {
         model.readFiles(corpusPath, stopWordsPath, postingPath);
     }
 
+    public void loadDictionaries() {
+        model.loadTermsDictionary();
+        model.loadDocsDictionary();
+        model.loadCitiesDictionary();
+    }
+
+    public StringBuilder getLines (){
+        return model.getLines();
+    }
+
+    public Integer getTotalDocuments() {
+        return model.getTotalDocuments();
+    }
+
+    public Integer getTotalTerms() {
+        return model.getTotalTerms();
+    }
+
+    public Double getTotalTime() {
+        return model.getTotalTime();
+    }
+
     public HashSet<String> getLanguages() {
         return model.getLanguages();
     }
@@ -61,26 +83,5 @@ public class Controller {
 
     public void setPostingPath(String postingPath) {
         this.postingPath = postingPath;
-    }
-
-    public void setTermsDictionary (HashMap<String, ArrayList<Object>> termsDictionary) {
-        model.setTermsDictionary(termsDictionary); }
-
-    public void setDocsDictionary (HashMap<Integer, ArrayList<Object>> docsDictionary) {
-        model.setDocsDictionary(docsDictionary); }
-
-    public void setCitiesDictionary (HashMap<String, CityInfo> citiesDictionary) {
-        model.setCitiesDictionary(citiesDictionary); }
-
-    public Integer getTotalDocuments() {
-        return model.getTotalDocuments();
-    }
-
-    public Integer getTotalTerms() {
-        return model.getTotalTerms();
-    }
-
-    public Double getTotalTime() {
-        return model.getTotalTime();
     }
 }

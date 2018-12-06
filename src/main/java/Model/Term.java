@@ -20,18 +20,6 @@ public class Term {
         amount++;
     }
 
-    public String getValue() {
-        return value;
-    }
-
-    public int getAmount() {
-        return amount;
-    }
-
-    public void setAmount(int newAmount) {
-        amount = newAmount;
-    }
-
     public void addInDocument(int documentId, double position) {
         if (inDocuments.containsKey(documentId)) {
             inDocuments.replace(documentId, inDocuments.get(documentId) + 1);
@@ -44,6 +32,14 @@ public class Term {
             } else
                 positionInDocument.put(documentId, 'c');
         }
+    }
+
+    public String toString() {
+        return amount + "," + inDocuments.size();
+    }
+
+    public int getAmount() {
+        return amount;
     }
 
     public Object[] getInDocuments() {
@@ -64,9 +60,5 @@ public class Term {
         }
         sb.deleteCharAt(sb.toString().length() - 1);
         return sb.toString();
-    }
-
-    public String toString() {
-        return amount + "," + inDocuments.size();
     }
 }

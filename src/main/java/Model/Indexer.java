@@ -34,11 +34,12 @@ class Indexer {
         Arrays.sort(sortedTerms);
         StringBuilder line = new StringBuilder();
         List<String> lines = new LinkedList<>();
-        for (Object sortedTerm : sortedTerms) {
-            line.append("<").append(sortedTerm).append("^");
-            Object[] documentsOfTerm = allTerms.get(sortedTerm).getInDocuments();
+        int length = sortedTerms.length;
+        for (int t = 0; t < length; t++) {
+            line.append("<").append(sortedTerms[t]).append("^");
+            Object[] documentsOfTerm = allTerms.get(sortedTerms[t]).getInDocuments();
             int size = documentsOfTerm.length;
-            addTermToDictionary((String) sortedTerm, currentPartOfPostFile);
+            addTermToDictionary((String) sortedTerms[t], currentPartOfPostFile);
             line.append((int) documentsOfTerm[0]).append(";");
             line.append((int) documentsOfTerm[0]).append(",");
             for (int i = 1; i < size; i++) {
@@ -47,7 +48,7 @@ class Indexer {
             line.deleteCharAt(line.toString().length() - 1);
             line.append(";").append((int) documentsOfTerm[size - 1]);
             line.append("!");
-            line.append(allTerms.get(sortedTerm).getAmountInDocuments());
+            line.append(allTerms.get(sortedTerms[t]).getAmountInDocuments());
             lines.add(line.toString());
             line.setLength(0);
         }

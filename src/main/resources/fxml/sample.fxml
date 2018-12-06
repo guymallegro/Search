@@ -24,6 +24,7 @@
             <ComboBox fx:id="languages" disable="true" layoutX="104.0" layoutY="204.0" prefHeight="39.0" prefWidth="218.0" promptText="Choose Language" />
              <Button fx:id="displayTermsDictionary" disable="true" layoutY="95.0" mnemonicParsing="false" onAction="#displayTermsDictionary" text="Display Terms" />
              <Button fx:id="loadDictionaries" disable="true" layoutY="49.0" mnemonicParsing="false" onAction="#loadDictionaries" text="Load Dictionaries" />
+            <Button fx:id="exit" onAction="#exit" layoutX="552.0" mnemonicParsing="false" text="exit" />
          </children>
       </AnchorPane>
    </children>

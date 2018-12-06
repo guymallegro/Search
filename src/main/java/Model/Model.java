@@ -1,5 +1,7 @@
 package Model;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,8 +19,8 @@ public class Model {
     private Document document;
     private CityChecker cityChecker;
     private String postingPathDestination;
-    private int nomOfDocs = 11800; //@TODO Need to find the best amount
-    private int totalAmountOfDocs = 0;
+    private int nomOfDocs = 11800;
+    StringBuilder lines;
     private HashSet<String> languages;
     private ArrayList<Document> documents;
     private HashSet<String> stopWords;
@@ -65,6 +67,53 @@ public class Model {
         long tEnd = System.currentTimeMillis();
         long tDelta = tEnd - tStart;
         totalTime = tDelta / 1000.0;
+    }
+
+    void processFile(String fileAsString) {
+        String[] allDocuments = fileAsString.split("<DOC>");
+        int length = allDocuments.length;
+        String document;
+        for (int d = 0; d < length; d++) {
+            document = allDocuments[d];
+            if (document.length() == 0 || document.equals(" ")) continue;
+            Document currentDocument = new Document();
+            nomOfDocs--;
+            int startTagIndex = document.indexOf("<DOCNO>");
+            int endTagIndex = document.indexOf("</DOCNO>");
+            if (startTagIndex != -1 && endTagIndex != -1)
+                currentDocument.setId(document.substring(startTagIndex + 7, endTagIndex));
+            startTagIndex = document.indexOf("<TEXT>");
+            endTagIndex = document.indexOf("</TEXT>");
+            if (startTagIndex != -1 && endTagIndex != -1)
+                currentDocument.setContent(document.substring(startTagIndex + 6, endTagIndex));
+            startTagIndex = document.indexOf("<TI>");
+            endTagIndex = document.indexOf("</TI>");
+            if (startTagIndex != -1 && endTagIndex != -1)
+                currentDocument.setTitle(document.substring(startTagIndex + 4, endTagIndex));
+            startTagIndex = document.indexOf("<DATE>");
+            endTagIndex = document.indexOf("</DATE>");
+            if (startTagIndex != -1 && endTagIndex != -1)
+                currentDocument.setDate(document.substring(startTagIndex + 7, endTagIndex));
+            startTagIndex = document.indexOf("<F P=104>");
+            endTagIndex = document.indexOf("</F>", startTagIndex);
+            if (startTagIndex != -1 && endTagIndex != -1)
+                currentDocument.setCity(getFirstWord(document.substring(startTagIndex + 9, endTagIndex)));
+            startTagIndex = document.indexOf("<F P=105>");
+            endTagIndex = document.indexOf("</F>", startTagIndex);
+            if (startTagIndex != -1 && endTagIndex != -1) {
+                String ans = cleanString(document.substring(startTagIndex + 9, endTagIndex));
+                if (ans.length() > 0)
+                    languages.add(ans);
+            }
+            documents.add(currentDocument);
+            if (nomOfDocs < 0) {
+                int size = documents.size();
+                for (int i = 0; i < size; i++)
+                    parse.parseDocument(documents.get(i));
+                index();
+                nomOfDocs = 11800;
+            }
+        }
     }
 
     private void writeTermsDictionary() {
@@ -148,48 +197,79 @@ public class Model {
         }
     }
 
-    void processFile(String fileAsString) {
-        String[] allDocuments = fileAsString.split("<DOC>");
-        for (String document : allDocuments) {
-            if (document.length() == 0 || document.equals(" ")) continue;
-            Document currentDocument = new Document();
-            totalAmountOfDocs++;
-            nomOfDocs--;
-            int startTagIndex = document.indexOf("<DOCNO>");
-            int endTagIndex = document.indexOf("</DOCNO>");
-            if (startTagIndex != -1 && endTagIndex != -1)
-                currentDocument.setId(document.substring(startTagIndex + 7, endTagIndex));
-            startTagIndex = document.indexOf("<TEXT>");
-            endTagIndex = document.indexOf("</TEXT>");
-            if (startTagIndex != -1 && endTagIndex != -1)
-                currentDocument.setContent(document.substring(startTagIndex + 6, endTagIndex));
-            startTagIndex = document.indexOf("<TI>");
-            endTagIndex = document.indexOf("</TI>");
-            if (startTagIndex != -1 && endTagIndex != -1)
-                currentDocument.setTitle(document.substring(startTagIndex + 4, endTagIndex));
-            startTagIndex = document.indexOf("<DATE>");
-            endTagIndex = document.indexOf("</DATE>");
-            if (startTagIndex != -1 && endTagIndex != -1)
-                currentDocument.setDate(document.substring(startTagIndex + 7, endTagIndex));
-            startTagIndex = document.indexOf("<F P=104>");
-            endTagIndex = document.indexOf("</F>", startTagIndex);
-            if (startTagIndex != -1 && endTagIndex != -1)
-                currentDocument.setCity(getFirstWord(document.substring(startTagIndex + 9, endTagIndex)));
-            startTagIndex = document.indexOf("<F P=105>");
-            endTagIndex = document.indexOf("</F>", startTagIndex);
-            if (startTagIndex != -1 && endTagIndex != -1) {
-                String ans = cleanString(document.substring(startTagIndex + 9, endTagIndex));
-                if (ans.length() > 0)
-                    languages.add(ans);
+    public void loadTermsDictionary() {
+        lines = new StringBuilder();
+        String path = postingPathDestination + "/termsDictionary.txt";
+        if (isStemming)
+            path = postingPathDestination + "/termsDictionaryWithStemming.txt";
+        File file = new File(path);
+        try {
+            lines = new StringBuilder();
+            Scanner scanner = new Scanner(file);
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                String term = line.substring(1, line.indexOf(":"));
+                String[] info = line.substring(line.indexOf(":") + 1).split(",");
+                ArrayList<Object> attributes = new ArrayList<>();
+                attributes.add(0, info[0]);
+                attributes.add(1, info[1]);
+                termsDictionary.put(term, attributes);
+                lines.append("<");
+                lines.append(term);
+                lines.append(": (");
+                lines.append(info[0]);
+                lines.append(")");
+                lines.append("\n");
             }
-            documents.add(currentDocument);
-            if (nomOfDocs < 0) {
-                for (Document doc : documents) {
-                    parse.parseDocument(doc);
-                }
-                index();
-                nomOfDocs = 11800;
+        } catch (FileNotFoundException e) {
+            System.out.println("Cannot open the terms dictionary");
+        }
+    }
+
+    public void loadDocsDictionary() {
+        String path = postingPathDestination + "/documentsDictionary.txt";
+        if (isStemming)
+            path = postingPathDestination + "/documentsDictionaryWithStemming.txt";
+        File file = new File(path);
+        try {
+            Scanner scanner = new Scanner(file);
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                int docIndex = Integer.parseInt(line.substring(1, line.indexOf(":")));
+                String[] info = line.substring(line.indexOf(":") + 1).split(",");
+                ArrayList<Object> attributes = new ArrayList<>();
+                attributes.add(0, info[0]);
+                attributes.add(1, info[1]);
+                if (info.length == 3)
+                    attributes.add(2, info[2]);
+                else
+                    attributes.add(2, "");
+                documentsDictionary.put(docIndex, attributes);
             }
+        } catch (FileNotFoundException e) {
+            System.out.println("Cannot open the documents dictionary");
+        }
+    }
+
+    public void loadCitiesDictionary() {
+        String path = postingPathDestination + "/citiesDictionary.txt";
+        if (isStemming)
+            path = postingPathDestination + "/citiesDictionaryWithStemming.txt";
+        File file = new File(path);
+        try {
+            Scanner scanner = new Scanner(file);
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                String[] info = line.substring(line.indexOf(":") + 1).split(",");
+                String city = line.substring(1, line.indexOf(":"));
+                CityInfo cityInfo = new CityInfo(city);
+                cityInfo.setCountryName(info[0]);
+                cityInfo.setCurrency(info[1]);
+                cityInfo.setPopulation(info[2]);
+                citiesDictionary.put(city, cityInfo);
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("Cannot open the city dictionary");
         }
     }
 
@@ -213,20 +293,6 @@ public class Model {
         }
     }
 
-    private String getFirstWord(String str) {
-        String ans = "";
-        if (str.contains(" ")) {
-            int counter;
-            for (counter = 0; counter < str.length(); counter++) {
-                if (str.charAt(counter) != ' ')
-                    break;
-            }
-            ans = str.substring(counter);
-            ans = ans.substring(0, ans.indexOf(' '));
-        }
-        return ans;
-    }
-
     private void index() {
         indexer.addAllTerms(postingPathDestination);
         indexer.addAllDocuments();
@@ -243,24 +309,12 @@ public class Model {
         indexer.addAllDocuments();
     }
 
-    public void setStemming(boolean selected) {
-        isStemming = selected;
-        indexer.setStemming(selected);
-        parse.setStemming(selected);
+    public void resetDictionaries(boolean resetCities) {
+        termsDictionary.clear();
+        documentsDictionary.clear();
+        if (resetCities)
+            citiesDictionary.clear();
     }
-
-    public void setTermsDictionary(HashMap<String, ArrayList<Object>> termsDictionary) {
-        this.termsDictionary = termsDictionary;
-    }
-
-    public void setDocsDictionary(HashMap<Integer, ArrayList<Object>> docsDictionary) {
-        documentsDictionary = docsDictionary;
-    }
-
-    public void setCitiesDictionary(HashMap<String, CityInfo> citiesDictionary) {
-        this.citiesDictionary = citiesDictionary;
-    }
-
 
     private String cleanString(String str) {
         if (str.length() == 0)
@@ -286,6 +340,24 @@ public class Model {
         return str;
     }
 
+    public StringBuilder getLines (){
+        return lines;
+    }
+
+    private String getFirstWord(String str) {
+        String ans = "";
+        if (str.contains(" ")) {
+            int counter;
+            for (counter = 0; counter < str.length(); counter++) {
+                if (str.charAt(counter) != ' ')
+                    break;
+            }
+            ans = str.substring(counter);
+            ans = ans.substring(0, ans.indexOf(' '));
+        }
+        return ans;
+    }
+
     public HashSet<String> getLanguages() {
         return languages;
     }
@@ -300,13 +372,6 @@ public class Model {
         return citiesDictionary;
     }
 
-    public void resetDictionaries(boolean resetCities) {
-        termsDictionary.clear();
-        documentsDictionary.clear();
-        if (resetCities)
-            citiesDictionary.clear();
-    }
-
     public Integer getTotalDocuments() {
         return documentsAmount;
     }
@@ -317,5 +382,11 @@ public class Model {
 
     public Double getTotalTime() {
         return totalTime;
+    }
+
+    public void setStemming(boolean selected) {
+        isStemming = selected;
+        indexer.setStemming(selected);
+        parse.setStemming(selected);
     }
 }

@@ -16,20 +16,17 @@ public class ReadFile {
         this.model = model;
     }
 
-    /*
-
-     */
-
     public void readFile(String path, boolean onlyCities) {
         File currentDirectory = new File(path);
         String[] allDirectories = currentDirectory.list();
-        for (String directory : allDirectories) {
-            if (directory.equals("stop_words.txt"))
+        int size = allDirectories.length;
+        for (int i = 0; i < size; i ++) {
+            if (allDirectories[i].equals("stop_words.txt"))
                 continue;
-            currentFile = new File(path + directory);
-            System.out.println("Current file " + directory);
+            currentFile = new File(path + allDirectories[i]);
+            System.out.println("Current file " + allDirectories[i]);
             allFiles = currentFile.list()[0];
-            currentFile = new File(path + directory + "/" + allFiles);
+            currentFile = new File(path + allDirectories[i] + "/" + allFiles);
             try {
                 InputStream is = new FileInputStream(currentFile);
                 BufferedReader buf = new BufferedReader(new InputStreamReader(is));

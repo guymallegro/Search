@@ -28,54 +28,6 @@ public class Document {
         content = "";
     }
 
-    public int getMax_tf() {
-        return max_tf;
-    }
-
-    String getId() {
-        return id;
-    }
-
-    void setId(String id) {
-        this.id = id;
-    }
-
-    public String getDate() {
-        return date;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    void setDate(String date) {
-        this.date = date;
-    }
-
-    void setTitle(String title) {
-        this.title = title;
-    }
-
-    String getContent() {
-        return content;
-    }
-
-    void setContent(String content) {
-        this.content = content;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public HashMap<Term, Integer> getTextTerms() {
-        return textTerms;
-    }
-
     void addTermToText(Term term) {
         if (!textTerms.containsKey(term))
             textTerms.put(term, 1);
@@ -86,24 +38,56 @@ public class Document {
             max_tf = textTerms.get(term);
     }
 
-    public HashMap<String, String> getCities() {
-        return cities;
+    public void initialize() {
+        documentsAmount = 1;
+        indexId = documentsAmount;
+    }
+
+    public int getMax_tf() {
+        return max_tf;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    String getContent() {
+        return content;
     }
 
     public int getIndexId() {
         return indexId;
     }
 
-    public void initialize() {
-        documentsAmount = 1;
-        indexId = documentsAmount;
-    }
-
     public int getLength() {
         return length;
     }
 
+    public HashMap<Term, Integer> getTextTerms() {
+        return textTerms;
+    }
+
+    void setId(String id) {
+        this.id = id;
+    }
+
+    void setDate(String date) {
+        this.date = date;
+    }
+
+    void setTitle(String title) {
+        this.title = title;
+    }
+
     public void setLength(int length) {
         this.length = length;
+    }
+
+    void setContent(String content) {
+        this.content = content;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
     }
 }

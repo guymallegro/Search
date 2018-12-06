@@ -13,6 +13,7 @@ public class browser {
     private View myView;
     private Controller myController;
     public javafx.scene.control.Button OK;
+    public javafx.scene.control.Button back;
     public javafx.scene.control.TextField corpusPath;
     public javafx.scene.control.TextField postingPath;
     public javafx.scene.control.Button browseCorpus;
@@ -52,15 +53,19 @@ public class browser {
             myController.setPostingPath(postingPath.getText());
             myView.setPostingPath(postingPath.getText());
             Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+            window.close();
             myController.readFiles();
             myView.initializeLanguages();
             myView.loadDictionaries.setDisable(false);
-            window.close();
+            myView.reset.setDisable(false);
             showFinishMessage();
-
         }
     }
 
+    public void back (ActionEvent actionEvent){
+        Stage window = (Stage)((Node)actionEvent.getSource()).getScene().getWindow();
+        window.close();
+    }
 
     public void showAlert(String property) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -69,7 +74,7 @@ public class browser {
     }
 
     private void showFinishMessage() {
-        String property = "Documents : " + myController.getTotalDocuments() + ", terms : " + myController.getTotalTerms() + "\ntime : " + myController.getTotalTime() + " seconds";
+        String property = "Number Of Documents : " + myController.getTotalDocuments() + "\n" + "Number Of Terms : " + myController.getTotalTerms() + "\nTotal Time : " + myController.getTotalTime() + " seconds";
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setContentText(property);
         alert.showAndWait();
