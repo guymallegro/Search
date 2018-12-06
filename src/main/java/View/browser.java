@@ -55,8 +55,8 @@ public class browser {
             myController.readFiles();
             myView.initializeLanguages();
             myView.loadDictionaries.setDisable(false);
-            showFinishMessage();
             window.close();
+            showFinishMessage();
 
         }
     }

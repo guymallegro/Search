@@ -290,9 +290,7 @@ public class Model {
         return languages;
     }
 
-    public HashMap<String, ArrayList<Object>> getTermsDictionary() {
-        return termsDictionary;
-    }
+    public HashMap<String, ArrayList<Object>> getTermsDictionary() { return termsDictionary; }
 
     public HashMap<Integer, ArrayList<Object>> getDocsDictionary() {
         return documentsDictionary;

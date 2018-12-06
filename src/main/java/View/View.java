@@ -16,8 +16,8 @@ import java.util.*;
 public class View {
     private Controller controller;
     private String postingPath;
-    ArrayList<String> termsDictionary;
-    ArrayList<String> citiesDictionary;
+    StringBuilder lines;
+    HashMap<String, ArrayList<Object>> termsDictionary;
     public javafx.scene.control.Button start;
     public javafx.scene.control.Button reset;
     public javafx.scene.control.Button loadDictionaries;
@@ -70,22 +70,28 @@ public class View {
     }
 
     public void loadTermsDictionary() {
-        termsDictionary = new ArrayList<>();
+        termsDictionary = new HashMap<>();
         String path = postingPath + "/termsDictionary.txt";
         if (stemming.isSelected())
             path = postingPath + "/termsDictionaryWithStemming.txt";
         File file = new File(path);
         try {
+            lines = new StringBuilder();
             Scanner scanner = new Scanner(file);
-            HashMap<String, ArrayList<Object>> termsDictionary = new HashMap<>();
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
                 String term = line.substring(1, line.indexOf(":"));
-                String[] info = line.substring(line.indexOf(":")).split(",");
+                String[] info = line.substring(line.indexOf(":") + 1).split(",");
                 ArrayList<Object> attributes = new ArrayList<>();
                 attributes.add(0, info[0]);
                 attributes.add(1, info[1]);
                 termsDictionary.put(term, attributes);
+                lines.append("<");
+                lines.append(term);
+                lines.append(": (");
+                lines.append(info[0]);
+                lines.append(")");
+                lines.append("\n");
             }
             controller.setTermsDictionary(termsDictionary);
         } catch (FileNotFoundException e) {
@@ -105,7 +111,7 @@ public class View {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
                 int docIndex = Integer.parseInt(line.substring(1, line.indexOf(":")));
-                String[] info = line.substring(line.indexOf(":")).split(",");
+                String[] info = line.substring(line.indexOf(":") + 1).split(",");
                 ArrayList<Object> attributes = new ArrayList<>();
                 attributes.add(0, info[0]);
                 attributes.add(1, info[1]);
@@ -131,7 +137,7 @@ public class View {
             HashMap<String, CityInfo> citiesDictionary = new HashMap<>();
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
-                String[] info = line.substring(line.indexOf(":")).split(",");
+                String[] info = line.substring(line.indexOf(":") + 1).split(",");
                 String city = line.substring(1, line.indexOf(":"));
                 CityInfo cityInfo = new CityInfo(city);
                 cityInfo.setCountryName(info[0]);
@@ -162,13 +168,7 @@ public class View {
         stage.setTitle("Start");
         Dictionary dic = myLoader.getController();
         dic.setView(this);
-        StringBuilder lines = new StringBuilder();
-        int size = termsDictionary.size();
-        for (int i = 0; i < size; i++) {
-            lines.append(termsDictionary.get(i));
-            lines.append("\n");
-        }
-        dic.displayDictionary(size, lines.toString());
+        dic.displayDictionary(termsDictionary.size(), lines.toString());
         stage.show();
     }
 

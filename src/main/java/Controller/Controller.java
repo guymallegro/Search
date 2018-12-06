@@ -31,6 +31,18 @@ public class Controller {
         return model.getLanguages();
     }
 
+    public HashMap<String, ArrayList<Object>> getTermsDictionary () {
+        return model.getTermsDictionary();
+    }
+
+    public HashMap<Integer, ArrayList<Object>> getDocsDictionary (){
+        return model.getDocsDictionary();
+    }
+
+    public HashMap<String, CityInfo> getCitiesDictionary (){
+        return model.getCitiesDictionary();
+    }
+
     public void setView(View view) {
         this.view = view;
     }
