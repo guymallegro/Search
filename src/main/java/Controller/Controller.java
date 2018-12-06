@@ -8,7 +8,6 @@ import java.util.HashSet;
 
 public class Controller {
     private Model model;
-    private View view;
     private String corpusPath;
     private String stopWordsPath;
     private String postingPath;
@@ -54,10 +53,6 @@ public class Controller {
 
     public HashMap<String, ArrayList<Object>> getTermsDictionary () {
         return model.getTermsDictionary();
-    }
-
-    public void setView(View view) {
-        this.view = view;
     }
 
     public void setStemming(boolean selected) {
