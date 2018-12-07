@@ -3,10 +3,12 @@
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class CityChecker {
     HashMap<String, CityInfo> cityDictionary;
+    ArrayList<String> countires;
 
     public CityChecker(String WebServiceURL, HashMap<String, CityInfo> cityDictionary) {
         this.cityDictionary = cityDictionary;
@@ -24,7 +26,16 @@ public class CityChecker {
     public CityInfo getCityInfo(String cityName) {
         if (cityDictionary.containsKey(cityName))
             return cityDictionary.get(cityName);
-        else
-            return new CityInfo(cityName);
+        else {
+            HTTPRequest request = new HTTPRequest();
+            JSONObject jsonDetails = request.post("http://getcitydetails.geobytes.com/GetCityDetails?fqcn="+cityName);
+            CityInfo info = new CityInfo(cityName);
+            info.setInfoNotCapitalCity(jsonDetails);
+            return info;
+        }
+    }
+
+    public int amountOfCountries(){
+        return 0;
     }
 }

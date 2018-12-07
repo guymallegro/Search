@@ -39,7 +39,7 @@ public class View {
         stage.setScene(scene);
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setTitle("Start");
-        browser browser = myLoader.getController();
+        Browser browser = myLoader.getController();
         browser.setController(controller);
         browser.setView(this);
         controller.setStemming(stemming.isSelected());

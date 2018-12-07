@@ -339,8 +339,6 @@ public class Model {
         for (int i = 0; i < size; i++)
             parse.parseDocument(documents.get(i));
         index();
-        //indexer.addAllCities(postingPathDestination);
-        //indexer.addAllDocuments(); //happend in the indexer function
     }
 
     public void resetDictionaries(boolean resetCities) {

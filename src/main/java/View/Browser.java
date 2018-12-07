@@ -9,7 +9,7 @@ import javafx.stage.Stage;
 import java.io.File;
 
 
-public class browser {
+public class Browser {
     private View myView;
     private Controller myController;
     public javafx.scene.control.Button OK;
@@ -67,7 +67,7 @@ public class browser {
         window.close();
     }
 
-    public void showAlert(String property) {
+    private void showAlert(String property) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setContentText(property);
         alert.showAndWait();
@@ -81,11 +81,11 @@ public class browser {
 
     }
 
-    public void setView(View view) {
+    void setView(View view) {
         myView = view;
     }
 
-    public void setController(Controller controller) {
+    void setController(Controller controller) {
         myController = controller;
     }
 

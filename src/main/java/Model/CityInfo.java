@@ -9,47 +9,50 @@ public class CityInfo {
     private String countryName;
     private String population;
     private String currency;
+    private boolean capital;
 
     private HashMap<Integer, String> locationsInDocuments;
 
-    public CityInfo(JSONObject data) {
+    CityInfo(JSONObject data) {
         countryName = data.get("name").toString();
         cityName = data.get("capital").toString();
         population = data.get("population").toString();
+        capital=true;
         parsePopulation();
         currency = data.getJSONArray("currencies").getJSONObject(0).get("name").toString();
         locationsInDocuments = new HashMap<>();
     }
 
-    public CityInfo(String name) {
+    CityInfo(String name) {
         cityName = name;
+        capital=false;
         locationsInDocuments = new HashMap<>();
     }
 
-    public void addLocation(Integer documentId, int location) {
+    void addLocation(Integer documentId, int location) {
         if (locationsInDocuments.containsKey(documentId)) {
             locationsInDocuments.put(documentId, locationsInDocuments.get(documentId) + "," + location);
         } else
             locationsInDocuments.put(documentId, "" + location);
     }
 
-    public String getCityName() {
-        return this.cityName;
+    String getCityName() {
+        return cityName;
     }
 
     public String getPopulation() {
-        return this.population;
+        return population;
     }
 
-    public String getCurrency() {
-        return this.currency;
+    String getCurrency() {
+        return currency;
     }
 
     public String toString() {
         return countryName + "," + currency + "," + population;
     }
 
-    public HashMap<Integer, String> getLocationsInDocuments() {
+    HashMap<Integer, String> getLocationsInDocuments() {
         return locationsInDocuments;
     }
 
@@ -76,16 +79,29 @@ public class CityInfo {
         this.cityName = cityName;
     }
 
-    public void setCountryName(String countryName) {
+    void setCountryName(String countryName) {
         this.countryName = countryName;
     }
 
-    public void setPopulation(String population) {
+    void setPopulation(String population) {
         this.population = population;
     }
 
-    public void setCurrency(String currency) {
+    void setCurrency(String currency) {
         this.currency = currency;
     }
 
+    void setInfoNotCapitalCity(JSONObject data) {
+        String info = data.toString();
+        int startIndex = info.indexOf("geobytescurrency\":\"");
+        int endIndex = info.indexOf("\",\"geobyteslatitude");
+        currency = info.substring(startIndex + 19, endIndex);
+        startIndex = info.indexOf("geobytescountry\":\"");
+        endIndex = info.indexOf("\",\"geobytesregion");
+        countryName = info.substring(startIndex + 18, endIndex);
+        startIndex = info.indexOf("geobytespopulation\":\"");
+        endIndex = info.indexOf("\",\"geobytesforwarderfor");
+        population = info.substring(startIndex + 21, endIndex);
+        parsePopulation();
+    }
 }

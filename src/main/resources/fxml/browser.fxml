@@ -5,7 +5,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="318.0" prefWidth="368.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.browser">
+<AnchorPane prefHeight="318.0" prefWidth="368.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.Browser">
    <children>
       <Button fx:id="OK" layoutX="291.0" layoutY="130.0" mnemonicParsing="false" onAction="#ok" text="OK" />
       <TextField fx:id="corpusPath" layoutX="14.0" layoutY="75.0" prefHeight="39.0" prefWidth="219.0" text="Enter Path" />

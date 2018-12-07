@@ -260,44 +260,6 @@ class Indexer {
         documents.clear();
     }
 
-    /*
-    This function sort the cities dictionary and write to file the city name, country and population.
-     */
-
-//    public void addAllCities(String path) {
-//        postingPath = path;
-//        if (isStemming)
-//            path += "/postCitiesWithStemming.txt";
-//        else
-//            path += "/postCities.txt";
-//        Path file = Paths.get(path);
-//        ArrayList<String> toPrint = new ArrayList<>();
-//        Object[] sortedCities = model.getCitiesDictionary().keySet().toArray();
-//        Arrays.sort(sortedCities);
-//        int size = sortedCities.length;
-//        for (int i = 0; i < size; i++) {
-//            String key = (String) sortedCities[i];
-//            String value = "";
-//            if (model.getCitiesDictionary().get(key).getCurrency() != null && model.getCitiesDictionary().get(key).getLocationsInDocuments().size() == 0) {
-//                model.getCitiesDictionary().remove(key);
-//                continue;
-//            } else {
-//                Iterator it = model.getCitiesDictionary().get(key).getLocationsInDocuments().entrySet().iterator();
-//                while (it.hasNext()) {
-//                    Map.Entry pair = (Map.Entry) it.next();
-//                    value += pair.getKey() + "(" + pair.getValue() + ")";
-//                    it.remove();
-//                }
-//                toPrint.add("<" + key + ": " + value);
-//            }
-//        }
-//        try {
-//            Files.write(file, toPrint, Charset.forName("UTF-8"));
-//        } catch (Exception e) {
-//            System.out.println("cannot write");
-//        }
-//    }
-
     public void initCurrentPostFile() {
         currentPostFile = 0;
     }
