@@ -54,9 +54,9 @@ class Parse {
                         continue;
                     } else if (checkRange(i)) {
                     } else if (checkFraction(i)) {
-                    } else if (checkLittleMoney(i)) {
                     } else if (Character.isDigit(tokens.get(i).charAt(0)) || tokens.get(i).charAt(0) == '$') {
                         if (checkIfContainsLetters(tokens.get(i))) {
+                        } else if (checkLittleMoney(i)) {
                         } else if (checkPercent(i)) {
                         } else if (checkDate(i)) {
                         } else if (checkMoney(i)) {
@@ -103,33 +103,20 @@ class Parse {
     private boolean checkRange(int i) {
         if (tokens.get(i).contains("--"))
             tokens.set(i, tokens.get(i).substring(0, tokens.get(i).indexOf("--")) + tokens.get(i).substring(tokens.get(i).indexOf("--") + 1));
-        if (tokens.get(i).indexOf('-') != tokens.get(i).lastIndexOf('-'))
-            return true;
         String[] range = tokens.get(i).split("-");
         if (range.length > 1) {
-            String ans = "";
-            if (range[0].matches("[0-9]+")) {
-                tokens.set(i, range[0]);
-                checkNumber(i);
-                ans = tokens.get(i);
+            StringBuilder ans = new StringBuilder();
+            for (int j = 0; j < range.length; j++) {
+                tokens.set(i, range[j]);
+                if (range[j].matches("[0-9]+"))
+                    checkNumber(i);
+                else
+                    parseByLetters(i);
+                addTerm(tokens.get(i), i);
+                ans.append(tokens.get(i)).append("-");
             }
-            else{
-                tokens.set(i, range[0]);
-                parseByLetters(i);
-                ans = tokens.get(i);
-            }
-            addTerm(tokens.get(i), i);
-            if (range[1].matches("[0-9]+")) {
-                tokens.set(i, range[1]);
-                checkNumber(i);
-                ans += "-" + tokens.get(i);
-            } else {
-                tokens.set(i, range[1]);
-                parseByLetters(i);
-                ans += "-" + tokens.get(i);
-            }
-            addTerm(tokens.get(i), i);
-            tokens.set(i, ans);
+            ans.deleteCharAt(ans.length() - 1);
+            tokens.set(i, ans.toString());
             return true;
         }
         return false;
