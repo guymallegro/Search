@@ -15,9 +15,9 @@ public class browser {
     public javafx.scene.control.Button OK;
     public javafx.scene.control.Button back;
     public javafx.scene.control.Button browseCorpus;
+    public javafx.scene.control.Button browsePosting;
     public javafx.scene.control.TextField corpusPath;
     public javafx.scene.control.TextField postingPath;
-    public javafx.scene.control.Button browsePosting;
 
 
     public void browseCorpus(ActionEvent actionEvent) {

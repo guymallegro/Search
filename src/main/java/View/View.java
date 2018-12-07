@@ -92,10 +92,10 @@ public class View {
         Stage stage = new Stage();
         stage.setScene(scene);
         stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setTitle("Start");
+        stage.setTitle("terms dictionary");
         Dictionary dic = myLoader.getController();
         dic.setView(this);
-        dic.displayDictionary(controller.getTermsDictionary().size(), controller.getLines().toString());
+        dic.displayDictionary(controller.getLines().toString());
         stage.show();
     }
 
@@ -103,10 +103,7 @@ public class View {
         System.exit(0);
     }
 
-    public void setController(Controller controller) {
-        this.controller = controller;
-        this.controller.setView(this);
-    }
+    public void setController(Controller controller) { this.controller = controller; }
 
     public void setPostingPath(String posting) {
         postingPath = posting;

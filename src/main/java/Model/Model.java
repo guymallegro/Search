@@ -69,7 +69,7 @@ public class Model {
         totalTime = tDelta / 1000.0;
     }
 
-    void processFile(String fileAsString) {
+    public void processFile(String fileAsString) {
         String[] allDocuments = fileAsString.split("<DOC>");
         int length = allDocuments.length;
         String document;
@@ -97,7 +97,7 @@ public class Model {
             startTagIndex = document.indexOf("<F P=104>");
             endTagIndex = document.indexOf("</F>", startTagIndex);
             if (startTagIndex != -1 && endTagIndex != -1)
-                currentDocument.setCity(getFirstWord(document.substring(startTagIndex + 9, endTagIndex)));
+                currentDocument.setCity(getFirstWord(document.substring(startTagIndex + 9, endTagIndex).toUpperCase()));
             startTagIndex = document.indexOf("<F P=105>");
             endTagIndex = document.indexOf("</F>", startTagIndex);
             if (startTagIndex != -1 && endTagIndex != -1) {
@@ -176,22 +176,54 @@ public class Model {
     private void writeCitiesDictionary() {
         Object[] sortedCities = citiesDictionary.keySet().toArray();
         Arrays.sort(sortedCities);
-        StringBuilder line = new StringBuilder();
-        List<String> lines = new LinkedList<>();
+        StringBuilder dictionaryLine = new StringBuilder();
+        List<String> dictionaryLines = new LinkedList<>();
+        StringBuilder postingLine = new StringBuilder();
+        List<String> postingLines = new LinkedList<>();
+        StringBuilder value = new StringBuilder();
         int size = sortedCities.length;
         for (int i = 1; i < size; i++) {
-            line.append("<");
-            line.append(sortedCities[i]).append(":");
-            line.append(citiesDictionary.get(sortedCities[i]));
-            lines.add(line.toString());
-            line.setLength(0);
+            dictionaryLine.append("<");
+            dictionaryLine.append(sortedCities[i]).append(":");
+            dictionaryLine.append(citiesDictionary.get(sortedCities[i]));
+            dictionaryLines.add(dictionaryLine.toString());
+            dictionaryLine.setLength(0);
+
+
+            value.setLength(0);
+            if (citiesDictionary.get(sortedCities[i]).getCurrency() != null && citiesDictionary.get(sortedCities[i]).getLocationsInDocuments().size() == 0) {
+                citiesDictionary.remove(sortedCities[i]);
+                continue;
+            } else {
+                postingLine.append("<");
+                postingLine.append(sortedCities[i]);
+                postingLine.append(": ");
+                Object [] locations = citiesDictionary.get(sortedCities[i]).getLocationsInDocuments().keySet().toArray();
+                for (int l = 0; l < locations.length; l ++) {
+                    postingLine.append(locations[l]);
+                    postingLine.append("(");
+                    postingLine.append(citiesDictionary.get(sortedCities[i]).getLocationsInDocuments().get(locations[l]));
+                    postingLine.append(")");
+                }
+                postingLines.add(postingLine.toString());
+                postingLine.setLength(0);
+            }
         }
         String path = postingPathDestination + "/citiesDictionary.txt";
         if (isStemming)
             path = postingPathDestination + "/citiesDictionaryWithStemming.txt";
-        Path file = Paths.get(path);
+        Path dictionaryFile = Paths.get(path);
         try {
-            Files.write(file, lines, Charset.forName("UTF-8"));
+            Files.write(dictionaryFile, dictionaryLines, Charset.forName("UTF-8"));
+        } catch (Exception e) {
+            System.out.println("cannot write to dictionary");
+        }
+        path = postingPathDestination + "/postCities.txt";
+        if (isStemming)
+            path += "/postCitiesWithStemming.txt";
+        Path postingFile = Paths.get(path);
+        try {
+            Files.write(postingFile, postingLines, Charset.forName("UTF-8"));
         } catch (Exception e) {
             System.out.println("cannot write to dictionary");
         }
@@ -273,21 +305,23 @@ public class Model {
         }
     }
 
-    public void addCitiesToDictionary(String fileAsString) {
+    public void addCitiesToDictionary(String fileAsString) { // change to split by the tag itself
         String[] allDocuments = fileAsString.split("<DOC>");
-        for (String document : allDocuments) {
-            if (document.length() == 0 || document.equals(" ")) continue;
-            int startTagIndex = document.indexOf("<F P=104>");
-            int endTagIndex = document.indexOf("</F>", startTagIndex);
+        String city = "";
+        int size = allDocuments.length;
+        for (int i = 0; i < size; i++) {
+            if (allDocuments[i].length() == 0 || document.equals(" ")) continue;
+            int startTagIndex = allDocuments[i].indexOf("<F P=104>");
+            int endTagIndex = allDocuments[i].indexOf("</F>", startTagIndex);
             if (startTagIndex != -1 && endTagIndex != -1)
-                addCityToDictionary(document.substring(startTagIndex + 9, endTagIndex));
+                addCityToDictionary(allDocuments[i].substring(startTagIndex + 9, endTagIndex));
         }
-    }
+    } // change to split by the tag itself
 
     private void addCityToDictionary(String city) {
         city = getFirstWord(city);
-        if (city.length() > 1 && !stopWords.contains(city)) {
-            if (!citiesDictionary.containsKey(city) && !stopWords.contains(city.toLowerCase())) {
+        if (city.length() > 1) {
+            if (!citiesDictionary.containsKey(city)) {
                 citiesDictionary.put(city, cityChecker.getCityInfo(city));
             }
         }
@@ -305,8 +339,8 @@ public class Model {
         for (int i = 0; i < size; i++)
             parse.parseDocument(documents.get(i));
         index();
-        indexer.addAllCities(postingPathDestination);
-        indexer.addAllDocuments();
+        //indexer.addAllCities(postingPathDestination);
+        //indexer.addAllDocuments(); //happend in the indexer function
     }
 
     public void resetDictionaries(boolean resetCities) {

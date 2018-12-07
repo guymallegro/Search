@@ -51,7 +51,7 @@ public class Document {
         return city;
     }
 
-    String getContent() {
+    public String getContent() {
         return content;
     }
 
@@ -67,15 +67,15 @@ public class Document {
         return textTerms;
     }
 
-    void setId(String id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    void setDate(String date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
-    void setTitle(String title) {
+    public void setTitle(String title) {
         this.title = title;
     }
 
@@ -83,7 +83,7 @@ public class Document {
         this.length = length;
     }
 
-    void setContent(String content) {
+    public void setContent(String content) {
         this.content = content;
     }
 

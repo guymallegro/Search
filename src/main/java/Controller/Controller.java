@@ -1,9 +1,6 @@
 package Controller;
 
 import Model.Model;
-import View.View;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 
 public class Controller {
@@ -11,7 +8,6 @@ public class Controller {
     private String corpusPath;
     private String stopWordsPath;
     private String postingPath;
-
 
     public Controller() {
         model = new Model();
@@ -49,10 +45,6 @@ public class Controller {
 
     public HashSet<String> getLanguages() {
         return model.getLanguages();
-    }
-
-    public HashMap<String, ArrayList<Object>> getTermsDictionary () {
-        return model.getTermsDictionary();
     }
 
     public void setStemming(boolean selected) {

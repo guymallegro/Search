@@ -95,27 +95,40 @@ class Parse {
     }
 
     private void checkCity(int i) {
+        //if (model.getCitiesDictionary().containsKey(tokens.get(i).toUpperCase()))
         if (model.getCitiesDictionary().containsKey(tokens.get(i)))
             model.getCitiesDictionary().get(tokens.get(i)).addLocation(currentDocument.getIndexId(), i);
     }
 
     private boolean checkRange(int i) {
+        if (tokens.get(i).contains("--"))
+            tokens.set(i, tokens.get(i).substring(0, tokens.get(i).indexOf("--")) + tokens.get(i).substring(tokens.get(i).indexOf("--") + 1));
         if (tokens.get(i).indexOf('-') != tokens.get(i).lastIndexOf('-'))
             return true;
         String[] range = tokens.get(i).split("-");
         if (range.length > 1) {
-            String ans = range[0];
+            String ans = "";
             if (range[0].matches("[0-9]+")) {
                 tokens.set(i, range[0]);
                 checkNumber(i);
                 ans = tokens.get(i);
             }
+            else{
+                tokens.set(i, range[0]);
+                parseByLetters(i);
+                ans = tokens.get(i);
+            }
+            addTerm(tokens.get(i), i);
             if (range[1].matches("[0-9]+")) {
                 tokens.set(i, range[1]);
                 checkNumber(i);
                 ans += "-" + tokens.get(i);
-            } else
-                ans += "-" + range[1];
+            } else {
+                tokens.set(i, range[1]);
+                parseByLetters(i);
+                ans += "-" + tokens.get(i);
+            }
+            addTerm(tokens.get(i), i);
             tokens.set(i, ans);
             return true;
         }
@@ -294,6 +307,7 @@ class Parse {
     the term will be saved just with capital letters, else, the term will be save just with small letters.
     */
     private void parseByLetters(int i) {
+        if (tokens.get(i).length() < 1) return;
         String upper = tokens.get(i).toUpperCase();
         String lowerCase = tokens.get(i).toLowerCase();
         if (Character.isUpperCase(tokens.get(i).charAt(0))) {
@@ -303,18 +317,22 @@ class Parse {
             } else if (model.getTermsDictionary().containsKey(lowerCase)) {
                 if (allTerms.containsKey(upper)) {
                     Term value = allTerms.remove(upper);
+                    value.setValue(lowerCase);
                     allTerms.put(lowerCase, value);
+                    tokens.set(i, lowerCase);
                     return;
-
                 }
             }
+            tokens.set(i, upper);
         } else if (Character.isLowerCase(tokens.get(i).charAt(0))) {
             if (allTerms.containsKey(lowerCase))
                 return;
-            if (allTerms.containsKey(upper)) {
+            else if (allTerms.containsKey(upper)) {
                 Term value = allTerms.remove(upper);
+                value.setValue(lowerCase);
                 allTerms.put(lowerCase, value);
             }
+            tokens.set(i, lowerCase);
         }
     }
 
@@ -405,7 +423,7 @@ class Parse {
         }
     }
 
-    void setStopWords(HashSet<String> stopWords) {
+    public void setStopWords(HashSet<String> stopWords) {
         this.stopWords = stopWords;
     }
 

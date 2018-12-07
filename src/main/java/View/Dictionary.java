@@ -14,8 +14,7 @@ public class Dictionary {
     public javafx.scene.control.TextArea allTerms;
     public javafx.scene.control.ScrollPane scrollPane;
 
-    public void displayDictionary(int height, String content) {
-        scrollPane.setHmax(height);
+    public void displayDictionary(String content) {
         allTerms.setText(content);
         allTerms.setEditable(false);
     }

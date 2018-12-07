@@ -61,4 +61,6 @@ public class Term {
         sb.deleteCharAt(sb.toString().length() - 1);
         return sb.toString();
     }
+
+    public void setValue (String newValue) {value = newValue;}
 }
