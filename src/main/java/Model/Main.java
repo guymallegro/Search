@@ -1,6 +1,5 @@
 package Model;
 
-import Model.Model;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -9,9 +8,15 @@ import javafx.stage.Stage;
 import Controller.Controller;
 import View.View;
 
+/**
+ * The main class
+ */
 public class Main extends Application {
-    public static String citiesUrl = "https://restcountries.eu/rest/v2/all?fields=name;capital;population;currencies";
+    static String citiesUrl = "https://restcountries.eu/rest/v2/all?fields=name;capital;population;currencies"; // URL to the cities API
 
+    /**
+     * The start function of the JAVAFX
+     */
     @Override
     public void start(Stage primaryStage) throws Exception {
         Parent root;
@@ -27,7 +32,6 @@ public class Main extends Application {
         View view = myLoader.getController();
         view.setController(controller);
     }
-
 
     public static void main(String[] args) {
         launch(args);

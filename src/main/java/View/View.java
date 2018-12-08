@@ -23,7 +23,6 @@ public class View {
     public javafx.scene.control.CheckBox stemming;
     public javafx.scene.control.ComboBox languages;
 
-
     public void startWindow(ActionEvent actionEvent) {
         Parent root = null;
         FXMLLoader myLoader = new FXMLLoader();
@@ -45,10 +44,10 @@ public class View {
         controller.setStemming(stemming.isSelected());
         stage.show();
         loadDictionaries.setDisable(true);
-        displayTermsDictionary.setDisable(true);
+        displayTermsDictionary.setDisable(false);
     }
 
-    public void initializeLanguages() {
+    void initializeLanguages() {
         HashSet<String> languageList = controller.getLanguages();
         Object[] sortedTerms = languageList.toArray();
         Arrays.sort(sortedTerms);
@@ -95,7 +94,7 @@ public class View {
         stage.setTitle("terms dictionary");
         Dictionary dic = myLoader.getController();
         dic.setView(this);
-        dic.displayDictionary(controller.getLines().toString());
+        dic.displayDictionary(controller.getTermsToDisplay().toString());
         stage.show();
     }
 
@@ -105,7 +104,7 @@ public class View {
 
     public void setController(Controller controller) { this.controller = controller; }
 
-    public void setPostingPath(String posting) {
+    void setPostingPath(String posting) {
         postingPath = posting;
     }
 

@@ -9,18 +9,18 @@ public class Term {
     private HashMap<Integer, Integer> inDocuments;
     private HashMap<Integer, Character> positionInDocument;
 
-    public Term(String value) {
+    Term(String value) {
         this.value = value;
         amount = 1;
         inDocuments = new HashMap<>();
         positionInDocument = new HashMap<>();
     }
 
-    public void increaseAmount() {
+    void increaseAmount() {
         amount++;
     }
 
-    public void addInDocument(int documentId, double position) {
+    void addInDocument(int documentId, double position) {
         if (inDocuments.containsKey(documentId)) {
             inDocuments.replace(documentId, inDocuments.get(documentId) + 1);
         } else {
@@ -38,17 +38,17 @@ public class Term {
         return amount + "," + inDocuments.size();
     }
 
-    public int getAmount() {
+    int getAmount() {
         return amount;
     }
 
-    public Object[] getInDocuments() {
+    Object[] getInDocuments() {
         Object[] sortedterms = inDocuments.keySet().toArray();
         Arrays.sort(sortedterms);
         return sortedterms;
     }
 
-    public String getAmountInDocuments() {
+    String getAmountInDocuments() {
         StringBuilder sb = new StringBuilder();
         Map<Integer, Integer> map = new TreeMap(inDocuments);
         Set set2 = map.entrySet();
@@ -62,5 +62,5 @@ public class Term {
         return sb.toString();
     }
 
-    public void setValue (String newValue) {value = newValue;}
+    void setValue(String newValue) {value = newValue;}
 }

@@ -2,31 +2,42 @@ package Model;
 
 import java.io.*;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Scanner;
 
-/*
-This class responsible for the reading of the files in the corpus contains documents and the stop words file.
-*/
-public class ReadFile {
+/**
+ * This class is responsible for all the file reading
+ */
+class ReadFile {
     private Model model;
-    private File currentFile;
-    private String allFiles;
 
-    public ReadFile(Model model) {
+    /**
+     * The default constructor
+     *
+     * @param model - The model
+     */
+    ReadFile(Model model) {
         this.model = model;
     }
 
-    public void readFile(String path, boolean onlyCities) {
+    /**
+     * Reads the corpus and sends each file as a string to the model. If onlyCities is true when the model's add cities
+     * to dictionary function is called instead.
+     *
+     * @param path       - The path to the corpus
+     * @param onlyCities - If the focus is only on the cities
+     */
+    void readCorpus(String path, boolean onlyCities) {
         File currentDirectory = new File(path);
         String[] allDirectories = currentDirectory.list();
-        int size = allDirectories.length;
-        for (int i = 0; i < size; i ++) {
-            if (allDirectories[i].equals("stop_words.txt"))
+        assert allDirectories != null;
+        for (String allDirectory : allDirectories) {
+            if (allDirectory.equals("stop_words.txt"))
                 continue;
-            currentFile = new File(path + allDirectories[i]);
-            System.out.println("Current file " + allDirectories[i]);
-            allFiles = currentFile.list()[0];
-            currentFile = new File(path + allDirectories[i] + "/" + allFiles);
+            File currentFile = new File(path + allDirectory);
+            System.out.println("Current file " + allDirectory);
+            String allFiles = Objects.requireNonNull(currentFile.list())[0];
+            currentFile = new File(path + allDirectory + "/" + allFiles);
             try {
                 InputStream is = new FileInputStream(currentFile);
                 BufferedReader buf = new BufferedReader(new InputStreamReader(is));
@@ -51,6 +62,12 @@ public class ReadFile {
             model.finishReading();
     }
 
+    /**
+     * Reads the stop words file, returns the stop words as a hash set of strings.
+     *
+     * @param path - Path to the stop words file.
+     * @return - Hash set of the stop words.
+     */
     public HashSet<String> readStopWords(String path) {
         HashSet<String> stopWords = new HashSet<>();
         try {

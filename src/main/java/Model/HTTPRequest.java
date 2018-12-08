@@ -6,8 +6,16 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Scanner;
 
-public class HTTPRequest {
-    public JSONObject post(String url) {
+/**
+ * A class which creates an HTTP request and returns the response as an JSON object
+ */
+class HTTPRequest {
+    /**
+     * Created an GET HTTP request and returns the response as an JSON object
+     * @param url - The URL to send the request
+     * @return - The response as an JSON object
+     */
+    JSONObject post(String url) {
         String json = "";
         try {
             URL address = new URL(url);

@@ -1,6 +1,5 @@
 package Model;
 
-import java.io.IOException;
 import java.util.*;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -12,7 +11,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 public class Model {
 
@@ -29,7 +27,7 @@ public class Model {
     private HashSet<String> stopWords;
     private HashMap<String, ArrayList<Object>> termsDictionary;
     private HashMap<Integer, ArrayList<Object>> documentsDictionary;
-    private HashMap<String, CityInfo> citiesDictionary;
+    private HashMap<String, City> citiesDictionary;
     private boolean isStemming = false;
     private int documentsAmount;
     private int termsAmount;
@@ -41,7 +39,7 @@ public class Model {
     public Model() {
         parse = new Parse(this);
         citiesDictionary = new HashMap<>();
-        cityChecker = new CityChecker(Main.citiesUrl, citiesDictionary);
+        cityChecker = new CityChecker(this, Main.citiesUrl, citiesDictionary);
         fileReader = new ReadFile(this);
         documents = new ArrayList<>();
         languages = new HashSet<>();
@@ -59,8 +57,8 @@ public class Model {
         long tStart = System.currentTimeMillis();
         stopWords = fileReader.readStopWords(stopWordsPath);
         parse.setStopWords(stopWords);
-        fileReader.readFile(filesPath, true);
-        fileReader.readFile(filesPath, false);
+        fileReader.readCorpus(filesPath, true);
+        fileReader.readCorpus(filesPath, false);
         indexer.mergeAllPostFiles();
         termsAmount = termsDictionary.size();
         documentsAmount = documentsDictionary.size();
@@ -73,17 +71,17 @@ public class Model {
         Iterator it = citiesDictionary.entrySet().iterator();
         while (it.hasNext()) {
             Entry pair = (Entry) it.next();
-            if (!countries.contains(((CityInfo) pair.getValue()).getCountryName()))
-                countries.add(((CityInfo) pair.getValue()).getCountryName());
-            if (((CityInfo) pair.getValue()).isCapital())
+            if (!countries.contains(((City) pair.getValue()).getCountryName()))
+                countries.add(((City) pair.getValue()).getCountryName());
+            if (((City) pair.getValue()).isCapital())
                 capital++;
         }
 
         System.out.println("Total amount of countries : " + countries.size());
         System.out.println("Total amount of cities : " + citiesDictionary.size());
         System.out.println("Total amount of capital cities : " + capital);
-        System.out.println("The most common city in a single document is " + CityInfo.maxCity);
-        System.out.println("The amount of the most common city is " + CityInfo.maxAmount);
+        System.out.println("The most common city in a single document is " + City.maxCity);
+        System.out.println("The amount of the most common city is " + City.maxAmount);
         long tEnd = System.currentTimeMillis();
         long tDelta = tEnd - tStart;
         totalTime = tDelta / 1000.0;
@@ -283,7 +281,6 @@ public class Model {
                 String[] info = line.substring(line.indexOf(":") + 1).split(",");
                 ArrayList<Object> attributes = new ArrayList<>();
                 attributes.add(0, info[0]);
-                attributes.add(1, info[1]);
                 termsDictionary.put(term, attributes);
                 lines.append("<");
                 lines.append(term);
@@ -333,11 +330,14 @@ public class Model {
                 String line = scanner.nextLine();
                 String[] info = line.substring(line.indexOf(":") + 1).split(",");
                 String city = line.substring(1, line.indexOf(":"));
-                CityInfo cityInfo = new CityInfo(city);
-                cityInfo.setCountryName(info[0]);
-                cityInfo.setCurrency(info[1]);
-                cityInfo.setPopulation(info[2]);
+                City cityInfo = new City(city);
+                if(info.length > 2) {
+                    cityInfo.setCountryName(info[0]);
+                    cityInfo.setCurrency(info[1]);
+                    cityInfo.setPopulation(info[2]);
+                }
                 citiesDictionary.put(city, cityInfo);
+
             }
         } catch (FileNotFoundException e) {
             System.out.println("Cannot open the city dictionary");
@@ -368,7 +368,7 @@ public class Model {
 
     private void index() {
         indexer.addAllTerms(postingPathDestination);
-        indexer.addAllDocuments();
+        indexer.addAllDocumentsToDictionary();
         parse.getAllTerms().clear();
         documents.clear();
     }
@@ -412,6 +412,9 @@ public class Model {
     }
 
     public StringBuilder getLines() {
+        if(lines == null || lines.length() == 0){
+            loadTermsDictionary();
+        }
         return lines;
     }
 
@@ -441,7 +444,7 @@ public class Model {
         return documentsDictionary;
     }
 
-    public HashMap<String, CityInfo> getCitiesDictionary() {
+    public HashMap<String, City> getCitiesDictionary() {
         return citiesDictionary;
     }
 

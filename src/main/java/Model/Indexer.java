@@ -7,11 +7,14 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
+/**
+ * The indexer class, responsible of all the indexing of the search engine
+ */
 class Indexer {
     private Model model;
     private HashMap<String, Term> allTerms;
     private ArrayList<Document> documents;
-    private int currentPostFile;
+    private int currentAmountTempPostFiles;
     private BufferedWriter bw;
     private PrintWriter out;
     private char currentPartOfPostFile = '~';
@@ -20,26 +23,35 @@ class Indexer {
     private boolean isStemming;
     private HashMap<String, String> capitalLetters;
 
+    /**
+     * The constructor of the indexer
+     * @param model - The model
+     * @param allTerms - All the terms which were found
+     * @param documents - All the documents which were found
+     */
     Indexer(Model model, HashMap<String, Term> allTerms, ArrayList<Document> documents) {
-        currentPostFile = 0;
+        currentAmountTempPostFiles = 0;
         this.model = model;
         this.allTerms = allTerms;
         this.documents = documents;
         capitalLetters = new HashMap<>();
     }
 
+    /**
+     * Creates temporary posting files for all the found terms, each post file is created sorted.
+     * @param path - Path to the required position for the post files to be created
+     */
     void addAllTerms(String path) {
         postingPath = path;
         Object[] sortedTerms = allTerms.keySet().toArray();
         Arrays.sort(sortedTerms);
         StringBuilder line = new StringBuilder();
         List<String> lines = new LinkedList<>();
-        int length = sortedTerms.length;
-        for (int t = 0; t < length; t++) {
-            line.append("<").append(sortedTerms[t]).append("^");
-            Object[] documentsOfTerm = allTerms.get(sortedTerms[t]).getInDocuments();
+        for (Object sortedTerm : sortedTerms) {
+            line.append("<").append(sortedTerm).append("^");
+            Object[] documentsOfTerm = allTerms.get(sortedTerm).getInDocuments();
             int size = documentsOfTerm.length;
-            addTermToDictionary((String) sortedTerms[t]);
+            addTermToDictionary((String) sortedTerm);
             line.append((int) documentsOfTerm[0]).append(";");
             line.append((int) documentsOfTerm[0]).append(",");
             for (int i = 1; i < size; i++) {
@@ -48,33 +60,36 @@ class Indexer {
             line.deleteCharAt(line.toString().length() - 1);
             line.append(";").append((int) documentsOfTerm[size - 1]);
             line.append("!");
-            line.append(allTerms.get(sortedTerms[t]).getAmountInDocuments());
+            line.append(allTerms.get(sortedTerm).getAmountInDocuments());
             lines.add(line.toString());
             line.setLength(0);
         }
         if (isStemming)
-            path += "/post" + currentPostFile + "WithStemming.txt";
+            path += "/post" + currentAmountTempPostFiles + "WithStemming.txt";
         else
-            path += "/post" + currentPostFile + ".txt";
+            path += "/post" + currentAmountTempPostFiles + ".txt";
         Path file = Paths.get(path);
         try {
             Files.write(file, lines, Charset.forName("UTF-8"));
         } catch (Exception e) {
             System.out.println("cannot write");
         }
-        currentPostFile++;
+        currentAmountTempPostFiles++;
     }
 
+    /**
+     * Merges all the temporary posting files into one sorted posting file
+     */
     void mergeAllPostFiles() {
-        Scanner[] scanners = new Scanner[currentPostFile];
-        String[] currentLine = new String[currentPostFile];
+        Scanner[] scanners = new Scanner[currentAmountTempPostFiles];
+        String[] currentLine = new String[currentAmountTempPostFiles];
         fw = null;
         StringBuilder toWrite;
         int currentIndex = 0;
         boolean isChanged = true;
-        String lastPosting = "/final.txt";
+        String lastPosting = "/termsPosting.txt";
         if (isStemming)
-            lastPosting = "/finalWithStemming.txt";
+            lastPosting = "/termsPostingWithStemming.txt";
         try {
             fw = new FileWriter(postingPath + lastPosting);
         } catch (Exception e) {
@@ -82,7 +97,7 @@ class Indexer {
         }
         bw = new BufferedWriter(fw);
         out = new PrintWriter(bw);
-        for (int i = 0; i < currentPostFile; i++) {
+        for (int i = 0; i < currentAmountTempPostFiles; i++) {
             try {
                 if (isStemming)
                     scanners[i] = new Scanner(new File(postingPath + "/post" + i + "WithStemming.txt"));
@@ -94,13 +109,13 @@ class Indexer {
             try {
                 currentLine[i] = scanners[i].nextLine();
             } catch (Exception e) {
-                currentPostFile--;
+                currentAmountTempPostFiles--;
             }
         }
         while (true) {
             toWrite = new StringBuilder("~");
             String fromCompare = "";
-            for (int i = 0; i < currentPostFile; i++) {
+            for (int i = 0; i < currentAmountTempPostFiles; i++) {
                 if (!currentLine[i].equals("~")) {
                     if (isChanged) {
                         if (!toWrite.toString().equals("~"))
@@ -162,10 +177,7 @@ class Indexer {
         out.close();
     }
 
-
-    /*
-    This function use the relevant information to
-     */
+    //@TODO Ask what is this doing?
     private StringBuilder lastLineVersion(String line) {
         StringBuilder ans = new StringBuilder();
         if (line.length() == 0)
@@ -182,9 +194,7 @@ class Indexer {
         return ans;
     }
 
-    /*
-    This function merge for each term the documents it appeared in, and the frequency in each document.
-     */
+    //@TODO Ask what is this doing?
     private StringBuilder calculateGaps(String toWrite, String next) {
         String[] term = toWrite.split(";");
         term[2] = term[2].substring(0, term[2].indexOf('!'));
@@ -221,11 +231,11 @@ class Indexer {
         out = new PrintWriter(bw);
     }
 
-    /*
-    This function sort the terms dictionary and write to file the term, the documents it appeared in,
-    and the frequency in each document.
+    /**
+     * Adds the term to the hash map dictionary, the key is the terms name, and the value is the total amount the term was found.
+     * If the term is already in the dictionary then update it's total amount.
+     * @param term - The term to add to the dictionary
      */
-
     private void addTermToDictionary(String term) {
         if (model.getTermsDictionary().containsKey(term)) {
             int amount = (int) model.getTermsDictionary().get(term).get(0);
@@ -237,12 +247,11 @@ class Indexer {
         }
     }
 
-    /*
-    This function sort the documents dictionary and write to file the index of the document,
-    the frequency of the most popular term and the origin city of the document.
+    /**
+     * Adds all the found documents to the hash map dictionary.
+     * The key is the documents index id and the values are it's max term frequency, id,amount of unique terms,it's content length.
      */
-
-    void addAllDocuments() {
+    void addAllDocumentsToDictionary() {
         int size = documents.size();
         for (int i = 0; i < size; i++) {
             ArrayList<Object> attributes = new ArrayList<>();
@@ -259,11 +268,18 @@ class Indexer {
         documents.clear();
     }
 
-    public void initCurrentPostFile() {
-        currentPostFile = 0;
+    /**
+     * Initializes the amount of the temporary post files to 0
+     */
+    void initCurrentPostFile() {
+        currentAmountTempPostFiles = 0;
     }
 
-    public void setStemming(boolean stemming) {
+    /**
+     * Tells the indexer if stemming is being done
+     * @param stemming - If stemming is being done
+     */
+    void setStemming(boolean stemming) {
         isStemming = stemming;
     }
 }

@@ -2,10 +2,13 @@ package Model;
 
 import java.util.HashMap;
 
+/**
+ * The document class which holds all of its required information
+ */
 public class Document {
     private String id;
     private int indexId;
-    public static int documentsAmount = 1;
+    private static int documentsAmount = 1;
     private int max_tf;
     private int length;
     private HashMap<Term, Integer> textTerms;
@@ -17,7 +20,9 @@ public class Document {
     private HashMap<Term, Integer> titleTerms;
     private HashMap<Term, Integer> dateTerms;
 
-
+    /**
+     * The default document constructor
+     */
     public Document() {
         titleTerms = new HashMap<>();
         dateTerms = new HashMap<>();
@@ -28,6 +33,10 @@ public class Document {
         content = "";
     }
 
+    /**
+     * Adds a term which was found on this document text
+     * @param term - The found term
+     */
     void addTermToText(Term term) {
         if (!textTerms.containsKey(term))
             textTerms.put(term, 1);
@@ -38,60 +47,115 @@ public class Document {
             max_tf = textTerms.get(term);
     }
 
-    public void initialize() {
+    /** // @TODO Ask why its 1 and not 0
+     * Initialize the documents amount to 1
+     */
+    void initialize() {
         documentsAmount = 1;
         indexId = documentsAmount;
     }
 
-    public int getMax_tf() {
+    /**
+     * Returns the document's max term frequency
+     * @return - The max term frequency
+     */
+    int getMax_tf() {
         return max_tf;
     }
 
-    public String getCity() {
+    /**
+     * Returns the document's city
+     * @return - The city
+     */
+    String getCity() {
         return city;
     }
 
-    public String getContent() {
+    /**
+     * Returns the document content
+     * @return - The document's content
+     */
+    String getContent() {
         return content;
     }
 
-    public int getIndexId() {
+    /**
+     * Returns the document's index id
+     * @return - The index id
+     */
+    int getIndexId() {
         return indexId;
     }
 
-    public int getLength() {
+    /**
+     * Returns the document content length
+     * @return - The document's  content length
+     */
+    int getLength() {
         return length;
     }
 
-    public HashMap<Term, Integer> getTextTerms() {
+    /**
+     * Returns the document's text terms
+     * @return - The text terms
+     */
+    HashMap<Term, Integer> getTextTerms() {
         return textTerms;
     }
 
-    public void setId(String id) {
+    /**
+     * Returns the document's id
+     * @return - The id
+     */
+    String getId() {
+        return id;
+    }
+
+    /**
+     * Sets the document's id to the given id
+     * @param id - The given id
+     */
+    void setId(String id) {
         this.id = id;
     }
 
-    public void setDate(String date) {
+    /**
+     * Sets the document's date to the given date
+     * @param date - The given date
+     */
+    void setDate(String date) {
         this.date = date;
     }
 
-    public void setTitle(String title) {
+    /**
+     * Sets the document's title to the given title
+     * @param title - The given title
+     */
+    void setTitle(String title) {
         this.title = title;
     }
 
-    public void setLength(int length) {
+    /**
+     * Sets the document's content length to the given length
+     * @param length - The given length
+     */
+    void setLength(int length) {
         this.length = length;
     }
 
-    public void setContent(String content) {
+    /**
+     * Sets the document's content to the given content
+     * @param content - The given content
+     */
+    void setContent(String content) {
         this.content = content;
     }
 
-    public void setCity(String city) {
+    /**
+     * Sets the document's city to the given city
+     * @param city - The given city
+     */
+    void setCity(String city) {
         this.city = city;
-    }
-
-    public String getId() {
-        return id;
     }
 }
