@@ -39,7 +39,7 @@ class Indexer {
             line.append("<").append(sortedTerms[t]).append("^");
             Object[] documentsOfTerm = allTerms.get(sortedTerms[t]).getInDocuments();
             int size = documentsOfTerm.length;
-            addTermToDictionary((String) sortedTerms[t], currentPartOfPostFile);
+            addTermToDictionary((String) sortedTerms[t]);
             line.append((int) documentsOfTerm[0]).append(";");
             line.append((int) documentsOfTerm[0]).append(",");
             for (int i = 1; i < size; i++) {
@@ -226,15 +226,13 @@ class Indexer {
     and the frequency in each document.
      */
 
-    private void addTermToDictionary(String term, char path) {
+    private void addTermToDictionary(String term) {
         if (model.getTermsDictionary().containsKey(term)) {
-            int numOfDocuments = (int) model.getTermsDictionary().get(term).get(0);
-            model.getTermsDictionary().get(term).set(0, numOfDocuments + allTerms.get(term).getInDocuments().length);
+            int amount = (int) model.getTermsDictionary().get(term).get(0);
+            model.getTermsDictionary().get(term).set(0, amount + allTerms.get(term).getAmount());
         } else {
             ArrayList<Object> attributes = new ArrayList<>();
             attributes.add(allTerms.get(term).getAmount());
-            attributes.add(allTerms.get(term).getInDocuments().length);
-            attributes.add(path);
             model.getTermsDictionary().put(term, attributes);
         }
     }
@@ -249,12 +247,13 @@ class Indexer {
         for (int i = 0; i < size; i++) {
             ArrayList<Object> attributes = new ArrayList<>();
             attributes.add(0, documents.get(i).getMax_tf());
-            attributes.add(1, documents.get(i).getTextTerms().size());
-            attributes.add(2, documents.get(i).getLength());
+            attributes.add(1, documents.get(i).getId());
+            attributes.add(2, documents.get(i).getTextTerms().size());
+            attributes.add(3, documents.get(i).getLength());
             if (documents.get(i).getCity() != null)
-                attributes.add(3, documents.get(i).getCity());
+                attributes.add(4, documents.get(i).getCity());
             else
-                attributes.add(3, "");
+                attributes.add(4, "");
             model.getDocsDictionary().put(documents.get(i).getIndexId(), attributes);
         }
         documents.clear();

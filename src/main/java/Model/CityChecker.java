@@ -3,12 +3,11 @@
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class CityChecker {
     HashMap<String, CityInfo> cityDictionary;
-    ArrayList<String> countires;
+    public int capital=0;
 
     public CityChecker(String WebServiceURL, HashMap<String, CityInfo> cityDictionary) {
         this.cityDictionary = cityDictionary;
@@ -19,6 +18,7 @@ public class CityChecker {
         for (Object obj : result) {
             JSONObject data = (JSONObject) obj;
             CityInfo city = new CityInfo(data);
+            capital++;
             cityDictionary.put(city.getCityName(), city);
         }
     }
@@ -33,9 +33,5 @@ public class CityChecker {
             info.setInfoNotCapitalCity(jsonDetails);
             return info;
         }
-    }
-
-    public int amountOfCountries(){
-        return 0;
     }
 }

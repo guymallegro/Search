@@ -1,5 +1,6 @@
 package Model;
 
+import java.io.IOException;
 import java.util.*;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -10,6 +11,8 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 public class Model {
 
@@ -31,6 +34,9 @@ public class Model {
     private int documentsAmount;
     private int termsAmount;
     private double totalTime;
+    private int capital = 0;
+
+    private ArrayList<String> countries = new ArrayList<>();
 
     public Model() {
         parse = new Parse(this);
@@ -61,12 +67,45 @@ public class Model {
         writeTermsDictionary();
         writeDocsDictionary();
         writeCitiesDictionary();
-        parse.getAllTerms().clear();
         System.out.println("--------------------------------------");
         System.out.println("-----------------Complete-------------");
+        printMostCommon();
+        Iterator it = citiesDictionary.entrySet().iterator();
+        while (it.hasNext()) {
+            Entry pair = (Entry) it.next();
+            if (!countries.contains(((CityInfo) pair.getValue()).getCountryName()))
+                countries.add(((CityInfo) pair.getValue()).getCountryName());
+            if (((CityInfo) pair.getValue()).isCapital())
+                capital++;
+        }
+
+        System.out.println("Total amount of countries : " + countries.size());
+        System.out.println("Total amount of cities : " + citiesDictionary.size());
+        System.out.println("Total amount of capital cities : " + capital);
+        System.out.println("The most common city in a single document is " + CityInfo.maxCity);
+        System.out.println("The amount of the most common city is " + CityInfo.maxAmount);
         long tEnd = System.currentTimeMillis();
         long tDelta = tEnd - tStart;
         totalTime = tDelta / 1000.0;
+    }
+
+    private void printMostCommon(){
+        Iterator it = termsDictionary.entrySet().iterator();
+        HashMap<String,Integer> termsAmount = new HashMap<>();
+        while (it.hasNext()) {
+            Entry pair = (Entry)it.next();
+            termsAmount.put((String) pair.getKey(),((Integer)((ArrayList)pair.getValue()).get(0)));
+        }
+        Set<Entry<String, Integer>> set = termsAmount.entrySet();
+        List<Entry<String, Integer>> list = new ArrayList<Entry<String, Integer>>(
+                set);
+        Collections.sort(list, new Comparator<Map.Entry<String, Integer>>() {
+            public int compare(Map.Entry<String, Integer> o1,
+                               Map.Entry<String, Integer> o2) {
+                return o2.getValue().compareTo(o1.getValue());
+            }
+        });
+        System.out.println("finish");
     }
 
     public void processFile(String fileAsString) {
@@ -126,7 +165,7 @@ public class Model {
             line.append("<");
             line.append(sortedTerms[i]);
             line.append(":");
-            line.append(termsDictionary.get(sortedTerms[i]).get(0)).append(",").append(termsDictionary.get(sortedTerms[i]).get(1));
+            line.append(termsDictionary.get(sortedTerms[i]).get(0));
             lines.add(line.toString());
             line.setLength(0);
         }
@@ -155,6 +194,8 @@ public class Model {
             line.append(documentsDictionary.get(sortedDocuments[i]).get(1));
             line.append(",");
             line.append(documentsDictionary.get(sortedDocuments[i]).get(2));
+            line.append(",");
+            line.append(documentsDictionary.get(sortedDocuments[i]).get(3));
             if (!documentsDictionary.get(sortedDocuments[i]).get(3).equals("")) {
                 line.append(",");
                 line.append(documentsDictionary.get(sortedDocuments[i]).get(3));
@@ -188,8 +229,6 @@ public class Model {
             dictionaryLine.append(citiesDictionary.get(sortedCities[i]));
             dictionaryLines.add(dictionaryLine.toString());
             dictionaryLine.setLength(0);
-
-
             value.setLength(0);
             if (citiesDictionary.get(sortedCities[i]).getCurrency() != null && citiesDictionary.get(sortedCities[i]).getLocationsInDocuments().size() == 0) {
                 citiesDictionary.remove(sortedCities[i]);
@@ -198,8 +237,8 @@ public class Model {
                 postingLine.append("<");
                 postingLine.append(sortedCities[i]);
                 postingLine.append(": ");
-                Object [] locations = citiesDictionary.get(sortedCities[i]).getLocationsInDocuments().keySet().toArray();
-                for (int l = 0; l < locations.length; l ++) {
+                Object[] locations = citiesDictionary.get(sortedCities[i]).getLocationsInDocuments().keySet().toArray();
+                for (int l = 0; l < locations.length; l++) {
                     postingLine.append(locations[l]);
                     postingLine.append("(");
                     postingLine.append(citiesDictionary.get(sortedCities[i]).getLocationsInDocuments().get(locations[l]));
@@ -372,7 +411,7 @@ public class Model {
         return str;
     }
 
-    public StringBuilder getLines (){
+    public StringBuilder getLines() {
         return lines;
     }
 
@@ -394,7 +433,9 @@ public class Model {
         return languages;
     }
 
-    public HashMap<String, ArrayList<Object>> getTermsDictionary() { return termsDictionary; }
+    public HashMap<String, ArrayList<Object>> getTermsDictionary() {
+        return termsDictionary;
+    }
 
     public HashMap<Integer, ArrayList<Object>> getDocsDictionary() {
         return documentsDictionary;

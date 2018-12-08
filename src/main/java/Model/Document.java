@@ -90,4 +90,8 @@ public class Document {
     public void setCity(String city) {
         this.city = city;
     }
+
+    public String getId() {
+        return id;
+    }
 }
