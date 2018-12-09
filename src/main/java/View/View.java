@@ -109,7 +109,7 @@ public class View {
         Iterator iterator2 = set2.iterator();
         while (iterator2.hasNext()) {
             Map.Entry me2 = (Map.Entry) iterator2.next();
-            allTerms.getItems().add(me2.getKey() + "-----> The DF:    " + ((ArrayList) me2.getValue()).get(0));
+            allTerms.getItems().add(me2.getKey() + " (" + ((ArrayList) me2.getValue()).get(0)+")");
         }
         Scene scene = new Scene(new Group());
         stage.initModality(Modality.APPLICATION_MODAL); //Lock the window until it closes
