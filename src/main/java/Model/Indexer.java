@@ -147,7 +147,7 @@ class Indexer {
             }
             if (!toWrite.toString().equals("~")) {
                 if (!Character.isDigit(toWrite.charAt(1)) && toWrite.charAt(1) != currentPartOfPostFile) {
-                          changePostFile(toWrite.charAt(1));
+                    changePostFile(toWrite.charAt(1));
                 }
                 String current = toWrite.toString().substring(1, toWrite.toString().indexOf('^'));
                 if (Character.isUpperCase(current.charAt(0))) {
@@ -179,7 +179,7 @@ class Indexer {
 
     private void removeTempPostFiles() {
         for (int i = 0; i < currentAmountTempPostFiles; i++) {
-            File currentFile = new File(postingPath +"\\"+ "post" + i + ".txt");
+            File currentFile = new File(postingPath + "\\" + "post" + i + ".txt");
             currentFile.delete();
         }
     }
@@ -241,11 +241,17 @@ class Indexer {
         out.close();
         currentPartOfPostFile = nextFile;
         try {
-            fw = new FileWriter(postingPath + "/post" + currentPartOfPostFile + ".txt");
+            if (Character.isLowerCase(nextFile)) {
+                File file = new File(postingPath + "/post" + currentPartOfPostFile + ".txt");
+                FileWriter fr = new FileWriter(file, true);
+                bw = new BufferedWriter(fr);
+            } else {
+                fw = new FileWriter(postingPath + "/post" + currentPartOfPostFile + ".txt");
+                bw = new BufferedWriter(fw);
+            }
         } catch (Exception e) {
             System.out.println("Failed to create file writer");
         }
-        bw = new BufferedWriter(fw);
         out = new PrintWriter(bw);
     }
 
