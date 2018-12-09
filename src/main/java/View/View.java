@@ -120,7 +120,7 @@ public class View {
         vBox.setAlignment(Pos.CENTER);
         Group group = ((Group) scene.getRoot());
         group.getChildren().addAll(vBox);
-        stage.setScene(scene);
+
         stage.show();
     }
 
@@ -148,9 +148,4 @@ public class View {
     void setPostingPath(String posting) {
         postingPath = posting;
     }
-
-    public Parent getRoot() {
-        return root;
-    }
-
 }
