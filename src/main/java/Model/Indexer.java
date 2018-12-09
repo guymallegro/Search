@@ -180,9 +180,8 @@ class Indexer {
     private void removeTempPostFiles() {
         String[] filesToDelete = new String[currentAmountTempPostFiles];
         for (int i = 0; i < currentAmountTempPostFiles; i++) {
-            filesToDelete[i] = ""
+            //      filesToDelete[i] = ""
         }
-
     }
 
     //@TODO Ask what is this doing?

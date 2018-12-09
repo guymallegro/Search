@@ -1,8 +1,12 @@
 package Model;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
+/**
+ * The parsing class
+ */
 class Parse {
     private Model model;
     private Stemmer stemmer;
@@ -21,6 +25,11 @@ class Parse {
     private Document currentDocument;
     private boolean toTest = false;
 
+    /**
+     * The parse default constructor
+     *
+     * @param model - The model
+     */
     Parse(Model model) {
         this.model = model;
         tokens = new ArrayList<>();
@@ -36,6 +45,11 @@ class Parse {
         initTests();
     }
 
+    /**
+     * Parses a given document into terms using smaller functions.
+     *
+     * @param document - The given document to parse.
+     */
     void parseDocument(Document document) {
         currentDocument = document;
         if (document.getContent() != null) {
@@ -94,12 +108,22 @@ class Parse {
         }
     }
 
+    /**
+     * Checks if the token at position i is a city, and add it if it is
+     *
+     * @param i - The position
+     */
     private void checkCity(int i) {
-        //if (model.getCitiesDictionary().containsKey(tokens.get(i).toUpperCase()))
         if (model.getCitiesDictionary().containsKey(tokens.get(i)))
             model.getCitiesDictionary().get(tokens.get(i)).addLocation(currentDocument.getIndexId(), i);
     }
 
+    /**
+     * Checks if the token at position i is a range term, and parse it if it its
+     *
+     * @param i - The position
+     * @return - If it is a range term
+     */
     private boolean checkRange(int i) {
         if (tokens.get(i).contains("--"))
             tokens.set(i, tokens.get(i).substring(0, tokens.get(i).indexOf("--")) + tokens.get(i).substring(tokens.get(i).indexOf("--") + 1));
@@ -122,6 +146,12 @@ class Parse {
         return false;
     }
 
+    /**
+     * Checks if the token at position i is a fraction, and parse it if it its
+     *
+     * @param i - The position
+     * @return - If it is a fraction
+     */
     private boolean checkFraction(int i) {
         if (tokens.get(i).contains("/")) {
             checkLittleMoney(i);
@@ -138,6 +168,12 @@ class Parse {
         return false;
     }
 
+    /**
+     * Checks if the token at position i is little money, and parse it if it its
+     *
+     * @param i - The position
+     * @return - If it is little money
+     */
     private boolean checkLittleMoney(int i) {
         if (i + 1 < tokens.size() && dollars.contains(tokens.get(i + 1))) {
             if (tokens.get(i).indexOf(",") != tokens.get(i).lastIndexOf(",") || tokens.get(i).charAt(0) == '/')
@@ -163,6 +199,12 @@ class Parse {
         return false;
     }
 
+    /**
+     * Checks if the token at position i is percent, and parse it if it its
+     *
+     * @param i - The position
+     * @return - If it is percent
+     */
     private boolean checkPercent(int i) {
         if (i + 1 < tokens.size()) {
             if (percents.containsKey(tokens.get(i + 1))) {
@@ -174,6 +216,12 @@ class Parse {
         return tokens.get(i).contains("%");
     }
 
+    /**
+     * Checks if the token at position i is a date, and parse it if it its
+     *
+     * @param i - The position
+     * @return - If it is a date
+     */
     private boolean checkDate(int i) {
         if (checkIfContainsCommas(tokens.get(i)))
             return false;
@@ -193,6 +241,12 @@ class Parse {
         return false;
     }
 
+    /**
+     * Checks if the token at position i is money, and parse it if it its
+     *
+     * @param i - The position
+     * @return - If it is money
+     */
     private boolean checkMoney(int i) {
         if (i < tokens.size() - 3) {
             if (tokens.get(i + 2).equals("U.S") && (dollars.contains(tokens.get(i + 3)))) {
@@ -250,6 +304,12 @@ class Parse {
         return false;
     }
 
+    /**
+     * Checks if the token at position i is a number, and parse it if it its
+     *
+     * @param i - The position
+     * @return - If it is a number
+     */
     private boolean checkNumber(int i) {
         if (tokens.get(i).indexOf('.') != tokens.get(i).lastIndexOf('.') || tokens.get(i).contains("/"))
             return true;
@@ -288,11 +348,12 @@ class Parse {
         return false;
     }
 
-    /*
-    This function checks if the term start in small or capital letters.
-    For each term, if the first letter of the term always appears as capital letter,
-    the term will be saved just with capital letters, else, the term will be save just with small letters.
-    */
+    /**
+     * This function checks if the token at position i starts with capital letters or not. It checks its previous
+     * appearances and only if all its appearances are with capital letters it will be saved with capital letters.
+     *
+     * @param i - The postiion
+     */
     private void parseByLetters(int i) {
         if (tokens.get(i).length() < 1) return;
         String upper = tokens.get(i).toUpperCase();
@@ -323,6 +384,12 @@ class Parse {
         }
     }
 
+    /**
+     * Cleans a string spaces and illegal symbols
+     *
+     * @param str - The string to clean
+     * @return - The clean string
+     */
     private String cleanString(String str) {
         if (str.length() == 0)
             return "";
@@ -347,12 +414,24 @@ class Parse {
         return str;
     }
 
+    /**
+     * Checks if a given word is a stop word
+     *
+     * @param word - The word to check
+     * @return - If it is a stop word
+     */
     private boolean isStopWord(String word) {
         if (stopWords.contains(word) || stopWords.contains(Character.toUpperCase(word.charAt(0)) + word.substring(1)))
             return true;
         return false;
     }
 
+    /**
+     * This function adds a term to the dictionary
+     *
+     * @param term - The term to add
+     * @param i    -THe position the term was found at
+     */
     private void addTerm(String term, int i) {
         if (term.length() > 1 || (term.length() == 1 && Character.isDigit(term.charAt(0)))) {
             String upper = term.toUpperCase();
@@ -378,22 +457,27 @@ class Parse {
                     currentDocument.addTermToText(newTerm);
                 }
             }
-            if (term.equals("NEW-TEST")) {
-                toTest = true;
-                return;
-            }
-            if (toTest) {
-                if (term.equals(tests[currentTest])) {
-                    System.out.println("Successful test : " + term);
-                } else {
-                    System.out.println("FAILED TEST!!! Got : " + term + " , Expected " + tests[currentTest]);
-                }
-                toTest = false;
-                currentTest++;
-            }
+//            if (term.equals("NEW-TEST")) {
+//                toTest = true;
+//                return;
+//            }
+//            if (toTest) {
+//                if (term.equals(tests[currentTest])) {
+//                    System.out.println("Successful test : " + term);
+//                } else {
+//                    System.out.println("FAILED TEST!!! Got : " + term + " , Expected " + tests[currentTest]);
+//                }
+//                toTest = false;
+//                currentTest++;
+//            }
         }
     }
 
+    /**
+     * Splits a string into terms and puts it into the tokens list
+     *
+     * @param content - The content to split
+     */
     private void splitDocument(String content) {
         tokens = new ArrayList<>();
         int i = 0;
@@ -410,10 +494,21 @@ class Parse {
         }
     }
 
-    public void setStopWords(HashSet<String> stopWords) {
+    /**
+     * Sets the stop words into the given stop words
+     *
+     * @param stopWords - The given stop words
+     */
+    void setStopWords(HashSet<String> stopWords) {
         this.stopWords = stopWords;
     }
 
+    /**
+     * Checks if a given string contains letters
+     *
+     * @param s - The given string
+     * @return - If it contains letters
+     */
     private boolean checkIfContainsLetters(String s) {
         for (int i = 0; i < s.length(); i++) {
             int ascii = (int) s.charAt(i);
@@ -424,6 +519,12 @@ class Parse {
         return false;
     }
 
+    /**
+     * Checks if a given string contains illegal symbols
+     *
+     * @param s - The given string
+     * @return - If it contains illegal symbols
+     */
     private boolean checkIfContainsIllegalSymbols(String s) {
         if (s.equals("$"))
             return true;
@@ -441,6 +542,12 @@ class Parse {
         return false;
     }
 
+    /**
+     * Checks if a given string contains a comma
+     *
+     * @param s - The given string
+     * @return - If it contains a comma
+     */
     private boolean checkIfContainsCommas(String s) {
         for (int i = 0; i < s.length(); i++) {
             if (s.charAt(i) == '.' || s.charAt(i) == ',')
@@ -449,6 +556,11 @@ class Parse {
         return false;
     }
 
+    /**
+     * Checks if the tokens are a number and if they are parse them into a digits number.
+     *
+     * @param i - The position to start checking for
+     */
     private void checkNumberName(int i) {
         int checking = i;
         int finalResult = 0;
@@ -541,6 +653,12 @@ class Parse {
         }
     }
 
+    /**
+     * Prases a number
+     *
+     * @param num - The number to parse
+     * @return - The parsed number
+     */
     private String parseNumber(double num) {
         String ans = Double.toString(num);
         while (ans.length() > 1) {
@@ -554,19 +672,37 @@ class Parse {
         return ans;
     }
 
+    /**
+     * Removes redundant zeros from a token at a given position
+     *
+     * @param i - The given position
+     */
     private void removeRedundantZero(int i) {
         if (tokens.get(i).length() > 2 && tokens.get(i).charAt(0) == '0' && tokens.get(i).charAt(1) == '.')
             tokens.set(i, tokens.get(i).substring(1));
     }
 
-    public void setStemming(boolean selected) {
+    /**
+     * Tells if stemming is used
+     *
+     * @param selected - If it is used
+     */
+    void setStemming(boolean selected) {
         doStemming = selected;
     }
 
-    public HashMap<String, Term> getAllTerms() {
+    /**
+     * Returns all the terms that were found
+     *
+     * @return - All the found terms
+     */
+    HashMap<String, Term> getAllTerms() {
         return allTerms;
     }
 
+    /**
+     * Initializes the rules
+     */
     private void initRules() {
         numbers.put("Thousand", "K");
         numbers.put("thousand", "K");

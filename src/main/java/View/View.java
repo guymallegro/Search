@@ -11,6 +11,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+/**
+ * The view class which represents the main view
+ */
 public class View {
     private String postingPath;
     private Controller controller;
@@ -23,7 +26,10 @@ public class View {
     public javafx.scene.control.CheckBox stemming;
     public javafx.scene.control.ComboBox languages;
 
-    public void startWindow(ActionEvent actionEvent) {
+    /**
+     * The function which moves the user to the browser page
+     */
+    public void startWindow() {
         Parent root = null;
         FXMLLoader myLoader = new FXMLLoader();
         try {
@@ -47,6 +53,9 @@ public class View {
         displayTermsDictionary.setDisable(false);
     }
 
+    /**
+     * Initializes the languages
+     */
     void initializeLanguages() {
         HashSet<String> languageList = controller.getLanguages();
         Object[] sortedTerms = languageList.toArray();
@@ -58,7 +67,10 @@ public class View {
         query.setDisable(false);
     }
 
-    public void reset(ActionEvent actionEvent) {
+    /**
+     * The function which tells the controller to reset all the posting files and the dictionaries
+     */
+    public void reset() {
         File currentDirectory = new File(postingPath);
         String[] allFiles = currentDirectory.list();
         for (String file : allFiles) {
@@ -71,13 +83,19 @@ public class View {
         controller.resetDictionaries(true);
     }
 
+    /**
+     * Tells the controller to load the dictionaries
+     */
     public void loadDictionaries() {
         controller.loadDictionaries();
         loadDictionaries.setDisable(true);
         displayTermsDictionary.setDisable(false);
     }
 
-    public void displayTermsDictionary(ActionEvent actionEvent) {
+    /**
+     * The function that moves the user to the display of the terms
+     */
+    public void displayTermsDictionary() {
         Parent root = null;
         FXMLLoader myLoader = new FXMLLoader();
         try {
@@ -98,12 +116,23 @@ public class View {
         stage.show();
     }
 
+    /**
+     * The function that closes the application
+     */
     public void exit (){
         System.exit(0);
     }
 
+    /**
+     * Sets the controller to the given controller
+     * @param controller - The given controller
+     */
     public void setController(Controller controller) { this.controller = controller; }
 
+    /**
+     * Sets the posting path into the given path
+     * @param posting - The given path
+     */
     void setPostingPath(String posting) {
         postingPath = posting;
     }
