@@ -2,14 +2,15 @@ package Model;
 
 import java.io.*;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Scanner;
 
-/**
- * This class is responsible for all the file reading
- */
-class ReadFile {
+/*
+This class responsible for the reading of the files in the corpus contains documents and the stop words file.
+*/
+public class ReadFile {
     private Model model;
+    private File currentFile;
+    private String allFiles;
 
     /**
      * The default constructor
@@ -30,14 +31,14 @@ class ReadFile {
     void readCorpus(String path, boolean onlyCities) {
         File currentDirectory = new File(path);
         String[] allDirectories = currentDirectory.list();
-        assert allDirectories != null;
-        for (String allDirectory : allDirectories) {
-            if (allDirectory.equals("stop_words.txt"))
+        int size = allDirectories.length;
+        for (int i = 0; i < size; i ++) {
+            if (allDirectories[i].equals("stop_words.txt"))
                 continue;
-            File currentFile = new File(path + allDirectory);
-            System.out.println("Current file " + allDirectory);
-            String allFiles = currentFile.list()[0];
-            currentFile = new File(path + allDirectory + "/" + allFiles);
+            currentFile = new File(path + allDirectories[i]);
+            System.out.println("Current file " + allDirectories[i]);
+            allFiles = currentFile.list()[0];
+            currentFile = new File(path + allDirectories[i] + "/" + allFiles);
             try {
                 InputStream is = new FileInputStream(currentFile);
                 BufferedReader buf = new BufferedReader(new InputStreamReader(is));
@@ -62,12 +63,6 @@ class ReadFile {
             model.finishReading();
     }
 
-    /**
-     * Reads the stop words file, returns the stop words as a hash set of strings.
-     *
-     * @param path - Path to the stop words file.
-     * @return - Hash set of the stop words.
-     */
     public HashSet<String> readStopWords(String path) {
         HashSet<String> stopWords = new HashSet<>();
         try {

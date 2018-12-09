@@ -56,9 +56,8 @@ class Parse {
             splitDocument(document.getContent());
             currentDocument.setLength(tokens.size());
             for (int i = 0; i < tokens.size(); i++) {
-                checkNumberName(i);
-                if(tokens.get(i).length()>0 && tokens.get(i).charAt(0)=='<') continue;
                 if (tokens.get(i).length() > 0 && (!isStopWord(tokens.get(i)) || (tokens.get(i).equals("between") && (i < tokens.size() - 1 && tokens.get(i + 1).length() > 0 && Character.isDigit(tokens.get(i + 1).charAt(0)))))) {
+                    checkNumberName(i);
                     checkCity(i);
                     if (doStemming) {
                         stemmer.setTerm(tokens.get(i));
@@ -395,6 +394,8 @@ class Parse {
         if (str.length() == 0)
             return "";
         char current = str.charAt(0);
+        if (current == '<')
+            return "";
         while (!(Character.isLetter(current) || Character.isDigit(current) || current == '$')) {
             if (str.length() == 1) {
                 return str;
