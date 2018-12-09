@@ -36,7 +36,7 @@ class ReadFile {
                 continue;
             File currentFile = new File(path + allDirectory);
             System.out.println("Current file " + allDirectory);
-            String allFiles = Objects.requireNonNull(currentFile.list())[0];
+            String allFiles = currentFile.list()[0];
             currentFile = new File(path + allDirectory + "/" + allFiles);
             try {
                 InputStream is = new FileInputStream(currentFile);

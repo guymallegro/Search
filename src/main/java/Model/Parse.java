@@ -57,6 +57,7 @@ class Parse {
             currentDocument.setLength(tokens.size());
             for (int i = 0; i < tokens.size(); i++) {
                 checkNumberName(i);
+                if(tokens.get(i).length()>0 && tokens.get(i).charAt(0)=='<') continue;
                 if (tokens.get(i).length() > 0 && (!isStopWord(tokens.get(i)) || (tokens.get(i).equals("between") && (i < tokens.size() - 1 && tokens.get(i + 1).length() > 0 && Character.isDigit(tokens.get(i + 1).charAt(0)))))) {
                     checkCity(i);
                     if (doStemming) {
@@ -430,7 +431,7 @@ class Parse {
      * This function adds a term to the dictionary
      *
      * @param term - The term to add
-     * @param i    -THe position the term was found at
+     * @param i    -The position the term was found at
      */
     private void addTerm(String term, int i) {
         if (term.length() > 1 || (term.length() == 1 && Character.isDigit(term.charAt(0)))) {
@@ -625,24 +626,6 @@ class Parse {
                     result += 80;
                 } else if (str.equals("ninety")) {
                     result += 90;
-                } else if (str.equals("hundred")) {
-                    result *= 100;
-                } else if (str.equals("thousand")) {
-                    result *= 1000;
-                    finalResult += result;
-                    result = 0;
-                } else if (str.equals("million")) {
-                    result *= 1000000;
-                    finalResult += result;
-                    result = 0;
-                } else if (str.equals("billion")) {
-                    result *= 1000000000;
-                    finalResult += result;
-                    result = 0;
-                } else if (str.equals("trillion")) {
-                    result *= 1000000000000L;
-                    finalResult += result;
-                    result = 0;
                 } else {
                     tokens.set(checking, str);
                 }

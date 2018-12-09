@@ -4,9 +4,6 @@ import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.stage.Stage;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 public class Dictionary {
 
     /**

@@ -24,7 +24,7 @@ public class Model {
     StringBuilder lines;
     private CityChecker cityChecker;
     private String postingPathDestination;
-    private int nomOfDocs = 11800;
+    private int nomOfDocs = 8000;
     private HashSet<String> languages;
     private ArrayList<Document> documents;
     private HashSet<String> stopWords;
@@ -167,7 +167,7 @@ public class Model {
                 for (int i = 0; i < size; i++)
                     parse.parseDocument(documents.get(i));
                 index();
-                nomOfDocs = 11800;
+                nomOfDocs = 8000;
             }
         }
     }
@@ -219,9 +219,9 @@ public class Model {
             line.append(documentsDictionary.get(sortedDocuments[i]).get(2));
             line.append(",");
             line.append(documentsDictionary.get(sortedDocuments[i]).get(3));
-            if (!documentsDictionary.get(sortedDocuments[i]).get(3).equals("")) {
+            if (!documentsDictionary.get(sortedDocuments[i]).get(4).equals("")) {
                 line.append(",");
-                line.append(documentsDictionary.get(sortedDocuments[i]).get(3));
+                line.append(documentsDictionary.get(sortedDocuments[i]).get(4));
             }
             lines.add(line.toString());
             line.setLength(0);
@@ -261,7 +261,7 @@ public class Model {
                 continue;
             } else {
                 postingLine.append("<");
-                postingLine.append(sortedCities[i]);
+                postingLine.append(sortedCities[i].toString().toUpperCase());
                 postingLine.append(": ");
                 Object[] locations = citiesDictionary.get(sortedCities[i]).getLocationsInDocuments().keySet().toArray();
                 for (int l = 0; l < locations.length; l++) {

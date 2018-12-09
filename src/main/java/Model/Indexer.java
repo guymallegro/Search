@@ -147,7 +147,7 @@ class Indexer {
             }
             if (!toWrite.toString().equals("~")) {
                 if (!Character.isDigit(toWrite.charAt(1)) && toWrite.charAt(1) != currentPartOfPostFile) {
-                    //      changePostFile(toWrite.charAt(1));
+                          changePostFile(toWrite.charAt(1));
                 }
                 String current = toWrite.toString().substring(1, toWrite.toString().indexOf('^'));
                 if (Character.isUpperCase(current.charAt(0))) {
@@ -178,13 +178,18 @@ class Indexer {
     }
 
     private void removeTempPostFiles() {
-        String[] filesToDelete = new String[currentAmountTempPostFiles];
         for (int i = 0; i < currentAmountTempPostFiles; i++) {
-            //      filesToDelete[i] = ""
+            File currentFile = new File(postingPath +"\\"+ "post" + i + ".txt");
+            currentFile.delete();
         }
     }
 
-    //@TODO Ask what is this doing?
+    /**
+     * Changes the format used at the temp post files to the format used at the final post files.
+     *
+     * @param line - The line before the new format
+     * @return - The line after the new format
+     */
     private StringBuilder lastLineVersion(String line) {
         StringBuilder ans = new StringBuilder();
         if (line.length() == 0)
@@ -201,7 +206,13 @@ class Indexer {
         return ans;
     }
 
-    //@TODO Ask what is this doing?
+    /**
+     * Accepts two strings, calculates the gaps and merges them into one string.
+     *
+     * @param toWrite - The first string
+     * @param next    - The second string
+     * @return - The two strings merged
+     */
     private StringBuilder calculateGaps(String toWrite, String next) {
         String[] term = toWrite.split(";");
         term[2] = term[2].substring(0, term[2].indexOf('!'));
