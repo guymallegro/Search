@@ -8,6 +8,7 @@ import java.util.HashSet;
  * The parsing class
  */
 class Parse {
+    static int counter = 0;
     private Model model;
     private Stemmer stemmer;
     private HashSet<String> stopWords;
@@ -57,7 +58,7 @@ class Parse {
             currentDocument.setLength(tokens.size());
             for (int i = 0; i < tokens.size(); i++) {
                 if (tokens.get(i).length() > 0 && (!isStopWord(tokens.get(i)) || (tokens.get(i).equals("between") && (i < tokens.size() - 1 && tokens.get(i + 1).length() > 0 && Character.isDigit(tokens.get(i + 1).charAt(0)))))) {
-                    checkNumberName(i);
+                    //checkNumberName(i);
                     checkCity(i);
                     if (doStemming) {
                         stemmer.setTerm(tokens.get(i));
@@ -79,8 +80,9 @@ class Parse {
                     } else if (date.containsKey(tokens.get(i))) {
                         if (i + 1 < tokens.size()) {
                             if (i < tokens.size() - 1 && tokens.get(i + 1).matches("[0-9]+")) {
-                                if (tokens.get(i + 1).length() == 4)
+                                if (tokens.get(i + 1).length() == 4) {
                                     tokens.set(i, tokens.get(i + 1) + "-" + date.get(tokens.get(i)));
+                                }
                                 else if (tokens.get(i + 1).length() == 0) {
                                 } else
                                     tokens.set(i, date.get(tokens.get(i)) + "-" + String.format("%02d", Integer.parseInt(tokens.get(i + 1))));
@@ -132,8 +134,10 @@ class Parse {
             StringBuilder ans = new StringBuilder();
             for (int j = 0; j < range.length; j++) {
                 tokens.set(i, range[j]);
-                if (range[j].matches("[0-9]+"))
-                    checkNumber(i);
+                if (range[j].matches("[0-9]+")) {
+                    if (checkNumber(i))
+                        counter--;
+                }
                 else
                     parseByLetters(i);
                 addTerm(tokens.get(i), i);
@@ -231,6 +235,7 @@ class Parse {
                 if (i + 2 < tokens.size()) {
                     if (tokens.get(i + 2).matches("[0-9][0-9][0-9][0-9]")) {
                         addTerm(tokens.get(i + 2) + "-" + date.get(tokens.get(i + 1)), i);
+                        tokens.set(i + 1, "");
                         tokens.set(i + 2, "");
                     }
                 }
@@ -328,11 +333,15 @@ class Parse {
             if (num < 1000) {
                 tokens.set(i, parseNumber(num) + numbers.get(tokens.get(i + 1)));
                 tokens.set(i + 1, "");
+                if (!model.getTermsDictionary().containsKey(tokens.get(i)))
+                    counter++;
                 return true;
             }
         }
         if (num < 1000) {
             tokens.set(i, parseNumber(num));
+            if (!model.getTermsDictionary().containsKey(tokens.get(i)))
+                counter++;
             return true;
         }
         if (num >= 1000) {
@@ -343,6 +352,8 @@ class Parse {
             } else {
                 tokens.set(i, parseNumber(num / 1000000000) + "B");
             }
+            if (!model.getTermsDictionary().containsKey(tokens.get(i)))
+                counter++;
             return true;
         }
         return false;
