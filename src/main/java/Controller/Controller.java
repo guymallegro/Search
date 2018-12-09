@@ -1,6 +1,9 @@
 package Controller;
 
 import Model.Model;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 
 /**
@@ -47,8 +50,8 @@ public class Controller {
      * Tells the model to return the terms list
      * @return - List of terms
      */
-    public StringBuilder getTermsToDisplay(){
-        return model.getLines();
+    public HashMap<String, ArrayList<Object>> getTermsToDisplay(){
+        return model.getTermsDictionary();
     }
 
     /**

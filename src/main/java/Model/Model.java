@@ -21,7 +21,6 @@ public class Model {
     private ReadFile fileReader;
     private Indexer indexer;
     private Document document;
-    StringBuilder lines;
     private CityChecker cityChecker;
     private String postingPathDestination;
     private int nomOfDocs = 8000;
@@ -57,9 +56,10 @@ public class Model {
     /**
      * The function that manages the processing of the corpus. Tells the read-file class to read the corpus,index them,
      * and write the dictionaries to the disk.
-     * @param filesPath - Path to the corpus
+     *
+     * @param filesPath     - Path to the corpus
      * @param stopWordsPath - Path to the stop words file
-     * @param postingpath - Path to save the posting files
+     * @param postingpath   - Path to save the posting files
      */
     public void readFiles(String filesPath, String stopWordsPath, String postingpath) {
         indexer.initCurrentPostFile();
@@ -101,12 +101,12 @@ public class Model {
     /**
      * Temporary function to find the most common and uncommon terms
      */
-    private void printMostCommon(){
+    private void printMostCommon() {
         Iterator it = termsDictionary.entrySet().iterator();
-        HashMap<String,Integer> termsAmount = new HashMap<>();
+        HashMap<String, Integer> termsAmount = new HashMap<>();
         while (it.hasNext()) {
-            Entry pair = (Entry)it.next();
-            termsAmount.put((String) pair.getKey(),((Integer)((ArrayList)pair.getValue()).get(0)));
+            Entry pair = (Entry) it.next();
+            termsAmount.put((String) pair.getKey(), ((Integer) ((ArrayList) pair.getValue()).get(0)));
         }
         Set<Entry<String, Integer>> set = termsAmount.entrySet();
         List<Entry<String, Integer>> list = new ArrayList<Entry<String, Integer>>(
@@ -123,6 +123,7 @@ public class Model {
     /**
      * Function which receives a file as a string, splits it into documents with the relevant data and sends them
      * to parsing.
+     *
      * @param fileAsString - The file as a string file
      */
     void processFile(String fileAsString) {
@@ -181,7 +182,7 @@ public class Model {
         StringBuilder line = new StringBuilder();
         List<String> lines = new LinkedList<>();
         int size = sortedTerms.length;
-        for (int i = 1; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             line.append("<");
             line.append(sortedTerms[i]);
             line.append(":");
@@ -298,13 +299,11 @@ public class Model {
      * Loads the terms dictionary from the disk
      */
     public void loadTermsDictionary() {
-        lines = new StringBuilder();
         String path = postingPathDestination + "/termsDictionary.txt";
         if (isStemming)
             path = postingPathDestination + "/termsDictionaryWithStemming.txt";
         File file = new File(path);
         try {
-            lines = new StringBuilder();
             Scanner scanner = new Scanner(file);
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
@@ -313,12 +312,6 @@ public class Model {
                 ArrayList<Object> attributes = new ArrayList<>();
                 attributes.add(0, info[0]);
                 termsDictionary.put(term, attributes);
-                lines.append("<");
-                lines.append(term);
-                lines.append(": (");
-                lines.append(info[0]);
-                lines.append(")");
-                lines.append("\n");
             }
         } catch (FileNotFoundException e) {
             System.out.println("Cannot open the terms dictionary");
@@ -368,7 +361,7 @@ public class Model {
                 String[] info = line.substring(line.indexOf(":") + 1).split(",");
                 String city = line.substring(1, line.indexOf(":"));
                 City cityInfo = new City(city);
-                if(info.length > 2) {
+                if (info.length > 2) {
                     cityInfo.setCountryName(info[0]);
                     cityInfo.setCurrency(info[1]);
                     cityInfo.setPopulation(info[2]);
@@ -383,6 +376,7 @@ public class Model {
 
     /**
      * This function recieves a file as a string, splits it into documents and puts the city into the cities dictionary.
+     *
      * @param fileAsString - The file as a string
      */
     void addCitiesToDictionary(String fileAsString) { // change to split by the tag itself
@@ -400,6 +394,7 @@ public class Model {
 
     /**
      * Adds a city to the dictionary
+     *
      * @param city - The city's name
      */
     private void addCityToDictionary(String city) {
@@ -433,6 +428,7 @@ public class Model {
 
     /**
      * Resets the dictionaries
+     *
      * @param resetCities - If to reset the cities dictionary too
      */
     public void resetDictionaries(boolean resetCities) {
@@ -444,6 +440,7 @@ public class Model {
 
     /**
      * Cleans a string from spaces
+     *
      * @param str - The string to clean
      * @return - The clean string
      */
@@ -472,18 +469,8 @@ public class Model {
     }
 
     /**
-     * Retruns the terms dictionary lines
-     * @return - The lines as a string builder
-     */
-    public StringBuilder getLines() {
-        if(lines == null || lines.length() == 0){
-            loadTermsDictionary();
-        }
-        return lines;
-    }
-
-    /**
      * Returns the first word of a given string
+     *
      * @param str - The given string
      * @return - The first word of the given string
      */
@@ -503,6 +490,7 @@ public class Model {
 
     /**
      * Returns the languages
+     *
      * @return - The languages
      */
     public HashSet<String> getLanguages() {
@@ -511,14 +499,16 @@ public class Model {
 
     /**
      * Returns the terms dictionary
+     *
      * @return - The terms dictionary
      */
-    HashMap<String, ArrayList<Object>> getTermsDictionary() {
+    public HashMap<String, ArrayList<Object>> getTermsDictionary() {
         return termsDictionary;
     }
 
     /**
      * Returns the documents dictionary
+     *
      * @return - The documents dictionary
      */
     HashMap<Integer, ArrayList<Object>> getDocsDictionary() {
@@ -527,6 +517,7 @@ public class Model {
 
     /**
      * Returns the cities dictionary
+     *
      * @return - The cities dictionary
      */
     HashMap<String, City> getCitiesDictionary() {
@@ -535,6 +526,7 @@ public class Model {
 
     /**
      * Returns the total amount of documents
+     *
      * @return - THe amount of documetns
      */
     public Integer getTotalDocuments() {
@@ -543,6 +535,7 @@ public class Model {
 
     /**
      * Returns the total amount of terms
+     *
      * @return - The amount of terms
      */
     public Integer getTotalTerms() {
@@ -551,6 +544,7 @@ public class Model {
 
     /**
      * Returns the total amount of time it took to parse and index the corpus
+     *
      * @return - The total time it took
      */
     public Double getTotalTime() {
@@ -559,6 +553,7 @@ public class Model {
 
     /**
      * Tells if stemming is done
+     *
      * @param selected - If stemming is done
      */
     public void setStemming(boolean selected) {
