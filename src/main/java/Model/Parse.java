@@ -79,8 +79,9 @@ class Parse {
                     } else if (date.containsKey(tokens.get(i))) {
                         if (i + 1 < tokens.size()) {
                             if (i < tokens.size() - 1 && tokens.get(i + 1).matches("[0-9]+")) {
-                                if (tokens.get(i + 1).length() == 4)
+                                if (tokens.get(i + 1).length() == 4) {
                                     tokens.set(i, tokens.get(i + 1) + "-" + date.get(tokens.get(i)));
+                                }
                                 else if (tokens.get(i + 1).length() == 0) {
                                 } else
                                     tokens.set(i, date.get(tokens.get(i)) + "-" + String.format("%02d", Integer.parseInt(tokens.get(i + 1))));
@@ -231,6 +232,7 @@ class Parse {
                 if (i + 2 < tokens.size()) {
                     if (tokens.get(i + 2).matches("[0-9][0-9][0-9][0-9]")) {
                         addTerm(tokens.get(i + 2) + "-" + date.get(tokens.get(i + 1)), i);
+                        tokens.set(i + 1, "");
                         tokens.set(i + 2, "");
                     }
                 }
@@ -320,7 +322,6 @@ class Parse {
         try {
             num = Double.parseDouble(tokens.get(i));
         } catch (Exception e) {
-            System.out.println("Illegal word " + tokens.get(i) + " current doc: " + currentDocument.getIndexId());
         }
         if (i + 1 < tokens.size() && numbers.containsKey(tokens.get(i + 1))) {
             if (tokens.get(i + 1).equals("Trillion"))
@@ -459,19 +460,6 @@ class Parse {
                     currentDocument.addTermToText(newTerm);
                 }
             }
-//            if (term.equals("NEW-TEST")) {
-//                toTest = true;
-//                return;
-//            }
-//            if (toTest) {
-//                if (term.equals(tests[currentTest])) {
-//                    System.out.println("Successful test : " + term);
-//                } else {
-//                    System.out.println("FAILED TEST!!! Got : " + term + " , Expected " + tests[currentTest]);
-//                }
-//                toTest = false;
-//                currentTest++;
-//            }
         }
     }
 

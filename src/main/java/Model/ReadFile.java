@@ -36,7 +36,6 @@ public class ReadFile {
             if (allDirectories[i].equals("stop_words.txt"))
                 continue;
             currentFile = new File(path + allDirectories[i]);
-            System.out.println("Current file " + allDirectories[i]);
             allFiles = currentFile.list()[0];
             currentFile = new File(path + allDirectories[i] + "/" + allFiles);
             try {

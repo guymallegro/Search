@@ -77,9 +77,6 @@ public class Model {
         writeTermsDictionary();
         writeDocsDictionary();
         writeCitiesDictionary();
-        System.out.println("--------------------------------------");
-        System.out.println("-----------------Complete-------------");
-        printMostCommon();
         Iterator it = citiesDictionary.entrySet().iterator();
         while (it.hasNext()) {
             Entry pair = (Entry) it.next();
@@ -88,36 +85,9 @@ public class Model {
             if (((City) pair.getValue()).isCapital())
                 capital++;
         }
-        System.out.println("Total amount of countries : " + countries.size());
-        System.out.println("Total amount of cities : " + citiesDictionary.size());
-        System.out.println("Total amount of capital cities : " + capital);
-        System.out.println("The most common city in a single document is " + City.maxCity);
-        System.out.println("The amount of the most common city is " + City.maxAmount);
         long tEnd = System.currentTimeMillis();
         long tDelta = tEnd - tStart;
         totalTime = tDelta / 1000.0;
-    }
-
-    /**
-     * Temporary function to find the most common and uncommon terms
-     */
-    private void printMostCommon() {
-        Iterator it = termsDictionary.entrySet().iterator();
-        HashMap<String, Integer> termsAmount = new HashMap<>();
-        while (it.hasNext()) {
-            Entry pair = (Entry) it.next();
-            termsAmount.put((String) pair.getKey(), ((Integer) ((ArrayList) pair.getValue()).get(0)));
-        }
-        Set<Entry<String, Integer>> set = termsAmount.entrySet();
-        List<Entry<String, Integer>> list = new ArrayList<Entry<String, Integer>>(
-                set);
-        Collections.sort(list, new Comparator<Map.Entry<String, Integer>>() {
-            public int compare(Map.Entry<String, Integer> o1,
-                               Map.Entry<String, Integer> o2) {
-                return o2.getValue().compareTo(o1.getValue());
-            }
-        });
-        System.out.println("finish");
     }
 
     /**
@@ -380,15 +350,15 @@ public class Model {
      * @param fileAsString - The file as a string
      */
     void addCitiesToDictionary(String fileAsString) { // change to split by the tag itself
-        String[] allDocuments = fileAsString.split("<DOC>");
+        String[] allDocuments = fileAsString.split("<F P=104>");
         String city = "";
         int size = allDocuments.length;
         for (int i = 0; i < size; i++) {
             if (allDocuments[i].length() == 0 || document.equals(" ")) continue;
-            int startTagIndex = allDocuments[i].indexOf("<F P=104>");
-            int endTagIndex = allDocuments[i].indexOf("</F>", startTagIndex);
-            if (startTagIndex != -1 && endTagIndex != -1)
-                addCityToDictionary(allDocuments[i].substring(startTagIndex + 9, endTagIndex));
+            int endTagIndex = allDocuments[i].indexOf("</F>");
+            if (endTagIndex != -1) {
+                addCityToDictionary(allDocuments[i].substring(0, endTagIndex));
+            }
         }
     }
 
@@ -399,7 +369,7 @@ public class Model {
      */
     private void addCityToDictionary(String city) {
         city = getFirstWord(city);
-        if (city.length() > 1) {
+        if (city.length() > 0 && Character.isLetter(city.charAt(0))) {
             if (!citiesDictionary.containsKey(city)) {
                 citiesDictionary.put(city, cityChecker.getCityInfo(city));
             }

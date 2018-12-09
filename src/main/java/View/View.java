@@ -84,10 +84,7 @@ public class View {
         String[] allFiles = currentDirectory.list();
         for (String file : allFiles) {
             File currentFile = new File(postingPath + "\\" + file);
-            if (currentFile.delete())
-                System.out.println("Current file " + file + " is closed");
-            else
-                System.out.println("no deletion");
+            currentFile.delete();
         }
         controller.resetDictionaries(true);
     }

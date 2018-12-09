@@ -98,10 +98,7 @@ class Indexer {
         out = new PrintWriter(bw);
         for (int i = 0; i < currentAmountTempPostFiles; i++) {
             try {
-                if (isStemming)
-                    scanners[i] = new Scanner(new File(postingPath + "/post" + i + "WithStemming.txt"));
-                else
-                    scanners[i] = new Scanner(new File(postingPath + "/post" + i + ".txt"));
+                scanners[i] = new Scanner(new File(postingPath + "/post" + i + ".txt"));
             } catch (Exception e) {
                 System.out.println("Failed to create a scanner");
             }
