@@ -8,7 +8,6 @@ import java.util.HashSet;
  * The parsing class
  */
 class Parse {
-    static int counter = 0;
     private Model model;
     private Stemmer stemmer;
     private HashSet<String> stopWords;
@@ -134,10 +133,8 @@ class Parse {
             StringBuilder ans = new StringBuilder();
             for (int j = 0; j < range.length; j++) {
                 tokens.set(i, range[j]);
-                if (range[j].matches("[0-9]+")) {
-                    if (checkNumber(i))
-                        counter--;
-                }
+                if (range[j].matches("[0-9]+"))
+                    checkNumber(i);
                 else
                     parseByLetters(i);
                 addTerm(tokens.get(i), i);
@@ -333,15 +330,11 @@ class Parse {
             if (num < 1000) {
                 tokens.set(i, parseNumber(num) + numbers.get(tokens.get(i + 1)));
                 tokens.set(i + 1, "");
-                if (!model.getTermsDictionary().containsKey(tokens.get(i)))
-                    counter++;
                 return true;
             }
         }
         if (num < 1000) {
             tokens.set(i, parseNumber(num));
-            if (!model.getTermsDictionary().containsKey(tokens.get(i)))
-                counter++;
             return true;
         }
         if (num >= 1000) {
@@ -352,8 +345,6 @@ class Parse {
             } else {
                 tokens.set(i, parseNumber(num / 1000000000) + "B");
             }
-            if (!model.getTermsDictionary().containsKey(tokens.get(i)))
-                counter++;
             return true;
         }
         return false;
