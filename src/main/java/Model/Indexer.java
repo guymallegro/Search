@@ -25,8 +25,9 @@ class Indexer {
 
     /**
      * The constructor of the indexer
-     * @param model - The model
-     * @param allTerms - All the terms which were found
+     *
+     * @param model     - The model
+     * @param allTerms  - All the terms which were found
      * @param documents - All the documents which were found
      */
     Indexer(Model model, HashMap<String, Term> allTerms, ArrayList<Document> documents) {
@@ -39,6 +40,7 @@ class Indexer {
 
     /**
      * Creates temporary posting files for all the found terms, each post file is created sorted.
+     *
      * @param path - Path to the required position for the post files to be created
      */
     void addAllTerms(String path) {
@@ -64,10 +66,7 @@ class Indexer {
             lines.add(line.toString());
             line.setLength(0);
         }
-        if (isStemming)
-            path += "/post" + currentAmountTempPostFiles + "WithStemming.txt";
-        else
-            path += "/post" + currentAmountTempPostFiles + ".txt";
+        path += "/post" + currentAmountTempPostFiles + ".txt";
         Path file = Paths.get(path);
         try {
             Files.write(file, lines, Charset.forName("UTF-8"));
@@ -174,7 +173,16 @@ class Indexer {
         for (int i = 0; i < scanners.length; i++) {
             scanners[i].close();
         }
+        removeTempPostFiles();
         out.close();
+    }
+
+    private void removeTempPostFiles() {
+        String[] filesToDelete = new String[currentAmountTempPostFiles];
+        for (int i = 0; i < currentAmountTempPostFiles; i++) {
+            filesToDelete[i] = ""
+        }
+
     }
 
     //@TODO Ask what is this doing?
@@ -234,6 +242,7 @@ class Indexer {
     /**
      * Adds the term to the hash map dictionary, the key is the terms name, and the value is the total amount the term was found.
      * If the term is already in the dictionary then update it's total amount.
+     *
      * @param term - The term to add to the dictionary
      */
     private void addTermToDictionary(String term) {
@@ -277,6 +286,7 @@ class Indexer {
 
     /**
      * Tells the indexer if stemming is being done
+     *
      * @param stemming - If stemming is being done
      */
     void setStemming(boolean stemming) {
