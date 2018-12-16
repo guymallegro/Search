@@ -3,6 +3,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -10,8 +11,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<?import javafx.scene.control.MenuButton?>
-<GridPane onMouseEntered="#initCities" alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.View">
+<GridPane alignment="center" hgap="10" onMouseEntered="#initCities" vgap="10" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.View">
    <children>
       <AnchorPane prefHeight="365.0" prefWidth="605.0">
          <children>
@@ -26,12 +26,12 @@
              <Button fx:id="displayTermsDictionary" disable="true" layoutY="95.0" mnemonicParsing="false" onAction="#displayTermsDictionary" text="Display Terms" />
              <Button fx:id="loadDictionaries" layoutY="49.0" mnemonicParsing="false" onAction="#loadDictionaries" text="Load Dictionaries" />
             <Button fx:id="exit" layoutX="552.0" mnemonicParsing="false" onAction="#exit" text="exit" />
-            <Button fx:id="run" layoutX="280.0" layoutY="334.0" mnemonicParsing="false" onAction="#run" text="Run">
+            <Button fx:id="run" layoutX="355.0" layoutY="324.0" mnemonicParsing="false" onAction="#run" text="Run">
                <font>
                   <Font name="Segoe UI Italic" size="18.0" />
                </font>
             </Button>
-             <MenuButton fx:id="citiesSelect" layoutX="340.0" layoutY="210.0" prefWidth="150.0" text="cities"/>
+             <MenuButton fx:id="citiesSelect" layoutX="340.0" layoutY="210.0" prefWidth="150.0" text="cities" />
          </children>
       </AnchorPane>
    </children>
