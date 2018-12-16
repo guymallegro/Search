@@ -17,7 +17,7 @@ class Indexer {
     private int currentAmountTempPostFiles;
     private BufferedWriter bw;
     private PrintWriter out;
-    private char currentPartOfPostFile = '~';
+    private String currentPartOfPostFile = "~";
     private FileWriter fw;
     private String postingPath;
     private boolean isStemming;
@@ -143,8 +143,8 @@ class Indexer {
                 currentLine[currentIndex] = "~";
             }
             if (!toWrite.toString().equals("~")) {
-                if (!Character.isDigit(toWrite.charAt(1)) && toWrite.charAt(1) != currentPartOfPostFile) {
-                    changePostFile(toWrite.charAt(1));
+                if (!Character.isDigit(toWrite.charAt(1)) && toWrite.charAt(1) != currentPartOfPostFile.charAt(0)) {
+                    changePostFile(""+toWrite.toString().charAt(1));
                 }
                 String current = toWrite.toString().substring(1, toWrite.toString().indexOf('^'));
                 if (Character.isUpperCase(current.charAt(0))) {
@@ -234,11 +234,13 @@ class Indexer {
         return ans;
     }
 
-    private void changePostFile(char nextFile) {
+    private void changePostFile(String nextFile) {
         out.close();
+        if (nextFile.equals("."))
+            nextFile = "numbers";
         currentPartOfPostFile = nextFile;
         try {
-            if (Character.isLowerCase(nextFile)) {
+            if (Character.isLowerCase(nextFile.charAt(0))) {
                 File file = new File(postingPath + "/post" + currentPartOfPostFile + ".txt");
                 FileWriter fr = new FileWriter(file, true);
                 bw = new BufferedWriter(fr);

@@ -30,7 +30,6 @@ public class Browser {
     public void browseCorpus() {
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("Corpus Directory");
-        //chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Directory", "*"));
         Stage stage = new Stage();
         File selectedDirectory = chooser.showDialog(stage);
         if (selectedDirectory != null) {
@@ -44,7 +43,6 @@ public class Browser {
     public void browsePosting() {
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("Posting Directory");
-        //chooser.getExtensionFilters().add(new DirectoryChooser().ExtensionFilter("Directory", ""));
         Stage stage = new Stage();
         File selectedDirectory = chooser.showDialog(stage);
         if (selectedDirectory != null) {
@@ -63,8 +61,8 @@ public class Browser {
         else if (postingPath.getText().equals("Enter Path"))
             showAlert("enter please a posting destination directory");
         else {
-            myController.setCorpusPath(corpusPath.getText() + "\\");
-            myController.setStopWordsPath(corpusPath.getText() + "\\stop_words.txt");
+            myController.setCorpusPath(corpusPath.getText() + "/");
+            myController.setStopWordsPath(corpusPath.getText() + "/stop_words.txt");
             myController.setPostingPath(postingPath.getText());
             myView.setPostingPath(postingPath.getText());
             Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
