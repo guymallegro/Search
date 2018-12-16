@@ -144,7 +144,7 @@ class Indexer {
             }
             if (!toWrite.toString().equals("~")) {
                 if (!Character.isDigit(toWrite.charAt(1)) && toWrite.charAt(1) != currentPartOfPostFile.charAt(0)) {
-                    changePostFile(""+toWrite.toString().charAt(1));
+                    changePostFile("" + toWrite.toString().charAt(1));
                 }
                 String current = toWrite.toString().substring(1, toWrite.toString().indexOf('^'));
                 if (Character.isUpperCase(current.charAt(0))) {

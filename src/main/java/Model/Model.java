@@ -1,5 +1,8 @@
 package Model;
 
+import jdk.nashorn.internal.runtime.regexp.joni.SearchAlgorithm;
+import sun.plugin2.os.windows.SECURITY_ATTRIBUTES;
+
 import java.util.*;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -34,8 +37,8 @@ public class Model {
     private int documentsAmount;
     private int termsAmount;
     private double totalTime;
-    private int capital = 0;
     private ArrayList<String> countries = new ArrayList<>();
+    private Searcher searcher;
 
     /**
      * The model default constructor
@@ -77,17 +80,10 @@ public class Model {
         writeTermsDictionary();
         writeDocsDictionary();
         writeCitiesDictionary();
-        Iterator it = citiesDictionary.entrySet().iterator();
-        while (it.hasNext()) {
-            Entry pair = (Entry) it.next();
-            if (!countries.contains(((City) pair.getValue()).getCountryName()))
-                countries.add(((City) pair.getValue()).getCountryName());
-            if (((City) pair.getValue()).isCapital())
-                capital++;
-        }
         long tEnd = System.currentTimeMillis();
         long tDelta = tEnd - tStart;
         totalTime = tDelta / 1000.0;
+        searcher = new Searcher(termsDictionary, documentsDictionary, citiesDictionary, this);
     }
 
     /**
@@ -530,5 +526,10 @@ public class Model {
         isStemming = selected;
         indexer.setStemming(selected);
         parse.setStemming(selected);
+    }
+
+    public void findRelevantDocuments(String query) {
+        searcher.findRelevantDocs(query);
+
     }
 }

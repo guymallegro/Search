@@ -117,4 +117,8 @@ public class Controller {
     public void setPostingPath(String postingPath) {
         this.postingPath = postingPath;
     }
+
+    public void findRelevantDocuments(String query){
+        model.findRelevantDocuments(query);
+    }
 }

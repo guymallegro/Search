@@ -22,7 +22,7 @@ class Parse {
     private String[] tests;
     private ArrayList<String> tokens;
     private int currentTest = 0;
-    private Document currentDocument;
+    private ADocument currentDocument;
     private boolean toTest = false;
 
     /**
@@ -50,7 +50,7 @@ class Parse {
      *
      * @param document - The given document to parse.
      */
-    void parseDocument(Document document) {
+    void parseDocument(ADocument document) {
         currentDocument = document;
         if (document.getContent() != null) {
             splitDocument(document.getContent());
