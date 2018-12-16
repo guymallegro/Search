@@ -6,12 +6,10 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Group;
-import javafx.scene.ParallelCamera;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -24,46 +22,43 @@ import java.util.*;
  */
 public class View {
     public MenuButton citiesSelect;
-    private String postingPath;
+    public TextField corpusPath;
+    public TextField postingPath;
+    public Button browseCorpus;
+    public Button browsePosting;
     private Controller controller;
-    public javafx.scene.control.Button start;
+    public javafx.scene.control.Button processCorpus;
     public javafx.scene.control.Button run;
     public javafx.scene.control.Button reset;
-    public javafx.scene.control.Button exit;
     public javafx.scene.control.Button loadDictionaries;
     public javafx.scene.control.Button displayTermsDictionary;
     public javafx.scene.control.TextField query;
     public javafx.scene.control.CheckBox stemming;
     public javafx.scene.control.ComboBox languages;
     public javafx.scene.control.ListView<String> allTerms;
-    private Parent root;
     boolean toInitCities = true;
     private HashSet<String> selectedCities;
 
     /**
      * The function which moves the user to the browser page
      */
-    public void startWindow() {
-        root = null;
-        FXMLLoader myLoader = new FXMLLoader();
-        try {
-            myLoader.setLocation(getClass().getResource("/fxml/browser.fxml"));
-            root = myLoader.load();
-        } catch (IOException e) {
-            e.printStackTrace();
+    public void processCorpus(ActionEvent actionEvent) {
+        if (corpusPath.getText().equals("Enter Path"))
+            showAlert("enter please a corpus directory");
+        else if (postingPath.getText().equals("Enter Path"))
+            showAlert("enter please a posting destination directory");
+        else {
+            controller.setCorpusPath(corpusPath.getText() + "/");
+            controller.setStopWordsPath(corpusPath.getText() + "/stop_words.txt");
+            controller.setPostingPath(postingPath.getText());
+            Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+            window.close();
+            controller.readFiles();
+            initializeLanguages();
+            reset.setDisable(false);
+            showFinishMessage();
         }
-        Scene scene = new Scene(root, 380, 320);
-        scene.getStylesheets().add(getClass().getResource("/sample.css").toExternalForm());
-        Stage stage = new Stage();
-        stage.setScene(scene);
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.setTitle("Start");
-        Browser browser = myLoader.getController();
-        browser.setController(controller);
-        browser.setView(this);
         controller.setStemming(stemming.isSelected());
-        stage.show();
-        loadDictionaries.setDisable(true);
         displayTermsDictionary.setDisable(false);
     }
 
@@ -115,13 +110,18 @@ public class View {
      * The function which tells the controller to reset all the posting files and the dictionaries
      */
     public void reset() {
-        File currentDirectory = new File(postingPath);
-        String[] allFiles = currentDirectory.list();
-        for (String file : allFiles) {
-            File currentFile = new File(postingPath + "\\" + file);
-            currentFile.delete();
+        try {
+            File currentDirectory = new File(postingPath.getText());
+            String[] allFiles = currentDirectory.list();
+            for (String file : allFiles) {
+                File currentFile = new File(postingPath + "\\" + file);
+                currentFile.delete();
+            }
+            controller.resetDictionaries(true);
+        } catch (Exception e) {
+            System.out.println("Some of the information is already clear");
         }
-        controller.resetDictionaries(true);
+        loadDictionaries.setDisable(false);
     }
 
     /**
@@ -131,6 +131,7 @@ public class View {
         controller.loadDictionaries();
         loadDictionaries.setDisable(true);
         displayTermsDictionary.setDisable(false);
+        reset.setDisable(false);
     }
 
     /**
@@ -162,15 +163,8 @@ public class View {
     /**
      * The function that sends the query to the model to be processed
      */
-    public void run (){
+    public void run() {
         controller.findRelevantDocuments(query.getText());
-    }
-
-    /**
-     * The function that closes the application
-     */
-    public void exit() {
-        System.exit(0);
     }
 
     /**
@@ -182,17 +176,45 @@ public class View {
         this.controller = controller;
     }
 
+    public void browseCorpus() {
+        DirectoryChooser chooser = new DirectoryChooser();
+        chooser.setTitle("Corpus Directory");
+        Stage stage = new Stage();
+        File selectedDirectory = chooser.showDialog(stage);
+        if (selectedDirectory != null) {
+            corpusPath.setText(selectedDirectory.getPath());
+        }
+    }
+
+    public void browsePosting() {
+        DirectoryChooser chooser = new DirectoryChooser();
+        chooser.setTitle("Posting Directory");
+        Stage stage = new Stage();
+        File selectedDirectory = chooser.showDialog(stage);
+        if (selectedDirectory != null) {
+            postingPath.setText(selectedDirectory.getPath());
+        }
+    }
+
     /**
-     * Sets the posting path into the given path
+     * A function which shows an alret to the user showing the given string
      *
-     * @param posting - The given path
+     * @param property - The given string
      */
-    void setPostingPath(String posting) {
-        postingPath = posting;
+    private void showAlert(String property) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setContentText(property);
+        alert.showAndWait();
     }
 
-    public Parent getRoot() {
-        return root;
-    }
+    /**
+     * A function which shows the user the finish message with its required information
+     */
+    private void showFinishMessage() {
+        String property = "Number Of Documents : " + controller.getTotalDocuments() + "\n" + "Number Of Terms : " + controller.getTotalTerms() + "\nTotal Time : " + controller.getTotalTime() + " seconds";
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setContentText(property);
+        alert.showAndWait();
 
+    }
 }

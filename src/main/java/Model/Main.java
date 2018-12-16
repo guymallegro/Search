@@ -23,7 +23,7 @@ public class Main extends Application {
         FXMLLoader myLoader = new FXMLLoader();
         myLoader.setLocation(getClass().getResource("/fxml/sample.fxml"));
         root = myLoader.load();
-        Scene scene = new Scene(root, 600, 480);
+        Scene scene = new Scene(root, 600, 600);
         scene.getStylesheets().add(getClass().getResource("/sample.css").toExternalForm());
         primaryStage.setTitle("SearchMe");
         primaryStage.setScene(scene);
