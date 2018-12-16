@@ -13,7 +13,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map.Entry;
 
 /**
  * The model class
@@ -37,7 +36,6 @@ public class Model {
     private int documentsAmount;
     private int termsAmount;
     private double totalTime;
-    private ArrayList<String> countries = new ArrayList<>();
     private Searcher searcher;
 
     /**
@@ -486,7 +484,7 @@ public class Model {
      *
      * @return - The cities dictionary
      */
-    HashMap<String, City> getCitiesDictionary() {
+    public HashMap<String, City> getCitiesDictionary() {
         return citiesDictionary;
     }
 

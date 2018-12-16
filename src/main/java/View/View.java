@@ -1,6 +1,7 @@
 package View;
 
 import Controller.Controller;
+import Model.City;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -9,7 +10,7 @@ import javafx.scene.Group;
 import javafx.scene.ParallelCamera;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -22,6 +23,7 @@ import java.util.*;
  * The view class which represents the main view
  */
 public class View {
+    public MenuButton citiesSelect;
     private String postingPath;
     private Controller controller;
     public javafx.scene.control.Button start;
@@ -35,6 +37,9 @@ public class View {
     public javafx.scene.control.ComboBox languages;
     public javafx.scene.control.ListView<String> allTerms;
     private Parent root;
+    boolean toInitCities = true;
+    private HashSet<String> selectedCities;
+
     /**
      * The function which moves the user to the browser page
      */
@@ -74,6 +79,36 @@ public class View {
         }
         languages.setDisable(false);
         query.setDisable(false);
+
+
+    }
+
+    public void initCities() {
+        if (toInitCities) {
+            selectedCities = new HashSet<>();
+            final List<CheckMenuItem> items = new LinkedList<>();
+            HashMap<String, City> citiesDictionary = controller.getCitiesDictionary();
+            Map<Integer, Integer> map = new TreeMap(citiesDictionary);
+            Set set2 = map.entrySet();
+            Iterator iterator2 = set2.iterator();
+            while (iterator2.hasNext()) {
+                Map.Entry me2 = (Map.Entry) iterator2.next();
+                CheckMenuItem item = new CheckMenuItem(((City) me2.getValue()).getCityName());
+                item.setOnAction(a -> {
+                    if (selectedCities.contains(item.getText())) {
+                        selectedCities.remove(item.getText());
+                        System.out.println("Removed :" + item.getText());
+                    } else {
+                        selectedCities.add(item.getText());
+                        System.out.println("Selected :" + item.getText());
+                    }
+                });
+                items.add(item);
+
+            }
+            citiesSelect.getItems().addAll(items);
+            toInitCities = false;
+        }
     }
 
     /**
@@ -109,7 +144,7 @@ public class View {
         Iterator iterator2 = set2.iterator();
         while (iterator2.hasNext()) {
             Map.Entry me2 = (Map.Entry) iterator2.next();
-            allTerms.getItems().add(me2.getKey() + " (" + ((ArrayList) me2.getValue()).get(0)+")");
+            allTerms.getItems().add(me2.getKey() + " (" + ((ArrayList) me2.getValue()).get(0) + ")");
         }
         Scene scene = new Scene(new Group());
         stage.initModality(Modality.APPLICATION_MODAL); //Lock the window until it closes
