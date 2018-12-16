@@ -65,6 +65,14 @@ public class Term {
     }
 
     /**
+     * Returns the value of the term
+     * @return - The value of the term
+     */
+    String getValue() {
+        return value;
+    }
+
+    /**
      * Returns all the documents the term was found at sorted
      * @return - The documents the term was found at sorted
      */

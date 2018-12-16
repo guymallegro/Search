@@ -19,7 +19,6 @@ public class Document extends ADocument {
     public Document() {
         titleTerms = new HashMap<>();
         dateTerms = new HashMap<>();
-        textTerms = new HashMap<>();
         cities = new HashMap<>();
         max_tf = 0;
         indexId = documentsAmount++;

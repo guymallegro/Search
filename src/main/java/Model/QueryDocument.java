@@ -1,8 +1,11 @@
 package Model;
 
-import java.util.HashMap;
 
-public class queryDocument extends ADocument {
+public class QueryDocument extends ADocument {
+
+    public QueryDocument(String content){
+        this.content = content;
+    }
 
 
     void addTermToText(Term term) {

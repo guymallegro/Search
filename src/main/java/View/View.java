@@ -24,9 +24,10 @@ import java.util.*;
 public class View {
     private String postingPath;
     private Controller controller;
-    public javafx.scene.control.Button exit;
     public javafx.scene.control.Button start;
+    public javafx.scene.control.Button run;
     public javafx.scene.control.Button reset;
+    public javafx.scene.control.Button exit;
     public javafx.scene.control.Button loadDictionaries;
     public javafx.scene.control.Button displayTermsDictionary;
     public javafx.scene.control.TextField query;
@@ -34,7 +35,6 @@ public class View {
     public javafx.scene.control.ComboBox languages;
     public javafx.scene.control.ListView<String> allTerms;
     private Parent root;
-
     /**
      * The function which moves the user to the browser page
      */
@@ -122,6 +122,13 @@ public class View {
         group.getChildren().addAll(vBox);
         stage.setScene(scene);
         stage.show();
+    }
+
+    /**
+     * The function that sends the query to the model to be processed
+     */
+    public void run (){
+        controller.findRelevantDocuments(query.getText());
     }
 
     /**

@@ -1,6 +1,7 @@
 package Model;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Scanner;
 
@@ -11,6 +12,7 @@ public class ReadFile {
     private Model model;
     private File currentFile;
     private String allFiles;
+    private String postPath;
 
     /**
      * The default constructor
@@ -29,6 +31,7 @@ public class ReadFile {
      * @param onlyCities - If the focus is only on the cities
      */
     void readCorpus(String path, boolean onlyCities) {
+        postPath = path;
         File currentDirectory = new File(path);
         String[] allDirectories = currentDirectory.list();
         int size = allDirectories.length;
@@ -76,5 +79,36 @@ public class ReadFile {
             System.out.println("Cannot open the file: " + path);
         }
         return stopWords;
+    }
+
+    public ArrayList<String> findTerms(ArrayList<String> terms) {
+        ArrayList<String> termsLines = new ArrayList<>();
+        char firstChar = terms.get(0).charAt(0);
+        if (Character.isLetter(firstChar))
+            currentFile = new File(postPath + "/post" + Character.toLowerCase(firstChar) + ".txt");
+        else if (firstChar == '$')
+            currentFile = new File(postPath + "/post" + "$" + ".txt");
+        else
+            currentFile = new File(postPath + "numbers.txt");
+        try {
+            InputStream is = new FileInputStream(currentFile);
+            BufferedReader buf = new BufferedReader(new InputStreamReader(is));
+            String line = buf.readLine();
+            for (int i = 0; i < terms.size(); i ++) {
+                while (line != null) {
+                    if (line.substring(1, line.indexOf(";")).equals(terms.get(i))) {
+                        termsLines.add(line);
+                        break;
+                    }
+                    line = buf.readLine();
+                }
+                //line = buf.readLine();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return termsLines;
     }
 }

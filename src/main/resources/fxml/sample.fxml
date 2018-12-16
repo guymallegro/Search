@@ -20,11 +20,16 @@
                </font></Button>
             <Button fx:id="reset" disable="true" mnemonicParsing="false" onAction="#reset" prefHeight="27.0" prefWidth="68.0" text="Reset" />
             <CheckBox fx:id="stemming" layoutX="104.0" layoutY="249.0" mnemonicParsing="false" text="Stemming" />
-            <TextField fx:id="query" disable="true" layoutX="104.0" layoutY="156.0" prefHeight="39.0" prefWidth="358.0" />
+            <TextField fx:id="query" layoutX="104.0" layoutY="156.0" prefHeight="39.0" prefWidth="358.0" />
             <ComboBox fx:id="languages" disable="true" layoutX="104.0" layoutY="204.0" prefHeight="39.0" prefWidth="218.0" promptText="Choose Language" />
              <Button fx:id="displayTermsDictionary" disable="true" layoutY="95.0" mnemonicParsing="false" onAction="#displayTermsDictionary" text="Display Terms" />
-             <Button fx:id="loadDictionaries" disable="true" layoutY="49.0" mnemonicParsing="false" onAction="#loadDictionaries" text="Load Dictionaries" />
-            <Button fx:id="exit" onAction="#exit" layoutX="552.0" mnemonicParsing="false" text="exit" />
+             <Button fx:id="loadDictionaries" layoutY="49.0" mnemonicParsing="false" onAction="#loadDictionaries" text="Load Dictionaries" />
+            <Button fx:id="exit" layoutX="552.0" mnemonicParsing="false" onAction="#exit" text="exit" />
+            <Button fx:id="run" layoutX="280.0" layoutY="334.0" mnemonicParsing="false" onAction="#run" text="Run">
+               <font>
+                  <Font name="Segoe UI Italic" size="18.0" />
+               </font>
+            </Button>
          </children>
       </AnchorPane>
    </children>

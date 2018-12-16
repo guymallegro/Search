@@ -132,7 +132,7 @@ public class Model {
             if (nomOfDocs < 0) {
                 int size = documents.size();
                 for (int i = 0; i < size; i++)
-                    parse.parseDocument(documents.get(i));
+                    parse. parseDocument(documents.get(i));
                 index();
                 nomOfDocs = 8000;
             }
@@ -529,7 +529,13 @@ public class Model {
     }
 
     public void findRelevantDocuments(String query) {
-        searcher.findRelevantDocs(query);
+        QueryDocument queryDocument = new QueryDocument(query);
+        parse.parseDocument(queryDocument);
+        searcher.findRelevantDocs(parse.getAllTerms());
 
+    }
+
+    public ArrayList<String> findTermFromPosting(ArrayList<String> terms){
+        return fileReader.findTerms(terms);
     }
 }

@@ -11,6 +11,10 @@ public abstract class ADocument {
     static int documentsAmount = 1;
     int length;
 
+    public ADocument (){
+        textTerms = new HashMap<Term, Integer>();
+    }
+
 
     abstract void addTermToText(Term term);
 
