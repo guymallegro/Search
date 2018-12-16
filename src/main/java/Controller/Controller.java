@@ -5,6 +5,7 @@ import Model.Model;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import Model.City;
 
 /**
  * The controller class of the search engine, controls the application.
@@ -120,5 +121,9 @@ public class Controller {
 
     public void findRelevantDocuments(String query){
         model.findRelevantDocuments(query);
+    }
+
+    public HashMap<String, City> getCitiesDictionary(){
+        return model.getCitiesDictionary();
     }
 }

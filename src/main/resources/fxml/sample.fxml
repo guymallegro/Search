@@ -10,7 +10,8 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.View">
+<?import javafx.scene.control.MenuButton?>
+<GridPane onMouseEntered="#initCities" alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.View">
    <children>
       <AnchorPane prefHeight="365.0" prefWidth="605.0">
          <children>
@@ -24,7 +25,8 @@
             <ComboBox fx:id="languages" disable="true" layoutX="104.0" layoutY="204.0" prefHeight="39.0" prefWidth="218.0" promptText="Choose Language" />
              <Button fx:id="displayTermsDictionary" disable="true" layoutY="95.0" mnemonicParsing="false" onAction="#displayTermsDictionary" text="Display Terms" />
              <Button fx:id="loadDictionaries" disable="true" layoutY="49.0" mnemonicParsing="false" onAction="#loadDictionaries" text="Load Dictionaries" />
-            <Button fx:id="exit" onAction="#exit" layoutX="552.0" mnemonicParsing="false" text="exit" />
+            <Button fx:id="exit" layoutX="552.0" mnemonicParsing="false" onAction="#exit" text="exit" />
+            <MenuButton fx:id="citiesSelect" layoutX="340.0" layoutY="210.0" prefWidth="150.0" text="cities"/>
          </children>
       </AnchorPane>
    </children>

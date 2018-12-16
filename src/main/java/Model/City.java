@@ -110,7 +110,7 @@ public class City {
      * Returns the city's name
      * @return - The city's name
      */
-    String getCityName() {
+    public String getCityName() {
         return cityName;
     }
 
