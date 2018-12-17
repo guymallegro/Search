@@ -7,16 +7,30 @@ import java.util.HashMap;
 public class Searcher {
     private Model model;
     private Ranker ranker;
+
+    private HashMap<String, Term> queryTerms;
     private HashMap<String, City> cityDictionary;
+    private HashMap<Integer, ArrayList<Object>> documentsDictionary;
+    private HashMap<Integer, ArrayList<Object>> allDocuments;
 
     public Searcher(HashMap<String, ArrayList<Object>> termsDictionary, HashMap<Integer, ArrayList<Object>> documentsDictionary, HashMap<String, City> cityDictionary, Model model) {
         this.model = model;
         this.cityDictionary = cityDictionary;
-        ranker = new Ranker(termsDictionary, documentsDictionary);
-
+        this.documentsDictionary = documentsDictionary;
+        ranker = new Ranker(termsDictionary, documentsDictionary, queryTerms, allDocuments);
     }
 
-    public ArrayList<String> findRelevantDocs(HashMap<String, Term> terms){
+    public void findRelevantDocs(){
+        retrieveData (findLinesOfTerms (queryTerms));
+        ranker.rank();
+    }
+
+    /**
+     *
+     * @param terms - HashMap of the terms from the query after the parsing process
+     * @return ArrayList of the lines of each term from the posting file
+     */
+    private ArrayList<String> findLinesOfTerms(HashMap<String,Term> terms) {
         String[] sortedTerms = terms.keySet().toArray(new String[terms.size()]);
         Arrays.sort(sortedTerms, String.CASE_INSENSITIVE_ORDER);
         ArrayList<String> termsToFind = new ArrayList<>();
@@ -36,7 +50,37 @@ public class Searcher {
             termsToFind = new ArrayList<>();
             termsToFind.add((terms.get(sortedTerms[i])).getValue());
         }
-        return termsToFind;
+        return allLines;
+    }
+
+    /**
+     * update the relevant details of terms and documents
+     * @param allLines - ArrayList of the lines of each term from the posting file
+     */
+    private void retrieveData(ArrayList<String> allLines) {
+        String [] documents;
+        String termLine = "";
+        String term = "";
+        int documentIndex = 0;
+        for (int line = 0; line < allLines.size(); line++){
+            termLine = allLines.get(line);
+            term = termLine.substring(1, termLine.indexOf(";"));
+            documents = termLine.substring(termLine.indexOf(";") + 1, termLine.indexOf(" ")).split(",");
+            for (int i = 0; i < documents.length; i ++){
+                documentIndex += Integer.parseInt(documents[i]);
+                queryTerms.get(term).addInDocument(documentIndex, 1);
+                if (!documentsDictionary.containsKey(documentIndex))
+                    allDocuments.put(documentIndex, documentsDictionary.get(documentIndex));
+            }
+        }
+    }
+
+    /**
+     * initial the terms' HashMap
+     * @param queryTerms - the HashMap of terms after parsing
+     */
+    public void setQueryTerms(HashMap<String, Term> queryTerms) {
+        this.queryTerms = queryTerms;
     }
 
 }

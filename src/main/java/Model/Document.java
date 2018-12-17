@@ -8,6 +8,7 @@ import java.util.HashMap;
 public class Document extends ADocument {
     private int max_tf;
     private HashMap<String, String> cities;
+    private double rank;
     private String date;
     private String title;
     private HashMap<Term, Integer> titleTerms;
@@ -17,6 +18,7 @@ public class Document extends ADocument {
      * The default document constructor
      */
     public Document() {
+        rank = 0;
         titleTerms = new HashMap<>();
         dateTerms = new HashMap<>();
         cities = new HashMap<>();
@@ -56,6 +58,18 @@ public class Document extends ADocument {
     int getMax_tf() {
         return max_tf;
     }
+
+    /**
+     *
+     * @return the rank of the document
+     */
+    public double getRank () {return rank;}
+
+    /**
+     *
+     * @param rank the rank of the document after calculation in ranker
+     */
+    public void setRank (double rank){this.rank = rank;}
 
 
     /**

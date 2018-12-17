@@ -83,6 +83,12 @@ public class Term {
     }
 
     /**
+     * Returns all the documents the term was found at sorted
+     * @return - The documents the term was found without sorting
+     */
+    HashMap<Integer, Integer> getUnsortedInDocuments () { return inDocuments;}
+
+    /**
      * Returns a string with all the documents the term was found at with the amount of times it was found
      * @return
      */

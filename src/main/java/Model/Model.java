@@ -381,7 +381,7 @@ public class Model {
     }
 
     /**
-     * Parsing and indexing the last iteration of the documents.
+     * Parsing and indexing the last iteratotion of the documents.
      */
     void finishReading() {
         int size = documents.size();
@@ -526,11 +526,21 @@ public class Model {
         parse.setStemming(selected);
     }
 
+    /**
+     * update the posting path
+     * @param postingPath - the path that contains all the posting files and dictionaries
+     */
+    public void setPostingPathDestination (String postingPath){
+        postingPathDestination = postingPath;
+        fileReader.setPostPath(postingPath);
+    }
+
     public void findRelevantDocuments(String query) {
         QueryDocument queryDocument = new QueryDocument(query);
         parse.parseDocument(queryDocument);
-        //searcher = new Searcher(termsDictionary, documentsDictionary, citiesDictionary, this);
-        searcher.findRelevantDocs(parse.getAllTerms());
+        searcher = new Searcher(termsDictionary, documentsDictionary, citiesDictionary, this);
+        searcher.setQueryTerms(parse.getAllTerms());
+        searcher.findRelevantDocs();
     }
 
     public ArrayList<String> findTermFromPosting(ArrayList<String> terms) {

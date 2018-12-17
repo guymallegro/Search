@@ -7,7 +7,6 @@ public class QueryDocument extends ADocument {
         this.content = content;
     }
 
-
     void addTermToText(Term term) {
         if (!textTerms.containsKey(term))
             textTerms.put(term, 1);
@@ -15,5 +14,4 @@ public class QueryDocument extends ADocument {
             textTerms.put(term, textTerms.get(term) + 1);
         }
     }
-
 }

@@ -51,8 +51,6 @@ public class View {
             controller.setCorpusPath(corpusPath.getText() + "/");
             controller.setStopWordsPath(corpusPath.getText() + "/stop_words.txt");
             controller.setPostingPath(postingPath.getText());
-//            Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-//            window.close();
             controller.readFiles();
             initializeLanguages();
             reset.setDisable(false);
@@ -60,6 +58,13 @@ public class View {
         }
         controller.setStemming(stemming.isSelected());
         displayTermsDictionary.setDisable(false);
+    }
+
+    /**
+     *
+     */
+    public void loadPostingPath (){
+        controller.setPostingPath(postingPath.getText());
     }
 
     /**

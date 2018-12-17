@@ -65,6 +65,11 @@ public class ReadFile {
             model.finishReading();
     }
 
+    /**
+     *
+     * @param path - the path of the folder of the stop-words file
+     * @return HashSet of all the stop-words appears in the file
+     */
     public HashSet<String> readStopWords(String path) {
         HashSet<String> stopWords = new HashSet<>();
         try {
@@ -81,8 +86,13 @@ public class ReadFile {
         return stopWords;
     }
 
+
+    /**
+     *
+     * @param terms- ArrayList of the terms appears in the query
+     * @return ArrayList of the line of each term from the posting file
+     */
     public ArrayList<String> findTerms(ArrayList<String> terms) {
-        postPath = "C:/Users/ספיר רצון/Desktop/postTest";
         Collections.sort(terms);
         ArrayList<String> termsLines = new ArrayList<>();
         char firstChar = terms.get(0).charAt(0);
@@ -104,7 +114,6 @@ public class ReadFile {
                     }
                     line = buf.readLine();
                 }
-                //line = buf.readLine();
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -112,5 +121,9 @@ public class ReadFile {
             e.printStackTrace();
         }
         return termsLines;
+    }
+
+    public void setPostPath(String postPath) {
+        this.postPath = postPath;
     }
 }
