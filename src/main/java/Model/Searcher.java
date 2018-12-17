@@ -13,13 +13,18 @@ public class Searcher {
     private HashMap<Integer, ArrayList<Object>> documentsDictionary;
     private HashMap<Integer, ArrayList<Object>> allDocuments;
 
-    public Searcher(HashMap<String, ArrayList<Object>> termsDictionary, HashMap<Integer, ArrayList<Object>> documentsDictionary, HashMap<String, City> cityDictionary, Model model) {
+    public Searcher(HashMap<String, ArrayList<Object>> termsDictionary, HashMap<Integer, ArrayList<Object>> documentsDictionary, HashMap<String, City> cityDictionary, Model model, HashMap<String, Term> queryTerms) {
         this.model = model;
+        this.queryTerms = queryTerms;
+        allDocuments = new HashMap<>();
         this.cityDictionary = cityDictionary;
         this.documentsDictionary = documentsDictionary;
         ranker = new Ranker(termsDictionary, documentsDictionary, queryTerms, allDocuments);
     }
 
+    /**
+     * find the 50 most relevant documents using the ranker
+     */
     public void findRelevantDocs(){
         retrieveData (findLinesOfTerms (queryTerms));
         ranker.rank();
@@ -69,7 +74,7 @@ public class Searcher {
             for (int i = 0; i < documents.length; i ++){
                 documentIndex += Integer.parseInt(documents[i]);
                 queryTerms.get(term).addInDocument(documentIndex, 1);
-                if (!documentsDictionary.containsKey(documentIndex))
+                if (documentsDictionary.containsKey(documentIndex))
                     allDocuments.put(documentIndex, documentsDictionary.get(documentIndex));
             }
         }

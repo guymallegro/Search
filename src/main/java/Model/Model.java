@@ -81,7 +81,7 @@ public class Model {
         long tEnd = System.currentTimeMillis();
         long tDelta = tEnd - tStart;
         totalTime = tDelta / 1000.0;
-        searcher = new Searcher(termsDictionary, documentsDictionary, citiesDictionary, this);
+        //searcher = new Searcher(termsDictionary, documentsDictionary, citiesDictionary, this);
     }
 
     /**
@@ -299,10 +299,12 @@ public class Model {
                 ArrayList<Object> attributes = new ArrayList<>();
                 attributes.add(0, info[0]);
                 attributes.add(1, info[1]);
-                if (info.length == 3)
-                    attributes.add(2, info[2]);
+                attributes.add(2, info[2]);
+                attributes.add(3, info[3]);
+                if (info.length == 5)
+                    attributes.add(4, info[4]);
                 else
-                    attributes.add(2, "");
+                    attributes.add(4, "");
                 documentsDictionary.put(docIndex, attributes);
             }
         } catch (FileNotFoundException e) {
@@ -535,14 +537,22 @@ public class Model {
         fileReader.setPostPath(postingPath);
     }
 
+    /**
+     * find the 50 most relevant documents by rank them
+     * @param query - the query from the user or file
+     */
     public void findRelevantDocuments(String query) {
         QueryDocument queryDocument = new QueryDocument(query);
         parse.parseDocument(queryDocument);
-        searcher = new Searcher(termsDictionary, documentsDictionary, citiesDictionary, this);
-        searcher.setQueryTerms(parse.getAllTerms());
+        searcher = new Searcher(termsDictionary, documentsDictionary, citiesDictionary, this, parse.getAllTerms());
         searcher.findRelevantDocs();
     }
 
+    /**
+     *
+     * @param terms - ArrayList of the terms from the query
+     * @return ArrayList with the line of each term
+     */
     public ArrayList<String> findTermFromPosting(ArrayList<String> terms) {
         return fileReader.findTerms(terms);
     }

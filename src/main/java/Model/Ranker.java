@@ -7,7 +7,7 @@ public class Ranker {
     public final double B = 0.75;
     private double avgDocLength;
     private HashMap<String, Term> queryTerms;
-    HashMap<Integer, ArrayList<Object>> allDocuments;
+    public HashMap<Integer, ArrayList<Object>> allDocuments;
     private HashMap<String, ArrayList<Object>> termsDictionary;
     private HashMap<Integer, ArrayList<Object>> documentsDictionary;
     private PriorityQueue <Document> queryDocuments;
@@ -17,6 +17,17 @@ public class Ranker {
     public Ranker(HashMap<String, ArrayList<Object>> termsDictionary, HashMap<Integer, ArrayList<Object>> documentsDictionary, HashMap<String, Term> queryTerms, HashMap<Integer, ArrayList<Object>> allDocuments) {
         this.queryTerms = queryTerms;
         this.allDocuments = allDocuments;
+        Comparator<Document> comparator = new Comparator<Document>() {
+            @Override
+            public int compare(Document o1, Document o2) {
+                if (o1.getRank() > o2.getRank())
+                    return 1;
+                else if (o1.getRank() < o2.getRank())
+                    return -1;
+                return 0;
+            }
+        };
+        queryDocuments = new PriorityQueue<Document>(comparator);
         this.termsDictionary = termsDictionary;
         this.documentsDictionary = documentsDictionary;
     }
@@ -26,13 +37,9 @@ public class Ranker {
      */
     private void corpusAvgDocLength() {
         int totalLength = 0;
-        Map<Integer, Integer> map = new TreeMap(documentsDictionary);
-        Set set2 = map.entrySet();
-        Iterator iterator2 = set2.iterator();
-        while (iterator2.hasNext()) {
-            Map.Entry me2 = (Map.Entry) iterator2.next();
+        for (ArrayList details: documentsDictionary.values()){
             docsAmount++;
-            totalLength += (Integer) ((ArrayList) me2.getValue()).get(3);
+            totalLength += Integer.parseInt((String) details.get(2));
         }
         avgDocLength = totalLength / docsAmount;
 
@@ -51,20 +58,16 @@ public class Ranker {
      * get the amount of all the terms that appears in the given query
      * @param documentIndex - the index of the document as it appear in the documentsDictionary file
      */
-    private int getDocumentLength( int documentIndex) {
+    private int getDocumentLength(int documentIndex) {
         String length = (String) documentsDictionary.get(documentIndex).get(2);
         return Integer.parseInt(length);
     }
 
-//    /**
-//     * initial the terms' HashMap
-//     * @param queryTerms - the HashMap of terms after parsing
-//     */
-//    public void setQueryTerms(HashMap<String, Term> queryTerms) {
-//        this.queryTerms = queryTerms;
-//    }
-
+    /**
+     * calculate the rank of all documents by M25 formula
+     */
     public void rank() {
+        corpusAvgDocLength();
         double currentRank = 0;
         double firstCalculation = 0;
         double logCalculation = 0;
@@ -82,6 +85,5 @@ public class Ranker {
             queryDocuments.add(currentDocument);
             currentRank = 0;
         }
-
     }
 }
