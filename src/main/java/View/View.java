@@ -51,8 +51,8 @@ public class View {
             controller.setCorpusPath(corpusPath.getText() + "/");
             controller.setStopWordsPath(corpusPath.getText() + "/stop_words.txt");
             controller.setPostingPath(postingPath.getText());
-            Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-            window.close();
+//            Stage window = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+//            window.close();
             controller.readFiles();
             initializeLanguages();
             reset.setDisable(false);

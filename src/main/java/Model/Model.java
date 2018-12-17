@@ -529,8 +529,8 @@ public class Model {
     public void findRelevantDocuments(String query) {
         QueryDocument queryDocument = new QueryDocument(query);
         parse.parseDocument(queryDocument);
+        //searcher = new Searcher(termsDictionary, documentsDictionary, citiesDictionary, this);
         searcher.findRelevantDocs(parse.getAllTerms());
-
     }
 
     public ArrayList<String> findTermFromPosting(ArrayList<String> terms) {

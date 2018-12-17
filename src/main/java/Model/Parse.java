@@ -424,6 +424,8 @@ class Parse {
      * @return - If it is a stop word
      */
     private boolean isStopWord(String word) {
+        if (stopWords == null)
+            return false;
         if (stopWords.contains(word) || stopWords.contains(Character.toUpperCase(word.charAt(0)) + word.substring(1)))
             return true;
         return false;

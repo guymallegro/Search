@@ -1,6 +1,7 @@
 package Model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class Searcher {
@@ -16,28 +17,26 @@ public class Searcher {
     }
 
     public ArrayList<String> findRelevantDocs(HashMap<String, Term> terms){
-        Object[] sortedTerms = terms.keySet().toArray();
-      //  sort (sortedTerms)
-
-        //Arrays.sort(sortedTerms);
+        String[] sortedTerms = terms.keySet().toArray(new String[terms.size()]);
+        Arrays.sort(sortedTerms, String.CASE_INSENSITIVE_ORDER);
         ArrayList<String> termsToFind = new ArrayList<>();
+        ArrayList<String> allLines = new ArrayList<>();
+        termsToFind.add((terms.get(sortedTerms[0])).getValue());
         char currentLetter = (terms.get(sortedTerms[0])).getValue().charAt(0);
-        for (int i = 0; i < sortedTerms.length; i++) {
-            termsToFind.add((terms.get(sortedTerms[i])).getValue());
-            while (currentLetter == (terms.get(sortedTerms[i])).getValue().charAt(0)) {
+        for (int i = 1; i < sortedTerms.length; i++) {
+            while (currentLetter == Character.toLowerCase((terms.get(sortedTerms[i])).getValue().charAt(0))){
                 termsToFind.add((terms.get(sortedTerms[i])).getValue());
-                i++;
+                if (i + 1 < sortedTerms.length)
+                    i++;
+                else
+                    break;
             }
-            termsToFind.addAll(model.findTermFromPosting(termsToFind));
-            currentLetter = (terms.get(sortedTerms[i])).getValue().charAt(0);
+            allLines.addAll(model.findTermFromPosting(termsToFind));
+            currentLetter = Character.toLowerCase((terms.get(sortedTerms[i])).getValue().charAt(0));
+            termsToFind = new ArrayList<>();
+            termsToFind.add((terms.get(sortedTerms[i])).getValue());
         }
         return termsToFind;
     }
-
-//    public void sort (Object [] terms){
-//        for (int i = 0; i < terms.length; i++){
-//
-//        }
-//    }
 
 }

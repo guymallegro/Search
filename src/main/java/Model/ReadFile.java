@@ -2,6 +2,7 @@ package Model;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Scanner;
 
@@ -31,7 +32,6 @@ public class ReadFile {
      * @param onlyCities - If the focus is only on the cities
      */
     void readCorpus(String path, boolean onlyCities) {
-        postPath = path;
         File currentDirectory = new File(path);
         String[] allDirectories = currentDirectory.list();
         int size = allDirectories.length;
@@ -82,10 +82,12 @@ public class ReadFile {
     }
 
     public ArrayList<String> findTerms(ArrayList<String> terms) {
+        postPath = "C:/Users/ספיר רצון/Desktop/postTest";
+        Collections.sort(terms);
         ArrayList<String> termsLines = new ArrayList<>();
         char firstChar = terms.get(0).charAt(0);
         if (Character.isLetter(firstChar))
-            currentFile = new File(postPath + "/post" + Character.toLowerCase(firstChar) + ".txt");
+            currentFile = new File(postPath + "/post" + Character.toUpperCase(firstChar) + ".txt");
         else if (firstChar == '$')
             currentFile = new File(postPath + "/post" + "$" + ".txt");
         else
