@@ -81,7 +81,6 @@ public class Model {
         long tEnd = System.currentTimeMillis();
         long tDelta = tEnd - tStart;
         totalTime = tDelta / 1000.0;
-        //searcher = new Searcher(termsDictionary, documentsDictionary, citiesDictionary, this);
     }
 
     /**
@@ -593,5 +592,9 @@ public class Model {
         for (int i = 0; i < 50 && list.size() >= 49; i++) {
             System.out.println("Doc: " + list.get(i).getId() + " rank: " + list.get(i).getRank());
         }
+    }
+
+    public HashMap<Integer, ArrayList<Object>> getDocumentsDictionary() {
+        return documentsDictionary;
     }
 }

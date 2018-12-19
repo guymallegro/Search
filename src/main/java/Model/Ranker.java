@@ -32,7 +32,6 @@ public class Ranker {
             totalLength += Integer.parseInt("" + details.get(2));
         }
         avgDocLength = totalLength / docsAmount;
-
     }
 
     /**

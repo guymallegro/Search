@@ -46,9 +46,9 @@ public class View {
      */
     public void processCorpus(ActionEvent actionEvent) {
         if (corpusPath.getText().equals("Enter Path"))
-            showAlert("enter please a corpus directory");
+            showAlert("Enter please a corpus directory");
         else if (postingPath.getText().equals("Enter Path"))
-            showAlert("enter please a posting destination directory");
+            showAlert("Enter please a posting destination directory");
         else {
             controller.setCorpusPath(corpusPath.getText() + "/");
             controller.setStopWordsPath(corpusPath.getText() + "/stop_words.txt");
@@ -97,12 +97,10 @@ public class View {
                 Map.Entry me2 = (Map.Entry) iterator2.next();
                 CheckMenuItem item = new CheckMenuItem(((City) me2.getValue()).getCityName());
                 item.setOnAction(a -> {
-                    if (selectedCities.contains(item.getText())) {
-                        selectedCities.remove(item.getText());
-                        System.out.println("Removed :" + item.getText());
+                    if (selectedCities.contains(item.getText().toUpperCase())) {
+                        selectedCities.remove(item.getText().toUpperCase());
                     } else {
-                        selectedCities.add(item.getText());
-                        System.out.println("Selected :" + item.getText());
+                        selectedCities.add(item.getText().toUpperCase());
                     }
                 });
                 items.add(item);
