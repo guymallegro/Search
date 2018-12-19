@@ -278,16 +278,18 @@ class Indexer {
     void addAllDocumentsToDictionary() {
         int size = documents.size();
         for (int i = 0; i < size; i++) {
-            ArrayList<Object> attributes = new ArrayList<>();
-            attributes.add(0, documents.get(i).getMax_tf());
-            attributes.add(1, documents.get(i).getId());
-            attributes.add(2, documents.get(i).getTextTerms().size());
-            attributes.add(3, documents.get(i).getLength());
-            if (documents.get(i).getCity() != null)
-                attributes.add(4, documents.get(i).getCity());
-            else
-                attributes.add(4, "");
-            model.getDocsDictionary().put(documents.get(i).getIndexId(), attributes);
+            Document document = new Document();
+            model.getDocsDictionary().put(documents.get(i).getIndexId(), documents.get(i));
+//            ArrayList<Object> attributes = new ArrayList<>();
+//            attributes.add(0, documents.get(i).getMax_tf());
+//            attributes.add(1, documents.get(i).getId());
+//            attributes.add(2, documents.get(i).getTextTerms().size());
+//            attributes.add(3, documents.get(i).getLength());
+//            if (documents.get(i).getCity() != null)
+//                attributes.add(4, documents.get(i).getCity());
+//            else
+//                attributes.add(4, "");
+//            model.getDocsDictionary().put(documents.get(i).getIndexId(), attributes);
         }
         documents.clear();
     }

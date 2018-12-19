@@ -11,10 +11,10 @@ public class Searcher {
 
     private HashMap<String, Term> queryTerms;
     private HashMap<String, City> cityDictionary;
-    private HashMap<Integer, ArrayList<Object>> documentsDictionary;
-    private HashMap<Integer, ArrayList<Object>> allDocuments;
+    private HashMap<Integer, Document> documentsDictionary;
+    private HashMap<Integer, Document> allDocuments;
 
-    public Searcher(HashMap<String, ArrayList<Object>> termsDictionary, HashMap<Integer, ArrayList<Object>> documentsDictionary, HashMap<String, City> cityDictionary, Model model, HashMap<String, Term> queryTerms) {
+    public Searcher(HashMap<String, ArrayList<Object>> termsDictionary, HashMap<Integer, Document> documentsDictionary, HashMap<String, City> cityDictionary, Model model, HashMap<String, Term> queryTerms) {
         this.model = model;
         this.queryTerms = queryTerms;
         allDocuments = new HashMap<>();

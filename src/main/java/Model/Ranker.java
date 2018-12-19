@@ -7,14 +7,14 @@ public class Ranker {
     public final double B = 0.75;
     private double avgDocLength;
     private HashMap<String, Term> queryTerms;
-    public HashMap<Integer, ArrayList<Object>> allDocuments;
+    public HashMap<Integer, Document> allDocuments;
     private HashMap<String, ArrayList<Object>> termsDictionary;
-    private HashMap<Integer, ArrayList<Object>> documentsDictionary;
+    private HashMap<Integer, Document> documentsDictionary;
     private PriorityQueue <Document> queryDocuments;
     private double docsAmount = 0;
 
 
-    public Ranker(HashMap<String, ArrayList<Object>> termsDictionary, HashMap<Integer, ArrayList<Object>> documentsDictionary, HashMap<String, Term> queryTerms, HashMap<Integer, ArrayList<Object>> allDocuments) {
+    public Ranker(HashMap<String, ArrayList<Object>> termsDictionary, HashMap<Integer, Document> documentsDictionary, HashMap<String, Term> queryTerms, HashMap<Integer, Document> allDocuments) {
         this.queryTerms = queryTerms;
         this.allDocuments = allDocuments;
         queryDocuments = new PriorityQueue<Document>((Comparator.comparingDouble(o -> o.getRank())));
@@ -27,9 +27,9 @@ public class Ranker {
      */
     private void corpusAvgDocLength() {
         int totalLength = 0;
-        for (ArrayList details: documentsDictionary.values()){
+        for (Document document: documentsDictionary.values()){
             docsAmount++;
-            totalLength += Integer.parseInt("" + details.get(2));
+            totalLength += document.getTextTerms().size();
         }
         avgDocLength = totalLength / docsAmount;
     }
@@ -48,8 +48,7 @@ public class Ranker {
      * @param documentIndex - the index of the document as it appear in the documentsDictionary file
      */
     private int getDocumentLength(int documentIndex) {
-        String length = (String) documentsDictionary.get(documentIndex).get(2);
-        return Integer.parseInt(length);
+        return documentsDictionary.get(documentIndex).getLength();
     }
 
     /**
@@ -69,7 +68,7 @@ public class Ranker {
                 }
             }
             Document currentDocument = new Document();
-            currentDocument.setId((String) documentsDictionary.get(documentIndex).get(1));
+            currentDocument.setId(documentsDictionary.get(documentIndex).getId());
             currentDocument.setRank(currentRank);
             queryDocuments.add(currentDocument);
             currentRank = 0;

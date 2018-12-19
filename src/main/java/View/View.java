@@ -173,7 +173,7 @@ public class View {
         Stage stage = new Stage();
         allDocuments = new ListView<>();
         ArrayList list = controller.getQueryDocuments();
-        for (int i = 0; i < 50 && list.size() >= 49; i++) {
+        for (int i = 0; i < 50 && i < list.size(); i++) {
             allDocuments.getItems().add(((ADocument) list.get(i)).getId());
         }
         Scene scene = new Scene(new Group());

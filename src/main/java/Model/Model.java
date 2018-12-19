@@ -30,7 +30,7 @@ public class Model {
     private ArrayList<Document> documents;
     private HashSet<String> stopWords;
     private HashMap<String, ArrayList<Object>> termsDictionary;
-    private HashMap<Integer, ArrayList<Object>> documentsDictionary;
+    private HashMap<Integer, Document> documentsDictionary;
     private HashMap<String, City> citiesDictionary;
     private boolean isStemming = false;
     private int documentsAmount;
@@ -176,16 +176,16 @@ public class Model {
         for (int i = 0; i < size; i++) {
             line.append("<");
             line.append(sortedDocuments[i]).append(":");
-            line.append(documentsDictionary.get(sortedDocuments[i]).get(0));
+            line.append(documentsDictionary.get(sortedDocuments[i]).getMax_tf());
             line.append(",");
-            line.append(documentsDictionary.get(sortedDocuments[i]).get(1));
+            line.append(documentsDictionary.get(sortedDocuments[i]).getId());
             line.append(",");
-            line.append(documentsDictionary.get(sortedDocuments[i]).get(2));
+            line.append(documentsDictionary.get(sortedDocuments[i]).getTextTerms().size());
             line.append(",");
-            line.append(documentsDictionary.get(sortedDocuments[i]).get(3));
-            if (!documentsDictionary.get(sortedDocuments[i]).get(4).equals("")) {
+            line.append(documentsDictionary.get(sortedDocuments[i]).getLength());
+            if (!documentsDictionary.get(sortedDocuments[i]).getCity().equals("")) {
                 line.append(",");
-                line.append(documentsDictionary.get(sortedDocuments[i]).get(4));
+                line.append(documentsDictionary.get(sortedDocuments[i]).getCity());
             }
             lines.add(line.toString());
             line.setLength(0);
@@ -295,16 +295,16 @@ public class Model {
                 String line = scanner.nextLine();
                 int docIndex = Integer.parseInt(line.substring(1, line.indexOf(":")));
                 String[] info = line.substring(line.indexOf(":") + 1).split(",");
-                ArrayList<Object> attributes = new ArrayList<>();
-                attributes.add(0, info[0]);
-                attributes.add(1, info[1]);
-                attributes.add(2, info[2]);
-                attributes.add(3, info[3]);
+                Document document = new Document();
+                document.setMax_tf(Integer.parseInt(info[0]));
+                document.setId(info[1]);
+                document.setTextTerms(new HashMap<Term, Integer>(Integer.parseInt(info[2])));
+                document.setLength(Integer.parseInt(info[3]));
                 if (info.length == 5)
-                    attributes.add(4, info[4]);
+                    document.setCity(info[4]);
                 else
-                    attributes.add(4, "");
-                documentsDictionary.put(docIndex, attributes);
+                    document.setCity("");
+                documentsDictionary.put(docIndex, document);
             }
         } catch (FileNotFoundException e) {
             System.out.println("Cannot open the documents dictionary");
@@ -476,7 +476,7 @@ public class Model {
      *
      * @return - The documents dictionary
      */
-    HashMap<Integer, ArrayList<Object>> getDocsDictionary() {
+    HashMap<Integer, Document> getDocsDictionary() {
         return documentsDictionary;
     }
 
@@ -589,12 +589,12 @@ public class Model {
 //            System.out.println("Doc: " + d.getId() + " rank: " + d.getRank());
 //        }
         ArrayList <Document> list = sortDocuments(searcher.getQueryDocuments());
-        for (int i = 0; i < 50 && list.size() >= 49; i++) {
+        for (int i = 0; i < 50 && i < list.size(); i++) {
             System.out.println("Doc: " + list.get(i).getId() + " rank: " + list.get(i).getRank());
         }
     }
 
-    public HashMap<Integer, ArrayList<Object>> getDocumentsDictionary() {
+    public HashMap<Integer, Document> getDocumentsDictionary() {
         return documentsDictionary;
     }
 }

@@ -90,5 +90,7 @@ public class Document extends ADocument {
         this.title = title;
     }
 
+    public void setMax_tf(int max_tf) { this.max_tf = max_tf; }
+
 
 }

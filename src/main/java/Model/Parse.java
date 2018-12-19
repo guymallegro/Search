@@ -366,6 +366,7 @@ class Parse {
             } else if (model.getTermsDictionary().containsKey(lowerCase)) {
                 if (allTerms.containsKey(upper)) {
                     Term value = allTerms.remove(upper);
+                    currentDocument.removeTermFromText(value);
                     value.setValue(lowerCase);
                     allTerms.put(lowerCase, value);
                     tokens.set(i, lowerCase);
@@ -378,6 +379,7 @@ class Parse {
                 return;
             else if (allTerms.containsKey(upper)) {
                 Term value = allTerms.remove(upper);
+                currentDocument.removeTermFromText(value);
                 value.setValue(lowerCase);
                 allTerms.put(lowerCase, value);
             }

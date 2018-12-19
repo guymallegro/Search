@@ -18,6 +18,11 @@ public abstract class ADocument {
 
     abstract void addTermToText(Term term);
 
+    public void removeTermFromText(Term term) {
+        if (textTerms.containsKey(term))
+            textTerms.remove(term);
+    }
+
     /**
      * Returns the document's city
      *
@@ -109,4 +114,5 @@ public abstract class ADocument {
     }
 
 
+    public void setTextTerms(HashMap<Term, Integer> tempHash) {textTerms = tempHash;}
 }

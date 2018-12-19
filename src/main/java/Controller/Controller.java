@@ -147,7 +147,7 @@ public class Controller {
         return model.getQueryDocuments();
     }
 
-    public HashMap<Integer, ArrayList<Object>> getDocumentsDictionary() {
+    public HashMap<Integer, Document> getDocumentsDictionary() {
         return model.getDocumentsDictionary();
     }
 }
