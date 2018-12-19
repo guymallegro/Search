@@ -29,7 +29,7 @@ public class Ranker {
         int totalLength = 0;
         for (ArrayList details: documentsDictionary.values()){
             docsAmount++;
-            totalLength += Integer.parseInt((String) details.get(2));
+            totalLength += Integer.parseInt("" + details.get(2));
         }
         avgDocLength = totalLength / docsAmount;
 
@@ -82,5 +82,9 @@ public class Ranker {
         for (Document d: queryDocuments){
             System.out.println("Doc: " + d.getId() + " rank: " + d.getRank());
         }
+    }
+
+    public PriorityQueue<Document> getQueryDocuemnts() {
+        return queryDocuments;
     }
 }

@@ -50,7 +50,7 @@ public abstract class ADocument {
      *
      * @return - The id
      */
-    String getId() {
+    public String getId() {
         return id;
     }
 

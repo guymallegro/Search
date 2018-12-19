@@ -545,6 +545,7 @@ public class Model {
      */
     public void findRelevantDocuments(String query) {
         parse.getAllTerms().clear();
+        //resetQueryDocuemnts();
         QueryDocument queryDocument = new QueryDocument(query);
         parse.parseDocument(queryDocument);
         searcher = new Searcher(termsDictionary, documentsDictionary, citiesDictionary, this, parse.getAllTerms());
@@ -557,5 +558,13 @@ public class Model {
      */
     public ArrayList<String> findTermFromPosting(ArrayList<String> terms) {
         return fileReader.findTerms(terms);
+    }
+
+    public PriorityQueue<Document> getQueryDocuemnts() {
+        return searcher.getQueryDocuemnts();
+    }
+
+    private void resetQueryDocuemnts() {
+        searcher.getQueryDocuemnts().clear();
     }
 }

@@ -3,6 +3,7 @@ package Model;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.PriorityQueue;
 
 public class Searcher {
     private Model model;
@@ -89,4 +90,7 @@ public class Searcher {
         this.queryTerms = queryTerms;
     }
 
+    public PriorityQueue<Document> getQueryDocuemnts() {
+        return ranker.getQueryDocuemnts();
+    }
 }
