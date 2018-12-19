@@ -17,17 +17,7 @@ public class Ranker {
     public Ranker(HashMap<String, ArrayList<Object>> termsDictionary, HashMap<Integer, ArrayList<Object>> documentsDictionary, HashMap<String, Term> queryTerms, HashMap<Integer, ArrayList<Object>> allDocuments) {
         this.queryTerms = queryTerms;
         this.allDocuments = allDocuments;
-        Comparator<Document> comparator = new Comparator<Document>() {
-            @Override
-            public int compare(Document o1, Document o2) {
-                if (o1.getRank() > o2.getRank())
-                    return 1;
-                else if (o1.getRank() < o2.getRank())
-                    return -1;
-                return 0;
-            }
-        };
-        queryDocuments = new PriorityQueue<Document>(comparator);
+        queryDocuments = new PriorityQueue<Document>((Comparator.comparingDouble(o -> o.getRank())));
         this.termsDictionary = termsDictionary;
         this.documentsDictionary = documentsDictionary;
     }
@@ -39,7 +29,7 @@ public class Ranker {
         int totalLength = 0;
         for (ArrayList details : documentsDictionary.values()) {
             docsAmount++;
-            totalLength += Integer.parseInt((String) details.get(2));
+            totalLength += Integer.parseInt("" + details.get(2));
         }
         avgDocLength = totalLength / docsAmount;
 
@@ -86,5 +76,9 @@ public class Ranker {
             queryDocuments.add(currentDocument);
             currentRank = 0;
         }
+    }
+
+    public PriorityQueue<Document> getQueryDocuemnts() {
+        return queryDocuments;
     }
 }

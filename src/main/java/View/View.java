@@ -1,9 +1,12 @@
 package View;
 
 import Controller.Controller;
+import Model.ADocument;
 import Model.City;
+import Model.Document;
+import Model.QueryDocument;
 import javafx.event.ActionEvent;
-import javafx.fxml.FXMLLoader;
+import javafx.event.Event;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.*;
@@ -14,7 +17,6 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -35,7 +37,7 @@ public class View {
     public javafx.scene.control.TextField query;
     public javafx.scene.control.CheckBox stemming;
     public javafx.scene.control.ComboBox languages;
-    public javafx.scene.control.ListView<String> allTerms;
+    public javafx.scene.control.ListView<String> allDocuments;
     boolean toInitCities = true;
     private HashSet<String> selectedCities;
 
@@ -63,7 +65,7 @@ public class View {
     /**
      *
      */
-    public void loadPostingPath (){
+    public void loadPostingPath() {
         controller.setPostingPath(postingPath.getText());
     }
 
@@ -144,20 +146,20 @@ public class View {
      */
     public void displayTermsDictionary() {
         Stage stage = new Stage();
-        allTerms = new ListView<>();
+        allDocuments = new ListView<>();
         Map<Integer, Integer> map = new TreeMap(controller.getTermsToDisplay());
         Set set2 = map.entrySet();
         Iterator iterator2 = set2.iterator();
         while (iterator2.hasNext()) {
             Map.Entry me2 = (Map.Entry) iterator2.next();
-            allTerms.getItems().add(me2.getKey() + " (" + ((ArrayList) me2.getValue()).get(0) + ")");
+            allDocuments.getItems().add(me2.getKey() + " (" + ((ArrayList) me2.getValue()).get(0) + ")");
         }
         Scene scene = new Scene(new Group());
         stage.initModality(Modality.APPLICATION_MODAL); //Lock the window until it closes
         final VBox vBox = new VBox();
         vBox.setSpacing(5);
         vBox.setPadding(new Insets(10, 0, 0, 10));
-        vBox.getChildren().addAll(allTerms);
+        vBox.getChildren().addAll(allDocuments);
         vBox.setAlignment(Pos.CENTER);
         Group group = ((Group) scene.getRoot());
         group.getChildren().addAll(vBox);
@@ -170,6 +172,24 @@ public class View {
      */
     public void run() {
         controller.findRelevantDocuments(query.getText());
+        Stage stage = new Stage();
+        allDocuments = new ListView<>();
+        PriorityQueue<Document> queryDocuments = controller.getQueryDocuemnts();
+        List list = new ArrayList(queryDocuments);
+        for (int i = 0; i < list.size(); i++) {
+            allDocuments.getItems().add(((ADocument) list.get(i)).getId());
+        }
+        Scene scene = new Scene(new Group());
+        stage.initModality(Modality.APPLICATION_MODAL); //Lock the window until it closes
+        final VBox vBox = new VBox();
+        vBox.setSpacing(5);
+        vBox.setPadding(new Insets(10, 0, 0, 10));
+        vBox.getChildren().addAll(allDocuments);
+        vBox.setAlignment(Pos.CENTER);
+        Group group = ((Group) scene.getRoot());
+        group.getChildren().addAll(vBox);
+        stage.setScene(scene);
+        stage.show();
     }
 
     /**
