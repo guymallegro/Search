@@ -12,6 +12,7 @@ public abstract class ADocument {
     int length;
 
     public ADocument (){
+        city = "";
         textTerms = new HashMap<Term, Integer>();
     }
 

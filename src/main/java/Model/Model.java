@@ -298,12 +298,10 @@ public class Model {
                 Document document = new Document();
                 document.setMax_tf(Integer.parseInt(info[0]));
                 document.setId(info[1]);
-                document.setTextTerms(new HashMap<Term, Integer>(Integer.parseInt(info[2])));
+                //document.setTextTerms(new HashMap<Term, Integer>(Integer.parseInt(info[2])));
                 document.setLength(Integer.parseInt(info[3]));
                 if (info.length == 5)
                     document.setCity(info[4]);
-                else
-                    document.setCity("");
                 documentsDictionary.put(docIndex, document);
             }
         } catch (FileNotFoundException e) {

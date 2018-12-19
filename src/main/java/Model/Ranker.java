@@ -29,7 +29,7 @@ public class Ranker {
         int totalLength = 0;
         for (Document document: documentsDictionary.values()){
             docsAmount++;
-            totalLength += document.getTextTerms().size();
+            totalLength += document.getLength();
         }
         avgDocLength = totalLength / docsAmount;
     }
@@ -62,6 +62,7 @@ public class Ranker {
         for (Integer documentIndex : allDocuments.keySet()) {
             for (Term queryTerm : queryTerms.values()) {
                 if (queryTerm.getUnsortedInDocuments().containsKey(documentIndex)){
+                    int len = getDocumentLength(documentIndex);
                     firstCalculation = (K + 1) / (1 + K*((1 - B)+ (B*getDocumentLength(documentIndex))/avgDocLength));
                     logCalculation = Math.log((documentsDictionary.size() + 1) / queryTerm.getInDocuments().length);
                     currentRank += firstCalculation * logCalculation;
