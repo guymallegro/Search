@@ -46,9 +46,9 @@ public class View {
      */
     public void processCorpus(ActionEvent actionEvent) {
         if (corpusPath.getText().equals("Enter Path"))
-            showAlert("enter please a corpus directory");
+            showAlert("Enter please a corpus directory");
         else if (postingPath.getText().equals("Enter Path"))
-            showAlert("enter please a posting destination directory");
+            showAlert("Enter please a posting destination directory");
         else {
             controller.setCorpusPath(corpusPath.getText() + "/");
             controller.setStopWordsPath(corpusPath.getText() + "/stop_words.txt");
@@ -176,6 +176,8 @@ public class View {
         List list = new ArrayList(queryDocuments);
         for (int i = 0; i < list.size(); i++) {
             if (selectedCities.size() > 0 && selectedCities.contains(controller.getDocumentsDictionary().get(((ADocument) list.get(i)).getIndexId()).get(4).toString().toUpperCase()))
+                allDocuments.getItems().add(((ADocument) list.get(i)).getId());
+            else if (selectedCities.size() == 0)
                 allDocuments.getItems().add(((ADocument) list.get(i)).getId());
         }
         Scene scene = new Scene(new Group());
