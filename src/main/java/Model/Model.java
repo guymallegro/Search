@@ -81,7 +81,6 @@ public class Model {
         long tEnd = System.currentTimeMillis();
         long tDelta = tEnd - tStart;
         totalTime = tDelta / 1000.0;
-        //searcher = new Searcher(termsDictionary, documentsDictionary, citiesDictionary, this);
     }
 
     /**
@@ -566,5 +565,9 @@ public class Model {
 
     private void resetQueryDocuemnts() {
         searcher.getQueryDocuemnts().clear();
+    }
+
+    public HashMap<Integer, ArrayList<Object>> getDocumentsDictionary() {
+        return documentsDictionary;
     }
 }

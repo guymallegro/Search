@@ -97,12 +97,10 @@ public class View {
                 Map.Entry me2 = (Map.Entry) iterator2.next();
                 CheckMenuItem item = new CheckMenuItem(((City) me2.getValue()).getCityName());
                 item.setOnAction(a -> {
-                    if (selectedCities.contains(item.getText())) {
-                        selectedCities.remove(item.getText());
-                        System.out.println("Removed :" + item.getText());
+                    if (selectedCities.contains(item.getText().toUpperCase())) {
+                        selectedCities.remove(item.getText().toUpperCase());
                     } else {
-                        selectedCities.add(item.getText());
-                        System.out.println("Selected :" + item.getText());
+                        selectedCities.add(item.getText().toUpperCase());
                     }
                 });
                 items.add(item);
@@ -177,7 +175,8 @@ public class View {
         PriorityQueue<Document> queryDocuments = controller.getQueryDocuemnts();
         List list = new ArrayList(queryDocuments);
         for (int i = 0; i < list.size(); i++) {
-            allDocuments.getItems().add(((ADocument) list.get(i)).getId());
+            if (selectedCities.size() > 0 && selectedCities.contains(controller.getDocumentsDictionary().get(((ADocument) list.get(i)).getIndexId()).get(4).toString().toUpperCase()))
+                allDocuments.getItems().add(((ADocument) list.get(i)).getId());
         }
         Scene scene = new Scene(new Group());
         stage.initModality(Modality.APPLICATION_MODAL); //Lock the window until it closes

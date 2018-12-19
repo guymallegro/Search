@@ -146,4 +146,8 @@ public class Controller {
     public PriorityQueue<Document> getQueryDocuemnts() {
         return model.getQueryDocuemnts();
     }
+
+    public HashMap<Integer, ArrayList<Object>> getDocumentsDictionary() {
+        return model.getDocumentsDictionary();
+    }
 }

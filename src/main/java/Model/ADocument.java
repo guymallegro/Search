@@ -23,7 +23,7 @@ public abstract class ADocument {
      *
      * @return - The city
      */
-    String getCity() {
+    public String getCity() {
         return city;
     }
 
@@ -86,7 +86,7 @@ public abstract class ADocument {
      *
      * @return - The index id
      */
-    int getIndexId() {
+    public int getIndexId() {
         return indexId;
     }
 
