@@ -530,18 +530,21 @@ public class Model {
 
     /**
      * update the posting path
+     *
      * @param postingPath - the path that contains all the posting files and dictionaries
      */
-    public void setPostingPathDestination (String postingPath){
+    public void setPostingPathDestination(String postingPath) {
         postingPathDestination = postingPath;
         fileReader.setPostPath(postingPath);
     }
 
     /**
      * find the 50 most relevant documents by rank them
+     *
      * @param query - the query from the user or file
      */
     public void findRelevantDocuments(String query) {
+        parse.getAllTerms().clear();
         QueryDocument queryDocument = new QueryDocument(query);
         parse.parseDocument(queryDocument);
         searcher = new Searcher(termsDictionary, documentsDictionary, citiesDictionary, this, parse.getAllTerms());
@@ -549,7 +552,6 @@ public class Model {
     }
 
     /**
-     *
      * @param terms - ArrayList of the terms from the query
      * @return ArrayList with the line of each term
      */

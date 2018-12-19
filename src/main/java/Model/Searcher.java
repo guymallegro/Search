@@ -25,25 +25,23 @@ public class Searcher {
     /**
      * find the 50 most relevant documents using the ranker
      */
-    public void findRelevantDocs(){
-        retrieveData (findLinesOfTerms (queryTerms));
+    public void findRelevantDocs() {
+        retrieveData(findLinesOfTerms(queryTerms));
         ranker.rank();
     }
 
     /**
-     *
      * @param terms - HashMap of the terms from the query after the parsing process
      * @return ArrayList of the lines of each term from the posting file
      */
-    private ArrayList<String> findLinesOfTerms(HashMap<String,Term> terms) {
+    private ArrayList<String> findLinesOfTerms(HashMap<String, Term> terms) {
         String[] sortedTerms = terms.keySet().toArray(new String[terms.size()]);
         Arrays.sort(sortedTerms, String.CASE_INSENSITIVE_ORDER);
         ArrayList<String> termsToFind = new ArrayList<>();
         ArrayList<String> allLines = new ArrayList<>();
-        termsToFind.add((terms.get(sortedTerms[0])).getValue());
         char currentLetter = (terms.get(sortedTerms[0])).getValue().charAt(0);
-        for (int i = 1; i < sortedTerms.length; i++) {
-            while (currentLetter == Character.toLowerCase((terms.get(sortedTerms[i])).getValue().charAt(0))){
+        for (int i = 0; i < sortedTerms.length; i++) {
+            while (currentLetter == Character.toLowerCase((terms.get(sortedTerms[i])).getValue().charAt(0))) {
                 termsToFind.add((terms.get(sortedTerms[i])).getValue());
                 if (i + 1 < sortedTerms.length)
                     i++;
@@ -60,18 +58,19 @@ public class Searcher {
 
     /**
      * update the relevant details of terms and documents
+     *
      * @param allLines - ArrayList of the lines of each term from the posting file
      */
     private void retrieveData(ArrayList<String> allLines) {
-        String [] documents;
+        String[] documents;
         String termLine = "";
         String term = "";
         int documentIndex = 0;
-        for (int line = 0; line < allLines.size(); line++){
+        for (int line = 0; line < allLines.size(); line++) {
             termLine = allLines.get(line);
             term = termLine.substring(1, termLine.indexOf(";"));
             documents = termLine.substring(termLine.indexOf(";") + 1, termLine.indexOf(" ")).split(",");
-            for (int i = 0; i < documents.length; i ++){
+            for (int i = 0; i < documents.length; i++) {
                 documentIndex += Integer.parseInt(documents[i]);
                 queryTerms.get(term).addInDocument(documentIndex, 1);
                 if (documentsDictionary.containsKey(documentIndex))
@@ -82,6 +81,7 @@ public class Searcher {
 
     /**
      * initial the terms' HashMap
+     *
      * @param queryTerms - the HashMap of terms after parsing
      */
     public void setQueryTerms(HashMap<String, Term> queryTerms) {
