@@ -560,11 +560,38 @@ public class Model {
         return fileReader.findTerms(terms);
     }
 
-    public PriorityQueue<Document> getQueryDocuemnts() {
-        return searcher.getQueryDocuemnts();
+    public ArrayList<Document> getQueryDocuments() {
+        print();
+        return sortDocuments(searcher.getQueryDocuments());
     }
 
-    private void resetQueryDocuemnts() {
-        searcher.getQueryDocuemnts().clear();
+    private ArrayList<Document> sortDocuments(PriorityQueue<Document> queryDocuments) {
+        Comparator<Document> comparator = new Comparator<Document>() {
+            @Override
+            public int compare(Document o1, Document o2) {
+                if (o1.getRank() > o2.getRank())
+                    return -1;
+                else if (o1.getRank() < o2.getRank())
+                    return 1;
+                return 0;
+            }
+        };
+        ArrayList <Document> list = new ArrayList<>(queryDocuments);
+        list.sort(comparator);
+        return list;
+    }
+
+    private void resetQueryDocuments() {
+        searcher.getQueryDocuments().clear();
+    }
+
+    private void print() {
+//        for (Document d:queryDocuments) {
+//            System.out.println("Doc: " + d.getId() + " rank: " + d.getRank());
+//        }
+        ArrayList <Document> list = sortDocuments(searcher.getQueryDocuments());
+        for (int i = 0; i < 50 && list.size() >= 49; i++) {
+            System.out.println("Doc: " + list.get(i).getId() + " rank: " + list.get(i).getRank());
+        }
     }
 }

@@ -64,7 +64,7 @@ public class Ranker {
         for (Integer documentIndex : allDocuments.keySet()) {
             for (Term queryTerm : queryTerms.values()) {
                 if (queryTerm.getUnsortedInDocuments().containsKey(documentIndex)){
-                    firstCalculation = (K + 1) / (1 + K*(1 - B)+ (B*getDocumentLength(documentIndex))/avgDocLength);
+                    firstCalculation = (K + 1) / (1 + K*((1 - B)+ (B*getDocumentLength(documentIndex))/avgDocLength));
                     logCalculation = Math.log((documentsDictionary.size() + 1) / queryTerm.getInDocuments().length);
                     currentRank += firstCalculation * logCalculation;
                 }
@@ -75,16 +75,10 @@ public class Ranker {
             queryDocuments.add(currentDocument);
             currentRank = 0;
         }
-        print ();
     }
 
-    private void print() {
-        for (Document d: queryDocuments){
-            System.out.println("Doc: " + d.getId() + " rank: " + d.getRank());
-        }
-    }
 
-    public PriorityQueue<Document> getQueryDocuemnts() {
+    public PriorityQueue<Document> getQueryDocuments() {
         return queryDocuments;
     }
 }

@@ -143,7 +143,7 @@ public class Controller {
         return model.getCitiesDictionary();
     }
 
-    public PriorityQueue<Document> getQueryDocuemnts() {
-        return model.getQueryDocuemnts();
+    public ArrayList<Document> getQueryDocuments() {
+        return model.getQueryDocuments();
     }
 }

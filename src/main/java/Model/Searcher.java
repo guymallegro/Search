@@ -90,7 +90,7 @@ public class Searcher {
         this.queryTerms = queryTerms;
     }
 
-    public PriorityQueue<Document> getQueryDocuemnts() {
-        return ranker.getQueryDocuemnts();
+    public PriorityQueue<Document> getQueryDocuments() {
+        return ranker.getQueryDocuments();
     }
 }

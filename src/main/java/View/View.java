@@ -174,9 +174,8 @@ public class View {
         controller.findRelevantDocuments(query.getText());
         Stage stage = new Stage();
         allDocuments = new ListView<>();
-        PriorityQueue<Document> queryDocuments = controller.getQueryDocuemnts();
-        List list = new ArrayList(queryDocuments);
-        for (int i = 0; i < list.size(); i++) {
+        ArrayList list = controller.getQueryDocuments();
+        for (int i = 0; i < 50 && list.size() >= 49; i++) {
             allDocuments.getItems().add(((ADocument) list.get(i)).getId());
         }
         Scene scene = new Scene(new Group());
