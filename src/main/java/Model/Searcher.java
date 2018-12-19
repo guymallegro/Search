@@ -42,7 +42,8 @@ public class Searcher {
         ArrayList<String> allLines = new ArrayList<>();
         char currentLetter = (terms.get(sortedTerms[0])).getValue().charAt(0);
         for (int i = 0; i < sortedTerms.length; i++) {
-            while (currentLetter == Character.toLowerCase((terms.get(sortedTerms[i])).getValue().charAt(0))) {
+            while (currentLetter == Character.toLowerCase((terms.get(sortedTerms[i])).getValue().charAt(0)) ||
+                    currentLetter == Character.toUpperCase((terms.get(sortedTerms[i])).getValue().charAt(0))) {
                 termsToFind.add((terms.get(sortedTerms[i])).getValue());
                 if (i + 1 < sortedTerms.length)
                     i++;
