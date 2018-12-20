@@ -1,15 +1,11 @@
 package Controller;
 
 import Model.Model;
-
+import Model.Term;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-
 import Model.Document;
-
-import java.util.PriorityQueue;
-
 import Model.City;
 
 /**
@@ -58,7 +54,7 @@ public class Controller {
      *
      * @return - List of terms
      */
-    public HashMap<String, ArrayList<Object>> getTermsToDisplay() {
+    public HashMap<String, Term> getTermsToDisplay() {
         return model.getTermsDictionary();
     }
 

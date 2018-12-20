@@ -111,4 +111,12 @@ public class Term {
      * @param newValue - The given value
      */
     void setValue(String newValue) {value = newValue;}
+
+    /**
+     * Sets the term amount in corpus
+     * @param amount - the frequency of the term in corpus
+     */
+    public void setAmount(int amount) {
+        this.amount = amount;
+    }
 }

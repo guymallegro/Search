@@ -34,12 +34,13 @@ public class Document extends ADocument {
      */
     void addTermToText(Term term) {
         if (!textTerms.containsKey(term))
-            textTerms.put(term, 1);
+            textTerms.put(term.getValue(), term);
         else {
-            textTerms.put(term, textTerms.get(term) + 1);
+            term.setAmount(term.getAmount() + 1);
+            textTerms.put(term.getValue(), term);
         }
-        if (textTerms.get(term) > max_tf)
-            max_tf = textTerms.get(term);
+        if (textTerms.get(term).getAmount() > max_tf)
+            max_tf = textTerms.get(term).getAmount();
     }
 
     /**

@@ -6,23 +6,17 @@ public class Ranker {
     public final double K = 1.2;
     public final double B = 0.75;
     private double avgDocLength;
-    private HashMap<String, Term> queryTerms;
-    public HashMap<Integer, Document> allDocuments;
-    private HashMap<String, ArrayList<Object>> termsDictionary;
+    private QueryDocument queryDocument;
     private HashMap<Integer, Document> documentsDictionary;
-    private PriorityQueue <Document> queryDocuments;
     private double docsAmount = 0;
 
 
-    public Ranker(HashMap<String, ArrayList<Object>> termsDictionary, HashMap<Integer, Document> documentsDictionary, HashMap<String, Term> queryTerms, HashMap<Integer, Document> allDocuments) {
-        this.queryTerms = queryTerms;
-        this.allDocuments = allDocuments;
-        queryDocuments = new PriorityQueue<Document>((Comparator.comparingDouble(o -> o.getRank())));
-        this.termsDictionary = termsDictionary;
+    public Ranker(HashMap<Integer, Document> documentsDictionary) {
         this.documentsDictionary = documentsDictionary;
     }
 
     /**
+     *
      * calculate the average number of terms in document of all the corpus
      */
     private void corpusAvgDocLength() {
@@ -32,15 +26,6 @@ public class Ranker {
             totalLength += document.getLength();
         }
         avgDocLength = totalLength / docsAmount;
-    }
-
-    /**
-     *
-     * @param term - the current term from the query
-     * @return the amount of document that the term appeared in
-     */
-    private int getDocumentAmount(String term) {
-        return queryTerms.get(term).getInDocuments().length;
     }
 
     /**
@@ -59,25 +44,26 @@ public class Ranker {
         double currentRank = 0;
         double firstCalculation = 0;
         double logCalculation = 0;
-        for (Integer documentIndex : allDocuments.keySet()) {
-            for (Term queryTerm : queryTerms.values()) {
+        for (Integer documentIndex : queryDocument.getTermsDocuments().keySet()) {
+            for (Term queryTerm : queryDocument.getTextTerms().values()) {
                 if (queryTerm.getUnsortedInDocuments().containsKey(documentIndex)){
                     int len = getDocumentLength(documentIndex);
-                    firstCalculation = (K + 1) / (1 + K*((1 - B)+ (B*getDocumentLength(documentIndex))/avgDocLength));
-                    logCalculation = Math.log((documentsDictionary.size() + 1) / queryTerm.getInDocuments().length);
+                    firstCalculation = (K + 1) / (1 + K*((1 - B)+ (B*len)/avgDocLength));
+                    logCalculation = Math.log((1 + documentsDictionary.size()) / queryTerm.getInDocuments().length);
                     currentRank += firstCalculation * logCalculation;
                 }
             }
             Document currentDocument = new Document();
             currentDocument.setId(documentsDictionary.get(documentIndex).getId());
             currentDocument.setRank(currentRank);
-            queryDocuments.add(currentDocument);
+            queryDocument.getQueryDocuments().add(currentDocument);
             currentRank = 0;
         }
     }
 
-
-    public PriorityQueue<Document> getQueryDocuments() {
-        return queryDocuments;
-    }
+    /**
+     * set the current document query to rank
+     * @param queryDocument the current query
+     */
+    public void setQueryDocument(QueryDocument queryDocument) { this.queryDocument = queryDocument; }
 }

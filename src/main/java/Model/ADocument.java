@@ -4,7 +4,8 @@ import java.util.HashMap;
 
 public abstract class ADocument {
     private String id;
-    HashMap<Term, Integer> textTerms;
+    //HashMap<Term, Integer> textTerms;
+    HashMap<String, Term> textTerms;
     String content;
     private String city;
     int indexId;
@@ -13,7 +14,8 @@ public abstract class ADocument {
 
     public ADocument (){
         city = "";
-        textTerms = new HashMap<Term, Integer>();
+        textTerms = new HashMap<String, Term>();
+        //textTerms = new HashMap<Term, Integer>();
     }
 
 
@@ -47,7 +49,7 @@ public abstract class ADocument {
      *
      * @return - The text terms
      */
-    HashMap<Term, Integer> getTextTerms() {
+    HashMap<String, Term> getTextTerms() {
         return textTerms;
     }
 
@@ -115,5 +117,5 @@ public abstract class ADocument {
     }
 
 
-    public void setTextTerms(HashMap<Term, Integer> tempHash) {textTerms = tempHash;}
+    public void setTextTerms(HashMap<String, Term> tempHash) {textTerms = tempHash;}
 }

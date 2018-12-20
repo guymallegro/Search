@@ -18,7 +18,7 @@ import java.util.HashSet;
  * The model class
  */
 public class Model {
-
+    static int queryIndex = 0;
     private Parse parse;
     private ReadFile fileReader;
     private Indexer indexer;
@@ -28,8 +28,9 @@ public class Model {
     private int nomOfDocs = 8000;
     private HashSet<String> languages;
     private ArrayList<Document> documents;
+    private ArrayList<QueryDocument> queriesDocuments;
     private HashSet<String> stopWords;
-    private HashMap<String, ArrayList<Object>> termsDictionary;
+    private HashMap<String, Term> termsDictionary;
     private HashMap<Integer, Document> documentsDictionary;
     private HashMap<String, City> citiesDictionary;
     private boolean isStemming = false;
@@ -52,6 +53,8 @@ public class Model {
         documentsDictionary = new HashMap<>();
         indexer = new Indexer(this, parse.getAllTerms(), documents);
         document = new Document();
+        queriesDocuments = new ArrayList<QueryDocument>();
+
     }
 
     /**
@@ -136,6 +139,53 @@ public class Model {
         }
     }
 
+    void processQuery(String fileAsString) {
+        String[] allQueries = fileAsString.split("<top>");
+        QueryDocument currentQuery = new QueryDocument();
+        String allQuery = "";
+        for (int query = 0; query < allQueries.length; query++) {
+            allQuery =  allQueries[query];
+            int startTagIndex = allQuery.indexOf("<top>");
+            int endTagIndex = allQuery.indexOf("<title>");
+            if (startTagIndex != -1 && endTagIndex != -1)
+                currentQuery.setId(allQuery.substring(allQuery.indexOf(": "), endTagIndex));
+            startTagIndex = endTagIndex;
+            endTagIndex = allQuery.indexOf("<de");
+            if (startTagIndex != -1 && endTagIndex != -1)
+                currentQuery.setContent(allQuery.substring(startTagIndex + 8, endTagIndex));
+            queriesDocuments.add(currentQuery);
+        }
+        findRelevantDocuments(queriesDocuments);
+    }
+
+    /**
+     * create a queryDocument from the user query
+     *
+     * @param query - the query from the user or file
+     */
+    public void findRelevantDocuments(String query) {
+        QueryDocument queryDocument = new QueryDocument(query);
+        queryDocument.setId(Integer.toString(queryIndex));
+        queryIndex++;
+        queriesDocuments.add(queryDocument);
+        findRelevantDocuments(queriesDocuments);
+    }
+
+    /**
+     * find the 50 most relevant documents for one or more queries by ranking the documents
+     *
+     * @param queriesDocuments - one or more queries from the user or file respectively
+     */
+    private void findRelevantDocuments(ArrayList<QueryDocument> queriesDocuments) {
+        for (int i = 0; i < queriesDocuments.size(); i++){
+            parse.getAllTerms().clear();
+            //resetQueryDocuments();
+            parse.parseDocument(queriesDocuments.get(i));
+        }
+        searcher = new Searcher(this, documentsDictionary, citiesDictionary, queriesDocuments);
+        searcher.findRelevantDocs();
+    }
+
     /**
      * Writes the terms dictionary to the disk.
      */
@@ -149,7 +199,7 @@ public class Model {
             line.append("<");
             line.append(sortedTerms[i]);
             line.append(":");
-            line.append(termsDictionary.get(sortedTerms[i]).get(0));
+            line.append(termsDictionary.get(sortedTerms[i]).getAmountInDocuments());
             lines.add(line.toString());
             line.setLength(0);
         }
@@ -271,10 +321,9 @@ public class Model {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
                 String term = line.substring(1, line.indexOf(":"));
-                String[] info = line.substring(line.indexOf(":") + 1).split(",");
-                ArrayList<Object> attributes = new ArrayList<>();
-                attributes.add(0, info[0]);
-                termsDictionary.put(term, attributes);
+                Term newTerm = new Term(term);
+                newTerm.setAmount(Integer.parseInt(line.substring(line.indexOf(":") + 1)));
+                termsDictionary.put(term, newTerm);
             }
         } catch (FileNotFoundException e) {
             System.out.println("Cannot open the terms dictionary");
@@ -465,7 +514,7 @@ public class Model {
      *
      * @return - The terms dictionary
      */
-    public HashMap<String, ArrayList<Object>> getTermsDictionary() {
+    public HashMap<String, Term> getTermsDictionary() {
         return termsDictionary;
     }
 
@@ -536,20 +585,6 @@ public class Model {
     }
 
     /**
-     * find the 50 most relevant documents by rank them
-     *
-     * @param query - the query from the user or file
-     */
-    public void findRelevantDocuments(String query) {
-        parse.getAllTerms().clear();
-        //resetQueryDocuemnts();
-        QueryDocument queryDocument = new QueryDocument(query);
-        parse.parseDocument(queryDocument);
-        searcher = new Searcher(termsDictionary, documentsDictionary, citiesDictionary, this, parse.getAllTerms());
-        searcher.findRelevantDocs();
-    }
-
-    /**
      * @param terms - ArrayList of the terms from the query
      * @return ArrayList with the line of each term
      */
@@ -559,7 +594,7 @@ public class Model {
 
     public ArrayList<Document> getQueryDocuments() {
         print();
-        return sortDocuments(searcher.getQueryDocuments());
+        return sortDocuments(queriesDocuments.get(0).getQueryDocuments());
     }
 
     private ArrayList<Document> sortDocuments(PriorityQueue<Document> queryDocuments) {
@@ -578,15 +613,16 @@ public class Model {
         return list;
     }
 
-    private void resetQueryDocuments() {
-        searcher.getQueryDocuments().clear();
-    }
+//
+//    private void resetQueryDocuments() {
+//        searcher.getQueryDocuments().clear();
+//    }
 
     private void print() {
 //        for (Document d:queryDocuments) {
 //            System.out.println("Doc: " + d.getId() + " rank: " + d.getRank());
 //        }
-        ArrayList <Document> list = sortDocuments(searcher.getQueryDocuments());
+        ArrayList <Document> list = sortDocuments(queriesDocuments.get(0).getQueryDocuments());
         for (int i = 0; i < 50 && i < list.size(); i++) {
             System.out.println("Doc: " + list.get(i).getId() + " rank: " + list.get(i).getRank());
         }

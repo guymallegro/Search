@@ -150,9 +150,9 @@ class Indexer {
                 if (Character.isUpperCase(current.charAt(0))) {
                     if (model.getTermsDictionary().containsKey(current.toLowerCase())) {
                         capitalLetters.put(current.toLowerCase(), toWrite.toString().toLowerCase());
-                        int toAdd = (int) model.getTermsDictionary().get(current).get(0);
-                        int amount = (int) model.getTermsDictionary().get(current.toLowerCase()).get(0);
-                        model.getTermsDictionary().get(current.toLowerCase()).set(0, amount + toAdd);
+                        int toAdd = model.getTermsDictionary().get(current).getAmount();
+                        int amount = model.getTermsDictionary().get(current.toLowerCase()).getAmount();
+                        model.getTermsDictionary().get(current.toLowerCase()).setAmount(amount + toAdd);
                         model.getTermsDictionary().remove(current.toUpperCase());
                         toWrite.setLength(0);
                     }
@@ -262,12 +262,12 @@ class Indexer {
      */
     private void addTermToDictionary(String term) {
         if (model.getTermsDictionary().containsKey(term)) {
-            int amount = (int) model.getTermsDictionary().get(term).get(0);
-            model.getTermsDictionary().get(term).set(0, amount + allTerms.get(term).getAmount());
+            int amount = (int) model.getTermsDictionary().get(term).getAmount();
+            model.getTermsDictionary().get(term).setAmount(amount + allTerms.get(term).getAmount());
         } else {
-            ArrayList<Object> attributes = new ArrayList<>();
-            attributes.add(allTerms.get(term).getAmount());
-            model.getTermsDictionary().put(term, attributes);
+            Term newTerm = new Term(term);
+            newTerm.setAmount(allTerms.get(term).getAmount());
+            model.getTermsDictionary().put(term, newTerm);
         }
     }
 

@@ -8,34 +8,38 @@ import java.util.PriorityQueue;
 public class Searcher {
     private Model model;
     private Ranker ranker;
-
-    private HashMap<String, Term> queryTerms;
+    private QueryDocument currentQuery;
+    ArrayList<QueryDocument> queryDocuments;
     private HashMap<String, City> cityDictionary;
     private HashMap<Integer, Document> documentsDictionary;
-    private HashMap<Integer, Document> allDocuments;
 
-    public Searcher(HashMap<String, ArrayList<Object>> termsDictionary, HashMap<Integer, Document> documentsDictionary, HashMap<String, City> cityDictionary, Model model, HashMap<String, Term> queryTerms) {
+    public Searcher(Model model, HashMap<Integer, Document> documentsDictionary, HashMap<String, City> cityDictionary, ArrayList<QueryDocument> queryDocuments) {
         this.model = model;
-        this.queryTerms = queryTerms;
-        allDocuments = new HashMap<>();
+        this.queryDocuments = queryDocuments;
         this.cityDictionary = cityDictionary;
         this.documentsDictionary = documentsDictionary;
-        ranker = new Ranker(termsDictionary, documentsDictionary, queryTerms, allDocuments);
+        ranker = new Ranker(documentsDictionary);
     }
 
     /**
      * find the 50 most relevant documents using the ranker
      */
     public void findRelevantDocs() {
-        retrieveData(findLinesOfTerms(queryTerms));
-        ranker.rank();
+        for (int i = 0; i < queryDocuments.size(); i++){
+            currentQuery = queryDocuments.get(i);
+            retrieveData(findLinesOfTerms());
+            ranker.setQueryDocument(currentQuery);
+            ranker.rank();
+        }
     }
 
     /**
-     * @param terms - HashMap of the terms from the query after the parsing process
-     * @return ArrayList of the lines of each term from the posting file
+     *find the posting lines of terms of the current query
+     *
+     * @return ArrayList of the lines of each term in the query from the posting file
      */
-    private ArrayList<String> findLinesOfTerms(HashMap<String, Term> terms) {
+    private ArrayList<String> findLinesOfTerms() {
+        HashMap <String, Term> terms = currentQuery.getTextTerms();
         String[] sortedTerms = terms.keySet().toArray(new String[terms.size()]);
         Arrays.sort(sortedTerms, String.CASE_INSENSITIVE_ORDER);
         ArrayList<String> termsToFind = new ArrayList<>();
@@ -74,23 +78,10 @@ public class Searcher {
             documents = termLine.substring(termLine.indexOf(";") + 1, termLine.indexOf(" ")).split(",");
             for (int i = 0; i < documents.length; i++) {
                 documentIndex += Integer.parseInt(documents[i]);
-                queryTerms.get(term).addInDocument(documentIndex, 1);
+                currentQuery.getTextTerms().get(term).addInDocument(documentIndex, 1);
                 if (documentsDictionary.containsKey(documentIndex))
-                    allDocuments.put(documentIndex, documentsDictionary.get(documentIndex));
+                    currentQuery.addDocument(documentIndex, documentsDictionary.get(documentIndex));
             }
         }
-    }
-
-    /**
-     * initial the terms' HashMap
-     *
-     * @param queryTerms - the HashMap of terms after parsing
-     */
-    public void setQueryTerms(HashMap<String, Term> queryTerms) {
-        this.queryTerms = queryTerms;
-    }
-
-    public PriorityQueue<Document> getQueryDocuments() {
-        return ranker.getQueryDocuments();
     }
 }
