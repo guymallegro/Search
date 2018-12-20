@@ -7,11 +7,11 @@ public class Ranker {
     public final double B = 0.75;
     private double avgDocLength;
     private QueryDocument queryDocument;
-    private HashMap<Integer, Document> documentsDictionary;
+    private HashMap<Integer, ArrayList<String>> documentsDictionary;
     private double docsAmount = 0;
 
 
-    public Ranker(HashMap<Integer, Document> documentsDictionary) {
+    public Ranker(HashMap<Integer, ArrayList<String>> documentsDictionary) {
         this.documentsDictionary = documentsDictionary;
     }
 
@@ -19,6 +19,7 @@ public class Ranker {
      *
      * calculate the average number of terms in document of all the corpus
      */
+/*
     private void corpusAvgDocLength() {
         int totalLength = 0;
         for (Document document: documentsDictionary.values()){
@@ -27,13 +28,30 @@ public class Ranker {
         }
         avgDocLength = totalLength / docsAmount;
     }
+*/
+
+    private void corpusAvgDocLength() {
+        int totalLength = 0;
+        for (ArrayList details: documentsDictionary.values()){
+            docsAmount++;
+            totalLength += Integer.parseInt("" + details.get(3));
+        }
+        avgDocLength = totalLength / docsAmount;
+    }
 
     /**
      * get the amount of all the terms that appears in the given query
      * @param documentIndex - the index of the document as it appear in the documentsDictionary file
      */
+/*
     private int getDocumentLength(int documentIndex) {
         return documentsDictionary.get(documentIndex).getLength();
+    }
+*/
+
+    private int getDocumentLength(int documentIndex) {
+        String length = documentsDictionary.get(documentIndex).get(2);
+        return Integer.parseInt(length);
     }
 
     /**
@@ -44,7 +62,7 @@ public class Ranker {
         double currentRank = 0;
         double firstCalculation = 0;
         double logCalculation = 0;
-        for (Integer documentIndex : queryDocument.getTermsDocuments().keySet()) {
+        for (Integer documentIndex : queryDocument.getTermsDocuments()) {
             for (Term queryTerm : queryDocument.getTextTerms().values()) {
                 if (queryTerm.getUnsortedInDocuments().containsKey(documentIndex)){
                     int len = getDocumentLength(documentIndex);
@@ -54,7 +72,8 @@ public class Ranker {
                 }
             }
             Document currentDocument = new Document();
-            currentDocument.setId(documentsDictionary.get(documentIndex).getId());
+currentDocument.setId((String) documentsDictionary.get(documentIndex).get(1));            
+//currentDocument.setId(documentsDictionary.get(documentIndex).getId());
             currentDocument.setRank(currentRank);
             queryDocument.getQueryDocuments().add(currentDocument);
             currentRank = 0;

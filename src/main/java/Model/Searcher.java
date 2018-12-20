@@ -11,9 +11,9 @@ public class Searcher {
     private QueryDocument currentQuery;
     ArrayList<QueryDocument> queryDocuments;
     private HashMap<String, City> cityDictionary;
-    private HashMap<Integer, Document> documentsDictionary;
+private HashMap<Integer, ArrayList<String>> documentsDictionary;
 
-    public Searcher(Model model, HashMap<Integer, Document> documentsDictionary, HashMap<String, City> cityDictionary, ArrayList<QueryDocument> queryDocuments) {
+    public Searcher(Model model, HashMap<Integer, ArrayList<String>> documentsDictionary, HashMap<String, City> cityDictionary, ArrayList<QueryDocument> queryDocuments) {
         this.model = model;
         this.queryDocuments = queryDocuments;
         this.cityDictionary = cityDictionary;
@@ -80,7 +80,7 @@ public class Searcher {
                 documentIndex += Integer.parseInt(documents[i]);
                 currentQuery.getTextTerms().get(term).addInDocument(documentIndex, 1);
                 if (documentsDictionary.containsKey(documentIndex))
-                    currentQuery.addDocument(documentIndex, documentsDictionary.get(documentIndex));
+                    currentQuery.addDocument(documentIndex);
             }
         }
     }

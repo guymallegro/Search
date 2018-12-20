@@ -36,11 +36,11 @@ public class Document extends ADocument {
         if (!textTerms.containsKey(term))
             textTerms.put(term.getValue(), term);
         else {
-            term.setAmount(term.getAmount() + 1);
+            term.increaseAmount();
             textTerms.put(term.getValue(), term);
         }
-        if (textTerms.get(term).getAmount() > max_tf)
-            max_tf = textTerms.get(term).getAmount();
+        if (textTerms.get(term.getValue()).getAmount() > max_tf)
+            max_tf = textTerms.get(term.getValue()).getAmount();
     }
 
     /**

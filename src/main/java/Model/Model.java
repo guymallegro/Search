@@ -18,7 +18,7 @@ import java.util.HashSet;
  * The model class
  */
 public class Model {
-    static int queryIndex = 0;
+    private static int queryIndex = 0;
     private Parse parse;
     private ReadFile fileReader;
     private Indexer indexer;
@@ -31,7 +31,7 @@ public class Model {
     private ArrayList<QueryDocument> queriesDocuments;
     private HashSet<String> stopWords;
     private HashMap<String, Term> termsDictionary;
-    private HashMap<Integer, Document> documentsDictionary;
+private HashMap<Integer, ArrayList<String>> documentsDictionary;
     private HashMap<String, City> citiesDictionary;
     private boolean isStemming = false;
     private int documentsAmount;
@@ -104,7 +104,7 @@ public class Model {
             int startTagIndex = document.indexOf("<DOCNO>");
             int endTagIndex = document.indexOf("</DOCNO>");
             if (startTagIndex != -1 && endTagIndex != -1)
-                currentDocument.setId(document.substring(startTagIndex + 7, endTagIndex));
+                currentDocument.setId(getId(document.substring(startTagIndex + 7, endTagIndex)));
             startTagIndex = document.indexOf("<TEXT>");
             endTagIndex = document.indexOf("</TEXT>");
             if (startTagIndex != -1 && endTagIndex != -1)
@@ -120,7 +120,7 @@ public class Model {
             startTagIndex = document.indexOf("<F P=104>");
             endTagIndex = document.indexOf("</F>", startTagIndex);
             if (startTagIndex != -1 && endTagIndex != -1)
-                currentDocument.setCity(getFirstWord(document.substring(startTagIndex + 9, endTagIndex).toUpperCase()));
+                currentDocument.setCity(cleanString(getFirstWord(document.substring(startTagIndex + 9, endTagIndex).toUpperCase())));
             startTagIndex = document.indexOf("<F P=105>");
             endTagIndex = document.indexOf("</F>", startTagIndex);
             if (startTagIndex != -1 && endTagIndex != -1) {
@@ -137,6 +137,30 @@ public class Model {
                 nomOfDocs = 8000;
             }
         }
+    }
+
+    private String getId(String str) {
+        if (str.length() == 0)
+            return "";
+        char current = str.charAt(0);
+        while (!(Character.isLetter(current)) && !Character.isDigit(current)) {
+            if (str.length() == 1) {
+                return "";
+            } else {
+                str = str.substring(1);
+                current = str.charAt(0);
+            }
+        }
+        current = str.charAt(str.length() - 1);
+        while (!(Character.isLetter(current)) && !Character.isDigit(current)) {
+            if (str.length() == 1) {
+                return "";
+            } else {
+                str = str.substring(0, str.length() - 1);
+                current = str.charAt(str.length() - 1);
+            }
+        }
+        return str;
     }
 
     void processQuery(String fileAsString) {
@@ -199,7 +223,7 @@ public class Model {
             line.append("<");
             line.append(sortedTerms[i]);
             line.append(":");
-            line.append(termsDictionary.get(sortedTerms[i]).getAmountInDocuments());
+            line.append(termsDictionary.get(sortedTerms[i]).getAmount());
             lines.add(line.toString());
             line.setLength(0);
         }
@@ -217,6 +241,39 @@ public class Model {
     /**
      * Writes the documents dictionary to the disk
      */
+//    private void writeDocsDictionary() {
+//        Object[] sortedDocuments = documentsDictionary.keySet().toArray();
+//        Arrays.sort(sortedDocuments);
+//        StringBuilder line = new StringBuilder();
+//        List<String> lines = new LinkedList<>();
+//        int size = sortedDocuments.length;
+//        for (int i = 0; i < size; i++) {
+//            line.append("<");
+//            line.append(sortedDocuments[i]).append(":");
+//            line.append(documentsDictionary.get(sortedDocuments[i]).getMax_tf());
+//            line.append(",");
+//            line.append(documentsDictionary.get(sortedDocuments[i]).getId());
+//            line.append(",");
+//            line.append(documentsDictionary.get(sortedDocuments[i]).getTextTerms().size());
+//            line.append(",");
+//            line.append(documentsDictionary.get(sortedDocuments[i]).getLength());
+//            if (!documentsDictionary.get(sortedDocuments[i]).getCity().equals("")) {
+//                line.append(",");
+//                line.append(documentsDictionary.get(sortedDocuments[i]).getCity());
+//            }
+//            lines.add(line.toString());
+//            line.setLength(0);
+//        }
+//        String path = postingPathDestination + "/documentsDictionary.txt";
+//        if (isStemming)
+//            path = postingPathDestination + "/documentsDictionaryWithStemming.txt";
+//        Path file = Paths.get(path);
+//        try {
+//            Files.write(file, lines, Charset.forName("UTF-8"));
+//        } catch (Exception e) {
+//            System.out.println("cannot write to dictionary");
+//        }
+//    }
     private void writeDocsDictionary() {
         Object[] sortedDocuments = documentsDictionary.keySet().toArray();
         Arrays.sort(sortedDocuments);
@@ -226,16 +283,16 @@ public class Model {
         for (int i = 0; i < size; i++) {
             line.append("<");
             line.append(sortedDocuments[i]).append(":");
-            line.append(documentsDictionary.get(sortedDocuments[i]).getMax_tf());
+            line.append(documentsDictionary.get(sortedDocuments[i]).get(0));
             line.append(",");
-            line.append(documentsDictionary.get(sortedDocuments[i]).getId());
+            line.append(documentsDictionary.get(sortedDocuments[i]).get(1));
             line.append(",");
-            line.append(documentsDictionary.get(sortedDocuments[i]).getTextTerms().size());
+            line.append(documentsDictionary.get(sortedDocuments[i]).get(2));
             line.append(",");
-            line.append(documentsDictionary.get(sortedDocuments[i]).getLength());
-            if (!documentsDictionary.get(sortedDocuments[i]).getCity().equals("")) {
+            line.append(documentsDictionary.get(sortedDocuments[i]).get(3));
+            if (!documentsDictionary.get(sortedDocuments[i]).get(4).equals("")) {
                 line.append(",");
-                line.append(documentsDictionary.get(sortedDocuments[i]).getCity());
+                line.append(documentsDictionary.get(sortedDocuments[i]).get(4));
             }
             lines.add(line.toString());
             line.setLength(0);
@@ -322,7 +379,7 @@ public class Model {
                 String line = scanner.nextLine();
                 String term = line.substring(1, line.indexOf(":"));
                 Term newTerm = new Term(term);
-                newTerm.setAmount(Integer.parseInt(line.substring(line.indexOf(":") + 1)));
+                newTerm.setAmount(Integer.parseInt(line.substring(line.lastIndexOf(":") + 1)));
                 termsDictionary.put(term, newTerm);
             }
         } catch (FileNotFoundException e) {
@@ -333,6 +390,30 @@ public class Model {
     /**
      * Loads the documents dictionary from the disk.
      */
+//    public void loadDocsDictionary() {
+//        String path = postingPathDestination + "/documentsDictionary.txt";
+//        if (isStemming)
+//            path = postingPathDestination + "/documentsDictionaryWithStemming.txt";
+//        File file = new File(path);
+//        try {
+//            Scanner scanner = new Scanner(file);
+//            while (scanner.hasNextLine()) {
+//                String line = scanner.nextLine();
+//                int docIndex = Integer.parseInt(line.substring(1, line.indexOf(":")));
+//                String[] info = line.substring(line.indexOf(":") + 1).split(",");
+//                Document document = new Document();
+//                document.setMax_tf(Integer.parseInt(info[0]));
+//                document.setId(info[1]);
+//                //document.setTextTerms(new HashMap<Term, Integer>(Integer.parseInt(info[2])));
+//                document.setLength(Integer.parseInt(info[3]));
+//                if (info.length == 5)
+//                    document.setCity(info[4]);
+//                documentsDictionary.put(docIndex, document);
+//            }
+//        } catch (FileNotFoundException e) {
+//            System.out.println("Cannot open the documents dictionary");
+//        }
+//    }
     public void loadDocsDictionary() {
         String path = postingPathDestination + "/documentsDictionary.txt";
         if (isStemming)
@@ -344,14 +425,16 @@ public class Model {
                 String line = scanner.nextLine();
                 int docIndex = Integer.parseInt(line.substring(1, line.indexOf(":")));
                 String[] info = line.substring(line.indexOf(":") + 1).split(",");
-                Document document = new Document();
-                document.setMax_tf(Integer.parseInt(info[0]));
-                document.setId(info[1]);
-                //document.setTextTerms(new HashMap<Term, Integer>(Integer.parseInt(info[2])));
-                document.setLength(Integer.parseInt(info[3]));
+                ArrayList<String> attributes = new ArrayList<>();
+                attributes.add(0, info[0]);
+                attributes.add(1, info[1]);
+                attributes.add(2, info[2]);
+                attributes.add(3, info[3]);
                 if (info.length == 5)
-                    document.setCity(info[4]);
-                documentsDictionary.put(docIndex, document);
+                    attributes.add(4, info[4]);
+                else
+                    attributes.add(4, "");
+                documentsDictionary.put(docIndex, attributes);
             }
         } catch (FileNotFoundException e) {
             System.out.println("Cannot open the documents dictionary");
@@ -523,7 +606,7 @@ public class Model {
      *
      * @return - The documents dictionary
      */
-    HashMap<Integer, Document> getDocsDictionary() {
+HashMap<Integer, ArrayList<String>> getDocsDictionary() {
         return documentsDictionary;
     }
 
@@ -628,7 +711,7 @@ public class Model {
         }
     }
 
-    public HashMap<Integer, Document> getDocumentsDictionary() {
+    public HashMap<Integer, ArrayList<String>> getDocumentsDictionary() {
         return documentsDictionary;
     }
 }

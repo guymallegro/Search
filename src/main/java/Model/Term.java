@@ -90,17 +90,13 @@ public class Term {
 
     /**
      * Returns a string with all the documents the term was found at with the amount of times it was found
-     * @return
+     * @return string of all the documents o terms
      */
     String getAmountInDocuments() {
         StringBuilder sb = new StringBuilder();
-        Map<Integer, Integer> map = new TreeMap(inDocuments);
-        Set set2 = map.entrySet();
-        Iterator iterator2 = set2.iterator();
-        while (iterator2.hasNext()) {
-            Map.Entry me2 = (Map.Entry) iterator2.next();
-            sb.append(positionInDocument.get(me2.getKey()));
-            sb.append(me2.getValue()).append(",");
+        for (Integer index : inDocuments.keySet()){
+            sb.append(index);
+            sb.append(positionInDocument.get(index)).append(",");
         }
         sb.deleteCharAt(sb.toString().length() - 1);
         return sb.toString();
@@ -116,7 +112,7 @@ public class Term {
      * Sets the term amount in corpus
      * @param amount - the frequency of the term in corpus
      */
-    public void setAmount(int amount) {
+    void setAmount(int amount) {
         this.amount = amount;
     }
 }

@@ -3,20 +3,22 @@ package Model;
 
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.PriorityQueue;
 
 public class QueryDocument extends ADocument {
-    private HashMap<Integer, Document> termsDocuments;
+    private HashSet<Integer> termsDocuments;
+    //private HashMap<Integer, Document> termsDocuments;
     private PriorityQueue<Document> rankDocuments;
 
     public QueryDocument(){
-        termsDocuments = new HashMap<Integer, Document>();
+        termsDocuments = new HashSet<>();
         rankDocuments = new PriorityQueue<Document>((Comparator.comparingDouble(o -> o.getRank())));
     }
 
     public QueryDocument(String content){
         this.content = content;
-        termsDocuments = new HashMap<Integer, Document>();
+        termsDocuments = new HashSet<>();
         rankDocuments = new PriorityQueue<Document>((Comparator.comparingDouble(o -> o.getRank())));
     }
 
@@ -30,10 +32,11 @@ public class QueryDocument extends ADocument {
         }
     }
 
-    public void addDocument (int index, Document document) {
-        termsDocuments.put(index, document);}
+    public void addDocument (int index) {
+        termsDocuments.add(index);
+    }
 
-    public HashMap<Integer, Document> getTermsDocuments() { return termsDocuments; }
+    public HashSet<Integer> getTermsDocuments() { return termsDocuments; }
 
     public PriorityQueue<Document> getQueryDocuments() { return rankDocuments; }
 }
