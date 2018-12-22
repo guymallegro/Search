@@ -283,17 +283,25 @@ private HashMap<Integer, ArrayList<String>> documentsDictionary;
         for (int i = 0; i < size; i++) {
             line.append("<");
             line.append(sortedDocuments[i]).append(":");
-            line.append(documentsDictionary.get(sortedDocuments[i]).get(0));
-            line.append(",");
-            line.append(documentsDictionary.get(sortedDocuments[i]).get(1));
-            line.append(",");
-            line.append(documentsDictionary.get(sortedDocuments[i]).get(2));
-            line.append(",");
-            line.append(documentsDictionary.get(sortedDocuments[i]).get(3));
-            if (!documentsDictionary.get(sortedDocuments[i]).get(4).equals("")) {
+            for (int s = 0; s < documentsDictionary.get(sortedDocuments[i]).size(); s++){
+                line.append(documentsDictionary.get(sortedDocuments[i]).get(s));
                 line.append(",");
-                line.append(documentsDictionary.get(sortedDocuments[i]).get(4));
             }
+            line.deleteCharAt(line.length() - 1);
+//            line.append(documentsDictionary.get(sortedDocuments[i]).get(0));
+//            line.append(",");
+//            line.append(documentsDictionary.get(sortedDocuments[i]).get(1));
+//            line.append(",");
+//            line.append(documentsDictionary.get(sortedDocuments[i]).get(2));
+//            line.append(",");
+//            line.append(documentsDictionary.get(sortedDocuments[i]).get(3));
+//            line.append(",");
+//            line.append(documentsDictionary.get(sortedDocuments[i]).get(4));
+//
+//            if (!documentsDictionary.get(sortedDocuments[i]).get(4).equals("")) {
+//                line.append(",");
+//                line.append(documentsDictionary.get(sortedDocuments[i]).get(4));
+//            }
             lines.add(line.toString());
             line.setLength(0);
         }
@@ -426,14 +434,17 @@ private HashMap<Integer, ArrayList<String>> documentsDictionary;
                 int docIndex = Integer.parseInt(line.substring(1, line.indexOf(":")));
                 String[] info = line.substring(line.indexOf(":") + 1).split(",");
                 ArrayList<String> attributes = new ArrayList<>();
-                attributes.add(0, info[0]);
-                attributes.add(1, info[1]);
-                attributes.add(2, info[2]);
-                attributes.add(3, info[3]);
-                if (info.length == 5)
-                    attributes.add(4, info[4]);
-                else
-                    attributes.add(4, "");
+                for (int i = 0; i < info.length; i++){
+                    attributes.add(i, info[i]);
+                }
+//                attributes.add(0, info[0]);
+//                attributes.add(1, info[1]);
+//                attributes.add(2, info[2]);
+//                attributes.add(3, info[3]);
+//                if (info.length == 5)
+//                    attributes.add(4, info[4]);
+//                else
+//                    attributes.add(4, "");
                 documentsDictionary.put(docIndex, attributes);
             }
         } catch (FileNotFoundException e) {

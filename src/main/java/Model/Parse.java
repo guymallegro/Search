@@ -57,6 +57,15 @@ class Parse {
             currentDocument.setLength(tokens.size());
             for (int i = 0; i < tokens.size(); i++) {
                 if (tokens.get(i).length() > 0 && (!isStopWord(tokens.get(i)) || (tokens.get(i).equals("between") && (i < tokens.size() - 1 && tokens.get(i + 1).length() > 0 && Character.isDigit(tokens.get(i + 1).charAt(0)))))) {
+                    if (tokens.get(i).contains("PROSPERITY")){
+                        int m = 10000000;
+                    }
+                    if (tokens.get(i).contains("Prosperity")){
+                        int m = 111;
+                    }
+                    if (tokens.get(i).equals("prosperity")){
+                        int m = 6;
+                    }
                     checkNumberName(i);
                     checkCity(i);
                     if (doStemming) {
@@ -74,34 +83,11 @@ class Parse {
                         } else if (checkPercent(i)) {
                         } else if (checkDate(i)) {
                         } else if (checkMoney(i)) {
-                        } else if (checkNumber(i)) {
-                        }
-                    } else if (date.containsKey(tokens.get(i))) {
-                        if (i + 1 < tokens.size()) {
-                            if (i < tokens.size() - 1 && tokens.get(i + 1).matches("[0-9]+")) {
-                                if (tokens.get(i + 1).length() == 4) {
-                                    tokens.set(i, tokens.get(i + 1) + "-" + date.get(tokens.get(i)));
-                                }
-                                else if (tokens.get(i + 1).length() == 0) {
-                                } else
-                                    tokens.set(i, date.get(tokens.get(i)) + "-" + String.format("%02d", Integer.parseInt(tokens.get(i + 1))));
-                                tokens.set(i + 1, "");
-                            }
-                        }
-                    } else if (tokens.get(i).equals("Between") || tokens.get(i).equals("between")) {
-                        if (i < tokens.size() - 3) {
-                            if (Character.isDigit(tokens.get(i + 1).charAt(0)) &&
-                                    tokens.get(i + 2).equals("and") &&
-                                    Character.isDigit(tokens.get(i + 3).charAt(0))) {
-                                tokens.set(i, tokens.get(i + 1) + "-" + tokens.get(i + 3));
-                                tokens.set(i + 3, "");
-                                tokens.set(i + 2, "");
-                                tokens.set(i + 1, "");
-                            }
-                        }
-                    } else {
-                        parseByLetters(i);
+                        } else if (checkNumber(i)) { }
+                    } else if (checkSecondCaseOfDate(i)) {
+                    } else if (checkBetween (i)) {
                     }
+                    parseByLetters(i);
                     removeRedundantZero(i);
                     addTerm(tokens.get(i), i);
                 }
@@ -243,6 +229,42 @@ class Parse {
         return false;
     }
 
+    private boolean checkSecondCaseOfDate (int i){
+        if (date.containsKey(tokens.get(i))) {
+            if (i + 1 < tokens.size()) {
+                if (tokens.get(i + 1).matches("[0-9]+")) {
+                    if (tokens.get(i + 1).length() == 4) {
+                        tokens.set(i, tokens.get(i + 1) + "-" + date.get(tokens.get(i)));
+                        return true;
+                    }
+                    else if (tokens.get(i + 1).length() > 0) {
+                        tokens.set(i, date.get(tokens.get(i)) + "-" + String.format("%02d", Integer.parseInt(tokens.get(i + 1))));
+                        return true;
+                    }
+                    tokens.set(i + 1, "");
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean checkBetween (int i){
+        if (tokens.get(i).equals("Between") || tokens.get(i).equals("between")) {
+            if (i < tokens.size() - 3) {
+                if (Character.isDigit(tokens.get(i + 1).charAt(0)) &&
+                        tokens.get(i + 2).equals("and") &&
+                        Character.isDigit(tokens.get(i + 3).charAt(0))) {
+                    tokens.set(i, tokens.get(i + 1) + "-" + tokens.get(i + 3));
+                    tokens.set(i + 3, "");
+                    tokens.set(i + 2, "");
+                    tokens.set(i + 1, "");
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     /**
      * Checks if the token at position i is money, and parse it if it its
      *
@@ -353,37 +375,103 @@ class Parse {
      * This function checks if the token at position i starts with capital letters or not. It checks its previous
      * appearances and only if all its appearances are with capital letters it will be saved with capital letters.
      *
-     * @param i - The postiion
+     * @param i - The position
      */
     private void parseByLetters(int i) {
-        if (tokens.get(i).length() < 1) return;
-        String upper = tokens.get(i).toUpperCase();
-        String lowerCase = tokens.get(i).toLowerCase();
-        if (Character.isUpperCase(tokens.get(i).charAt(0))) {
-            if (allTerms.containsKey(lowerCase)) {
-                tokens.set(i, lowerCase);
-                return;
-            } else if (model.getTermsDictionary().containsKey(lowerCase)) {
+        if (tokens.get(i).length() > 1 || (tokens.get(i).length() == 1 && Character.isDigit(tokens.get(i).charAt(0)))) {
+            String upper = tokens.get(i).toUpperCase();
+            String lowerCase = tokens.get(i).toLowerCase();
+            if (Character.isUpperCase(tokens.get(i).charAt(0))) {
+                if (allTerms.containsKey(lowerCase)) {
+                    tokens.set(i, lowerCase);
+                    return;
+                } else if (model.getTermsDictionary().containsKey(lowerCase)) {
+                    if (allTerms.containsKey(upper)) {
+                        Term value = allTerms.remove(upper);
+                        currentDocument.removeTermFromText(value);
+                        value.setValue(lowerCase);
+                        allTerms.put(lowerCase, value);
+                        tokens.set(i, lowerCase);
+                        return;
+                    } else {
+                        tokens.set(i, lowerCase);
+                        return;
+                    }
+                }
+                tokens.set(i, upper);
+            } else if (Character.isLowerCase(tokens.get(i).charAt(0))) {
                 if (allTerms.containsKey(upper)) {
                     Term value = allTerms.remove(upper);
                     currentDocument.removeTermFromText(value);
                     value.setValue(lowerCase);
                     allTerms.put(lowerCase, value);
-                    tokens.set(i, lowerCase);
-                    return;
                 }
+                tokens.set(i, lowerCase);
             }
-            tokens.set(i, upper);
-        } else if (Character.isLowerCase(tokens.get(i).charAt(0))) {
-            if (allTerms.containsKey(lowerCase))
-                return;
-            else if (allTerms.containsKey(upper)) {
-                Term value = allTerms.remove(upper);
-                currentDocument.removeTermFromText(value);
-                value.setValue(lowerCase);
-                allTerms.put(lowerCase, value);
+        }
+    }
+
+
+    /**
+     * This function adds a term to the dictionary
+     *
+     * @param term - The term to add
+     * @param i    -The position the term was found at
+     */
+    private void addTerm(String term, int i) {
+        if (term.length() > 1 || (term.length() == 1 && Character.isDigit(term.charAt(0)))) {
+//            String upper = term.toUpperCase();
+//            String lowerCase = term.toLowerCase();
+            if (allTerms.containsKey(term)) {
+                allTerms.get(term).increaseAmount();
+                allTerms.get(term).addInDocument(currentDocument.getIndexId(), ((double) i) / tokens.size());
+                currentDocument.addTermToText(allTerms.get(term));
+            } else {
+                Term newTerm = new Term(term);
+                newTerm.addInDocument(currentDocument.getIndexId(), ((double) i) / tokens.size());
+                currentDocument.addTermToText(newTerm);
+                allTerms.put(term, newTerm);
+                currentDocument.addTermToText(newTerm);
+//                if (Character.isUpperCase(term.charAt(0))) {
+//                    Term newTerm;
+//                    if (model.getTermsDictionary().containsKey(lowerCase)) {
+//                        newTerm = new Term(lowerCase);
+//                        currentDocument.removeTermFromText(newTerm);
+//                    }
+//                    else
+//                        newTerm = new Term(upper);
+//                    allTerms.put(term, newTerm);
+//                    newTerm.addInDocument(currentDocument.getIndexId(), ((double) i) / tokens.size());
+//                    currentDocument.addTermToText(newTerm);
+//                }
+//                else {
+//                    Term newTerm = new Term(lowerCase);
+//                    allTerms.put(term, newTerm);
+//                    newTerm.addInDocument(currentDocument.getIndexId(), ((double) i) / tokens.size());
+//                    currentDocument.addTermToText(newTerm);
+//                }
             }
-            tokens.set(i, lowerCase);
+        }
+    }
+
+    /**
+     * Splits a string into terms and puts it into the tokens list
+     *
+     * @param content - The content to split
+     */
+    private void splitDocument(String content) {
+        tokens = new ArrayList<>();
+        int i = 0;
+        while (i < content.length()) {
+            String token = "";
+            while (i < content.length() && content.charAt(i) != ' ') {
+                token += content.charAt(i);
+                i++;
+            }
+            if (!token.equals("")) {
+                tokens.add(cleanString(token));
+            }
+            i++;
         }
     }
 
@@ -417,75 +505,6 @@ class Parse {
             }
         }
         return str;
-    }
-
-    /**
-     * Checks if a given word is a stop word
-     *
-     * @param word - The word to check
-     * @return - If it is a stop word
-     */
-    private boolean isStopWord(String word) {
-        if (stopWords == null)
-            return false;
-        if (stopWords.contains(word) || stopWords.contains(Character.toUpperCase(word.charAt(0)) + word.substring(1)))
-            return true;
-        return false;
-    }
-
-    /**
-     * This function adds a term to the dictionary
-     *
-     * @param term - The term to add
-     * @param i    -The position the term was found at
-     */
-    private void addTerm(String term, int i) {
-        if (term.length() > 1 || (term.length() == 1 && Character.isDigit(term.charAt(0)))) {
-            String upper = term.toUpperCase();
-            String lowerCase = term.toLowerCase();
-            if (allTerms.containsKey(term)) {
-                allTerms.get(term).increaseAmount();
-                allTerms.get(term).addInDocument(currentDocument.getIndexId(), ((double) i) / tokens.size());
-                currentDocument.addTermToText(allTerms.get(term));
-            } else {
-                if (Character.isUpperCase(term.charAt(0))) {
-                    Term newTerm;
-                    if (model.getTermsDictionary().containsKey(lowerCase))
-                        newTerm = new Term(lowerCase);
-                    else
-                        newTerm = new Term(upper);
-                    allTerms.put(term, newTerm);
-                    newTerm.addInDocument(currentDocument.getIndexId(), ((double) i) / tokens.size());
-                    currentDocument.addTermToText(newTerm);
-                } else {
-                    Term newTerm = new Term(lowerCase);
-                    allTerms.put(term, newTerm);
-                    newTerm.addInDocument(currentDocument.getIndexId(), ((double) i) / tokens.size());
-                    currentDocument.addTermToText(newTerm);
-                }
-            }
-        }
-    }
-
-    /**
-     * Splits a string into terms and puts it into the tokens list
-     *
-     * @param content - The content to split
-     */
-    private void splitDocument(String content) {
-        tokens = new ArrayList<>();
-        int i = 0;
-        while (i < content.length()) {
-            String token = "";
-            while (i < content.length() && content.charAt(i) != ' ') {
-                token += content.charAt(i);
-                i++;
-            }
-            if (!token.equals("")) {
-                tokens.add(cleanString(token));
-            }
-            i++;
-        }
     }
 
     /**
@@ -630,7 +649,7 @@ class Parse {
     }
 
     /**
-     * Prases a number
+     * Parses a number
      *
      * @param num - The number to parse
      * @return - The parsed number
@@ -674,6 +693,18 @@ class Parse {
      */
     HashMap<String, Term> getAllTerms() {
         return allTerms;
+    }
+
+    /**
+     * Checks if a given word is a stop word
+     *
+     * @param word - The word to check
+     * @return - If it is a stop word
+     */
+    private boolean isStopWord(String word) {
+        if (stopWords == null)
+            return false;
+        return stopWords.contains(word) || stopWords.contains(Character.toUpperCase(word.charAt(0)) + word.substring(1));
     }
 
     /**

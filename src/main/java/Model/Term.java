@@ -8,7 +8,9 @@ import java.util.*;
 public class Term {
     private int amount;
     private String value;
+    private double rank;
     private HashMap<Integer, Integer> inDocuments;
+
     private HashMap<Integer, Character> positionInDocument;
 
     /**
@@ -56,13 +58,19 @@ public class Term {
         return amount + "," + inDocuments.size();
     }
 
+    public HashMap<Integer, Character> getPositionInDocument() {
+        return positionInDocument;
+    }
+
+    public double getRank() {
+        return rank;
+    }
+
     /**
      * Returns the total amount of times the term was found
      * @return - THe total amount of times
      */
-    int getAmount() {
-        return amount;
-    }
+    int getAmount() { return amount; }
 
     /**
      * Returns the value of the term
@@ -94,9 +102,13 @@ public class Term {
      */
     String getAmountInDocuments() {
         StringBuilder sb = new StringBuilder();
-        for (Integer index : inDocuments.keySet()){
-            sb.append(index);
-            sb.append(positionInDocument.get(index)).append(",");
+        Map<Integer, Integer> map = new TreeMap(inDocuments);
+        Set set2 = map.entrySet();
+        Iterator iterator2 = set2.iterator();
+        while (iterator2.hasNext()) {
+            Map.Entry me2 = (Map.Entry) iterator2.next();
+            sb.append(positionInDocument.get(me2.getKey()));
+            sb.append(me2.getValue()).append(",");
         }
         sb.deleteCharAt(sb.toString().length() - 1);
         return sb.toString();
@@ -114,5 +126,9 @@ public class Term {
      */
     void setAmount(int amount) {
         this.amount = amount;
+    }
+
+    public void setRank(double rank) {
+        this.rank = rank;
     }
 }

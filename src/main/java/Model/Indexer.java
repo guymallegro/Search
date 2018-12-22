@@ -24,6 +24,7 @@ class Indexer {
     private HashMap<String, String> capitalLetters;
 
     /**
+    /**
      * The constructor of the indexer
      *
      * @param model     - The model
@@ -277,18 +278,30 @@ class Indexer {
      */
     void addAllDocumentsToDictionary() {
         int size = documents.size();
+        Document document;
         for (int i = 0; i < size; i++) {
+            document = documents.get(i);
 //            Document document = new Document();
 //          model.getDocsDictionary().put(documents.get(i).getIndexId(), documents.get(i));
             ArrayList<String> attributes = new ArrayList<>();
-            attributes.add(0, Integer.toString(documents.get(i).getMax_tf()));
-            attributes.add(1, documents.get(i).getId());
-            attributes.add(2, Integer.toString(documents.get(i).getTextTerms().size()));
-            attributes.add(3, Integer.toString(documents.get(i).getLength()));
-            if (documents.get(i).getCity() != null)
-                attributes.add(4, documents.get(i).getCity());
+            attributes.add(0, Integer.toString(document.getMax_tf()));
+            attributes.add(1, document.getId());
+            attributes.add(2, Integer.toString(document.getTextTerms().size()));
+            attributes.add(3, Integer.toString(document.getLength()));
+            if (document.getCity().length() > 0)
+                attributes.add(4, document.getCity());
             else
                 attributes.add(4, "");
+            HashMap <String, Term> temp = document.getEntities();
+            List<Term> mapValues = new ArrayList<>(document.getEntities().values());
+            Collections.sort(mapValues, (Comparator.comparingDouble((o) -> o.getRank())));
+            int num = 5;
+            for (int entity = mapValues.size() - 1; num < 10 && entity >= 0; entity--){
+                if (model.getTermsDictionary().containsKey(mapValues.get(entity).getValue().toUpperCase())){
+                    attributes.add(num, mapValues.get(entity).getValue());
+                    num++;
+                }
+            }
             model.getDocsDictionary().put(documents.get(i).getIndexId(), attributes);
         }
         documents.clear();

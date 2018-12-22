@@ -8,7 +8,6 @@ import java.util.PriorityQueue;
 
 public class QueryDocument extends ADocument {
     private HashSet<Integer> termsDocuments;
-    //private HashMap<Integer, Document> termsDocuments;
     private PriorityQueue<Document> rankDocuments;
 
     public QueryDocument(){
@@ -19,7 +18,7 @@ public class QueryDocument extends ADocument {
     public QueryDocument(String content){
         this.content = content;
         termsDocuments = new HashSet<>();
-        rankDocuments = new PriorityQueue<Document>((Comparator.comparingDouble(o -> o.getRank())));
+        rankDocuments = new PriorityQueue<Document>(Comparator.comparingDouble(o -> o.getRank()));
     }
 
     void addTermToText(Term term) {
@@ -30,6 +29,11 @@ public class QueryDocument extends ADocument {
             term.setAmount(term.getAmount() + 1);
             textTerms.put(term.getValue(), term);
         }
+    }
+
+    public void removeTermFromText(Term term) {
+        if (textTerms.containsKey(term))
+            textTerms.remove(term);
     }
 
     public void addDocument (int index) {

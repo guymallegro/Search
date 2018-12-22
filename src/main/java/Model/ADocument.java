@@ -1,10 +1,10 @@
 package Model;
 
 import java.util.HashMap;
+import java.util.PriorityQueue;
 
 public abstract class ADocument {
     private String id;
-    //HashMap<Term, Integer> textTerms;
     HashMap<String, Term> textTerms;
     String content;
     private String city;
@@ -21,10 +21,7 @@ public abstract class ADocument {
 
     abstract void addTermToText(Term term);
 
-    public void removeTermFromText(Term term) {
-        if (textTerms.containsKey(term))
-            textTerms.remove(term);
-    }
+    abstract void removeTermFromText(Term term);
 
     /**
      * Returns the document's city
