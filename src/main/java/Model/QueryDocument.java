@@ -8,7 +8,6 @@ import java.util.PriorityQueue;
 
 public class QueryDocument extends ADocument {
     private HashSet<Integer> termsDocuments;
-    //private HashMap<Integer, Document> termsDocuments;
     private PriorityQueue<Document> rankDocuments;
 
     public QueryDocument(){

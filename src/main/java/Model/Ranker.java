@@ -16,7 +16,6 @@ public class Ranker {
     }
 
     /**
-     *
      * calculate the average number of terms in document of all the corpus
      */
 /*
@@ -29,10 +28,9 @@ public class Ranker {
         avgDocLength = totalLength / docsAmount;
     }
 */
-
     private void corpusAvgDocLength() {
         int totalLength = 0;
-        for (ArrayList details: documentsDictionary.values()){
+        for (ArrayList details : documentsDictionary.values()) {
             docsAmount++;
             totalLength += Integer.parseInt("" + details.get(3));
         }
@@ -41,6 +39,7 @@ public class Ranker {
 
     /**
      * get the amount of all the terms that appears in the given query
+     *
      * @param documentIndex - the index of the document as it appear in the documentsDictionary file
      */
 /*
@@ -48,7 +47,6 @@ public class Ranker {
         return documentsDictionary.get(documentIndex).getLength();
     }
 */
-
     private int getDocumentLength(int documentIndex) {
         String length = documentsDictionary.get(documentIndex).get(2);
         return Integer.parseInt(length);
@@ -64,16 +62,16 @@ public class Ranker {
         double logCalculation = 0;
         for (Integer documentIndex : queryDocument.getTermsDocuments()) {
             for (Term queryTerm : queryDocument.getTextTerms().values()) {
-                if (queryTerm.getUnsortedInDocuments().containsKey(documentIndex)){
+                if (queryTerm.getUnsortedInDocuments().containsKey(documentIndex)) {
                     int len = getDocumentLength(documentIndex);
-                    firstCalculation = (K + 1) / (1 + K*((1 - B)+ (B*len)/avgDocLength));
+                    firstCalculation = (K + 1) / (1 + K * ((1 - B) + (B * len) / avgDocLength));
                     logCalculation = Math.log((1 + documentsDictionary.size()) / queryTerm.getInDocuments().length);
                     currentRank += firstCalculation * logCalculation;
                 }
             }
             Document currentDocument = new Document();
-currentDocument.setId((String) documentsDictionary.get(documentIndex).get(1));            
-//currentDocument.setId(documentsDictionary.get(documentIndex).getId());
+            currentDocument.setId(documentsDictionary.get(documentIndex).get(1));
+            currentDocument.setCity(documentsDictionary.get(documentIndex).get(4));
             currentDocument.setRank(currentRank);
             queryDocument.getQueryDocuments().add(currentDocument);
             currentRank = 0;
@@ -82,7 +80,10 @@ currentDocument.setId((String) documentsDictionary.get(documentIndex).get(1));
 
     /**
      * set the current document query to rank
+     *
      * @param queryDocument the current query
      */
-    public void setQueryDocument(QueryDocument queryDocument) { this.queryDocument = queryDocument; }
+    public void setQueryDocument(QueryDocument queryDocument) {
+        this.queryDocument = queryDocument;
+    }
 }
