@@ -173,8 +173,19 @@ public class View {
         Stage stage = new Stage();
         allDocuments = new ListView<>();
         ArrayList list = controller.getQueryDocuments();
-        for (int i = 0; i < 50 && i < list.size(); i++) {
-            allDocuments.getItems().add(((ADocument) list.get(i)).getId());
+        int counter = 50;
+        for (int i = 0; i < list.size(); i++) {
+            if (selectedCities.size() > 0) {
+                if (selectedCities.contains(((ADocument) list.get(i)).getCity().toUpperCase())) {
+                    allDocuments.getItems().add(((ADocument) list.get(i)).getId());
+                    counter--;
+                }
+            } else {
+                allDocuments.getItems().add(((ADocument) list.get(i)).getId());
+                counter--;
+            }
+            if (counter == 0)
+                break;
         }
         Scene scene = new Scene(new Group());
         stage.initModality(Modality.APPLICATION_MODAL); //Lock the window until it closes

@@ -31,7 +31,7 @@ public class Model {
     private ArrayList<QueryDocument> queriesDocuments;
     private HashSet<String> stopWords;
     private HashMap<String, Term> termsDictionary;
-private HashMap<Integer, ArrayList<String>> documentsDictionary;
+    private HashMap<Integer, ArrayList<String>> documentsDictionary;
     private HashMap<String, City> citiesDictionary;
     private boolean isStemming = false;
     private int documentsAmount;
@@ -168,7 +168,7 @@ private HashMap<Integer, ArrayList<String>> documentsDictionary;
         QueryDocument currentQuery = new QueryDocument();
         String allQuery = "";
         for (int query = 0; query < allQueries.length; query++) {
-            allQuery =  allQueries[query];
+            allQuery = allQueries[query];
             int startTagIndex = allQuery.indexOf("<top>");
             int endTagIndex = allQuery.indexOf("<title>");
             if (startTagIndex != -1 && endTagIndex != -1)
@@ -201,13 +201,12 @@ private HashMap<Integer, ArrayList<String>> documentsDictionary;
      * @param queriesDocuments - one or more queries from the user or file respectively
      */
     private void findRelevantDocuments(ArrayList<QueryDocument> queriesDocuments) {
-        for (int i = 0; i < queriesDocuments.size(); i++){
-            parse.getAllTerms().clear();
-            //resetQueryDocuments();
-            parse.parseDocument(queriesDocuments.get(i));
-        }
         searcher = new Searcher(this, documentsDictionary, citiesDictionary, queriesDocuments);
-        searcher.findRelevantDocs();
+        for (int i = 0; i < queriesDocuments.size(); i++) {
+            parse.getAllTerms().clear();
+            parse.parseDocument(queriesDocuments.get(i));
+            searcher.findRelevantDocs();
+        }
     }
 
     /**
@@ -617,7 +616,7 @@ private HashMap<Integer, ArrayList<String>> documentsDictionary;
      *
      * @return - The documents dictionary
      */
-HashMap<Integer, ArrayList<String>> getDocsDictionary() {
+    HashMap<Integer, ArrayList<String>> getDocsDictionary() {
         return documentsDictionary;
     }
 
@@ -702,21 +701,14 @@ HashMap<Integer, ArrayList<String>> getDocsDictionary() {
                 return 0;
             }
         };
-        ArrayList <Document> list = new ArrayList<>(queryDocuments);
+        ArrayList<Document> list = new ArrayList<>(queryDocuments);
         list.sort(comparator);
         return list;
     }
 
-//
-//    private void resetQueryDocuments() {
-//        searcher.getQueryDocuments().clear();
-//    }
 
     private void print() {
-//        for (Document d:queryDocuments) {
-//            System.out.println("Doc: " + d.getId() + " rank: " + d.getRank());
-//        }
-        ArrayList <Document> list = sortDocuments(queriesDocuments.get(0).getQueryDocuments());
+        ArrayList<Document> list = sortDocuments(queriesDocuments.get(0).getQueryDocuments());
         for (int i = 0; i < 50 && i < list.size(); i++) {
             System.out.println("Doc: " + list.get(i).getId() + " rank: " + list.get(i).getRank());
         }
