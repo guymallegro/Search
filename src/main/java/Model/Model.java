@@ -101,18 +101,19 @@ public class Model {
             if (document.length() == 0 || document.equals(" ")) continue;
             Document currentDocument = new Document();
             nomOfDocs--;
+            String title = "";
             int startTagIndex = document.indexOf("<DOCNO>");
             int endTagIndex = document.indexOf("</DOCNO>");
             if (startTagIndex != -1 && endTagIndex != -1)
                 currentDocument.setId(getId(document.substring(startTagIndex + 7, endTagIndex)));
-            startTagIndex = document.indexOf("<TEXT>");
-            endTagIndex = document.indexOf("</TEXT>");
-            if (startTagIndex != -1 && endTagIndex != -1)
-                currentDocument.setContent(document.substring(startTagIndex + 6, endTagIndex));
             startTagIndex = document.indexOf("<TI>");
             endTagIndex = document.indexOf("</TI>");
             if (startTagIndex != -1 && endTagIndex != -1)
-                currentDocument.setTitle(document.substring(startTagIndex + 4, endTagIndex));
+                title = document.substring(startTagIndex + 4, endTagIndex);
+            startTagIndex = document.indexOf("<TEXT>");
+            endTagIndex = document.indexOf("</TEXT>");
+            if (startTagIndex != -1 && endTagIndex != -1)
+                currentDocument.setContent(title + " " + document.substring(startTagIndex + 6, endTagIndex));
             startTagIndex = document.indexOf("<DATE>");
             endTagIndex = document.indexOf("</DATE>");
             if (startTagIndex != -1 && endTagIndex != -1)

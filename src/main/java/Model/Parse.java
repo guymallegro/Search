@@ -57,15 +57,6 @@ class Parse {
             currentDocument.setLength(tokens.size());
             for (int i = 0; i < tokens.size(); i++) {
                 if (tokens.get(i).length() > 0 && (!isStopWord(tokens.get(i)) || (tokens.get(i).equals("between") && (i < tokens.size() - 1 && tokens.get(i + 1).length() > 0 && Character.isDigit(tokens.get(i + 1).charAt(0)))))) {
-                    if (tokens.get(i).contains("PROSPERITY")) {
-                        int m = 10000000;
-                    }
-                    if (tokens.get(i).contains("Prosperity")) {
-                        int m = 111;
-                    }
-                    if (tokens.get(i).equals("prosperity")) {
-                        int m = 6;
-                    }
                     checkNumberName(i);
                     checkCity(i);
                     if (doStemming) {
@@ -431,7 +422,6 @@ class Parse {
                 newTerm.addInDocument(currentDocument.getIndexId(), ((double) i) / tokens.size());
                 currentDocument.addTermToText(newTerm);
                 allTerms.put(term, newTerm);
-                currentDocument.addTermToText(newTerm);
             }
         }
     }
