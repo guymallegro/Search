@@ -2,11 +2,14 @@ package Controller;
 
 import Model.Model;
 import Model.Term;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+
 import Model.Document;
 import Model.City;
+import Model.QueryDocument;
 
 /**
  * The controller class of the search engine, controls the application.
@@ -135,7 +138,7 @@ public class Controller {
         model.addQueryDocument(query);
     }
 
-    public void findRelevantDocuments(){
+    public void findRelevantDocuments() {
         model.findRelevantDocuments();
     }
 
@@ -153,5 +156,13 @@ public class Controller {
 
     public void readQueriesFile(String path) {
         model.readQueriesFile(path);
+    }
+
+    public void writeSave(Object[] toWrite, String savePath) {
+        model.writeSave(toWrite, savePath);
+    }
+
+    public ArrayList<QueryDocument> getQueriesDocuments() {
+        return model.getQueriesDocuments();
     }
 }

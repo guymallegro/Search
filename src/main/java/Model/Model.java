@@ -726,4 +726,21 @@ public class Model {
     public void readQueriesFile(String path) {
         fileReader.readQueriesFile(path);
     }
+
+    public void writeSave(Object[] toWrite,String path){
+        List<String> lines = new LinkedList<>();
+        for (int i = 0; i < toWrite.length; i++) {
+            lines.add((String)toWrite[i]);
+        }
+        Path file = Paths.get(path+"/save.txt");
+        try {
+            Files.write(file, lines, Charset.forName("UTF-8"));
+        } catch (Exception e) {
+            System.out.println("Cannot write to save file");
+        }
+    }
+
+    public ArrayList<QueryDocument> getQueriesDocuments(){
+        return queriesDocuments;
+    }
 }

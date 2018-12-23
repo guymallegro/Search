@@ -31,6 +31,9 @@ public class View {
     public TextField queryPath;
     public Button runQueryPath;
     public Button browseQueries;
+    public TextField savePath;
+    public Button browseSave;
+    public Button save;
     private Controller controller;
     public javafx.scene.control.Button processCorpus;
     public javafx.scene.control.Button run;
@@ -63,14 +66,6 @@ public class View {
         }
         controller.setStemming(stemming.isSelected());
         displayTermsDictionary.setDisable(false);
-    }
-
-    /**
-     *
-     */
-    public void loadPostingPath() {
-        controller.setPostingPath(postingPath.getText());
-        loadDictionaries.setDisable(false);
     }
 
     /**
@@ -137,6 +132,7 @@ public class View {
      * Tells the controller to load the dictionaries
      */
     public void loadDictionaries() {
+        controller.setPostingPath(postingPath.getText());
         if (postingPath.getText().equals("Enter Path")) {
             showAlert("Please enter a posting path");
             return;
@@ -261,11 +257,11 @@ public class View {
     }
 
     public void runQueryPath(ActionEvent actionEvent) {
-        controller.readQueriesFile(queryPath.getText()+"/q.txt");
+        controller.readQueriesFile(queryPath.getText() + "/q.txt");
         Stage stage = new Stage();
         allDocuments = new ListView<>();
         ArrayList<ArrayList<Document>> list = controller.getQueriesResult();
-        for(int i=0;i< list.size();i++) {
+        for (int i = 0; i < list.size(); i++) {
             int counter = 50;
             for (int j = 0; j < list.get(i).size(); j++) {
                 if (selectedCities.size() > i) {
@@ -303,5 +299,37 @@ public class View {
         if (selectedDirectory != null) {
             queryPath.setText(selectedDirectory.getPath());
         }
+    }
+
+    public void browseSave(ActionEvent actionEvent) {
+        DirectoryChooser chooser = new DirectoryChooser();
+        chooser.setTitle("Save results directory");
+        Stage stage = new Stage();
+        File selectedDirectory = chooser.showDialog(stage);
+        if (selectedDirectory != null) {
+            savePath.setText(selectedDirectory.getPath());
+        }
+    }
+
+    public void save(ActionEvent actionEvent) {
+        ArrayList<ArrayList<Document>> list = controller.getQueriesResult();
+        ArrayList<String> toWrite = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
+            int counter = 50;
+            for (int j = 0; j < list.get(i).size(); j++) {
+                if (selectedCities.size() > i) {
+                    if (selectedCities.contains(list.get(i).get(j).getCity().toUpperCase())) {
+                        toWrite.add(controller.getQueriesDocuments().get(i).getId() + " " + list.get(i).get(j).getId()+" 1.1 "+" st");
+                        counter--;
+                    }
+                } else {
+                    toWrite.add(controller.getQueriesDocuments().get(i).getId() + " " + list.get(i).get(j).getId()+" 1.1 "+" st");
+                    counter--;
+                }
+                if (counter == 0)
+                    break;
+            }
+        }
+        controller.writeSave(toWrite.toArray(), savePath.getText());
     }
 }

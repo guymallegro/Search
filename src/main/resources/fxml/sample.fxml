@@ -16,36 +16,42 @@
    <children>
       <AnchorPane prefHeight="600.0" prefWidth="605.0">
          <children>
-            <Button fx:id="processCorpus" layoutX="223.0" layoutY="518.0" mnemonicParsing="false" onAction="#processCorpus" text="Process corpus">
+            <Button fx:id="processCorpus" layoutX="227.0" layoutY="541.0" mnemonicParsing="false" onAction="#processCorpus" text="Process corpus">
                <font>
                   <Font name="Segoe UI Italic" size="18.0" />
                </font></Button>
-            <Button fx:id="reset" disable="true" layoutX="27.0" layoutY="52.0" mnemonicParsing="false" onAction="#reset" prefHeight="26.0" prefWidth="140.0" text="Reset" />
-            <CheckBox fx:id="stemming" layoutX="258.0" layoutY="482.0" mnemonicParsing="false" text="Stemming" />
-            <TextField fx:id="query" layoutX="54.0" layoutY="153.0" prefHeight="39.0" prefWidth="358.0" />
-            <ComboBox fx:id="languages" disable="true" layoutX="58.0" layoutY="204.0" prefHeight="39.0" prefWidth="180.0" promptText="Choose Language" />
-             <Button fx:id="displayTermsDictionary" disable="true" layoutX="434.0" layoutY="52.0" mnemonicParsing="false" onAction="#displayTermsDictionary" prefHeight="26.0" prefWidth="140.0" text="Display Terms" />
-             <Button fx:id="loadDictionaries" layoutX="233.0" layoutY="52.0" mnemonicParsing="false" onAction="#loadDictionaries" prefHeight="26.0" prefWidth="140.0" text="Load Dictionaries" />
-            <Button fx:id="run" layoutX="444.0" layoutY="153.0" mnemonicParsing="false" onAction="#run" prefHeight="39.0" prefWidth="120.0" text="Run">
+            <Button fx:id="reset" disable="true" layoutX="113.0" layoutY="52.0" mnemonicParsing="false" onAction="#reset" prefHeight="26.0" prefWidth="140.0" text="Reset" />
+            <CheckBox fx:id="stemming" layoutX="258.0" layoutY="515.0" mnemonicParsing="false" text="Stemming" />
+            <TextField fx:id="query" layoutX="54.0" layoutY="99.0" prefHeight="39.0" prefWidth="358.0" text="Enter a query" />
+            <ComboBox fx:id="languages" disable="true" layoutX="54.0" layoutY="201.0" prefHeight="39.0" prefWidth="180.0" promptText="Choose Language" />
+             <Button fx:id="displayTermsDictionary" disable="true" layoutX="322.0" layoutY="52.0" mnemonicParsing="false" onAction="#displayTermsDictionary" prefHeight="26.0" prefWidth="140.0" text="Display Terms" />
+             <Button fx:id="loadDictionaries" layoutX="451.0" layoutY="468.0" mnemonicParsing="false" onAction="#loadDictionaries" prefHeight="26.0" prefWidth="140.0" text="Load Dictionaries" />
+            <Button fx:id="run" layoutX="444.0" layoutY="99.0" mnemonicParsing="false" onAction="#run" prefHeight="39.0" prefWidth="120.0" text="Run">
                <font>
                   <Font name="Segoe UI Italic" size="18.0" />
                </font>
             </Button>
-             <MenuButton fx:id="citiesSelect" layoutX="262.0" layoutY="204.0" prefHeight="39.0" prefWidth="150.0" text="cities" />
-            <TextField fx:id="corpusPath" layoutX="194.0" layoutY="340.0" prefHeight="39.0" prefWidth="219.0" text="Enter Path" />
-            <Label layoutX="263.0" layoutY="309.0" text="Corpus path" />
-            <TextField fx:id="postingPath" layoutX="194.0" layoutY="429.0" prefHeight="39.0" prefWidth="219.0" text="Enter Path" />
-            <Label layoutX="263.0" layoutY="395.0" text="Posting path" />
-            <Button fx:id="browseCorpus" layoutX="429.0" layoutY="340.0" mnemonicParsing="false" onAction="#browseCorpus" prefHeight="39.0" prefWidth="26.0" text="..." />
-            <Button fx:id="browsePosting" layoutX="429.0" layoutY="429.0" mnemonicParsing="false" onAction="#browsePosting" prefHeight="39.0" prefWidth="26.0" text="..." />
-            <Button fx:id="browseCorpus1" layoutX="473.0" layoutY="436.0" mnemonicParsing="false" onAction="#loadPostingPath" prefHeight="12.0" prefWidth="101.0" text="load path" />
-            <TextField fx:id="queryPath" layoutX="54.0" layoutY="251.0" prefHeight="39.0" prefWidth="338.0" text="Enter path" />
-            <Button fx:id="runQueryPath" layoutX="444.0" layoutY="251.0" mnemonicParsing="false" onAction="#runQueryPath" prefHeight="39.0" prefWidth="120.0" text="Browse">
+             <MenuButton fx:id="citiesSelect" layoutX="253.0" layoutY="201.0" prefHeight="39.0" prefWidth="150.0" text="cities" />
+            <TextField fx:id="corpusPath" layoutX="186.0" layoutY="385.0" prefHeight="39.0" prefWidth="219.0" text="Enter Path" />
+            <Label layoutX="263.0" layoutY="358.0" text="Corpus path" />
+            <TextField fx:id="postingPath" layoutX="186.0" layoutY="461.0" prefHeight="39.0" prefWidth="219.0" text="Enter Path" />
+            <Label layoutX="262.0" layoutY="433.0" text="Posting path" />
+            <Button fx:id="browseCorpus" layoutX="416.0" layoutY="385.0" mnemonicParsing="false" onAction="#browseCorpus" prefHeight="39.0" prefWidth="26.0" text="..." />
+            <Button fx:id="browsePosting" layoutX="416.0" layoutY="461.0" mnemonicParsing="false" onAction="#browsePosting" prefHeight="39.0" prefWidth="26.0" text="..." />
+            <TextField fx:id="queryPath" layoutX="54.0" layoutY="153.0" prefHeight="39.0" prefWidth="338.0" text="Enter queries path" />
+            <Button fx:id="runQueryPath" layoutX="444.0" layoutY="153.0" mnemonicParsing="false" onAction="#runQueryPath" prefHeight="39.0" prefWidth="120.0" text="Browse">
                <font>
                   <Font size="12.0" />
                </font>
             </Button>
-            <Button fx:id="browseQueries" layoutX="400.0" layoutY="251.0" mnemonicParsing="false" onAction="#browseQueries" prefHeight="39.0" prefWidth="26.0" text="..." />
+            <Button fx:id="browseQueries" layoutX="400.0" layoutY="153.0" mnemonicParsing="false" onAction="#browseQueries" prefHeight="39.0" prefWidth="26.0" text="..." />
+            <TextField fx:id="savePath" layoutX="54.0" layoutY="252.0" prefHeight="39.0" prefWidth="338.0" text="Enter path to save search results" />
+            <Button fx:id="browseSave" layoutX="403.0" layoutY="252.0" mnemonicParsing="false" onAction="#browseSave" prefHeight="39.0" prefWidth="26.0" text="..." />
+            <Button fx:id="save" layoutX="444.0" layoutY="252.0" mnemonicParsing="false" onAction="#save" prefHeight="39.0" prefWidth="120.0" text="Save">
+               <font>
+                  <Font size="12.0" />
+               </font>
+            </Button>
          </children>
       </AnchorPane>
    </children>
