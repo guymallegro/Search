@@ -250,4 +250,7 @@ public class View {
         alert.showAndWait();
 
     }
+
+    public void runQueryPath(ActionEvent actionEvent) {
+    }
 }

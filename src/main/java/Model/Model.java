@@ -188,6 +188,7 @@ public class Model {
      * @param query - the query from the user or file
      */
     public void findRelevantDocuments(String query) {
+        queriesDocuments.clear();
         QueryDocument queryDocument = new QueryDocument(query);
         queryDocument.setId(Integer.toString(queryIndex));
         queryIndex++;
@@ -282,7 +283,7 @@ public class Model {
         for (int i = 0; i < size; i++) {
             line.append("<");
             line.append(sortedDocuments[i]).append(":");
-            for (int s = 0; s < documentsDictionary.get(sortedDocuments[i]).size(); s++){
+            for (int s = 0; s < documentsDictionary.get(sortedDocuments[i]).size(); s++) {
                 line.append(documentsDictionary.get(sortedDocuments[i]).get(s));
                 line.append(",");
             }
@@ -433,7 +434,7 @@ public class Model {
                 int docIndex = Integer.parseInt(line.substring(1, line.indexOf(":")));
                 String[] info = line.substring(line.indexOf(":") + 1).split(",");
                 ArrayList<String> attributes = new ArrayList<>();
-                for (int i = 0; i < info.length; i++){
+                for (int i = 0; i < info.length; i++) {
                     attributes.add(i, info[i]);
                 }
 //                attributes.add(0, info[0]);

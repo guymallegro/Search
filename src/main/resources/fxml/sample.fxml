@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<GridPane alignment="center" hgap="10" onMouseEntered="#initCities" prefWidth="605.0" vgap="10" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.View">
+<GridPane alignment="center" hgap="10" onMouseEntered="#initCities" prefWidth="605.0" vgap="10" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="View.View">
    <children>
       <AnchorPane prefHeight="600.0" prefWidth="605.0">
          <children>
@@ -39,6 +39,12 @@
             <Button fx:id="browseCorpus" layoutX="429.0" layoutY="340.0" mnemonicParsing="false" onAction="#browseCorpus" prefHeight="39.0" prefWidth="26.0" text="..." />
             <Button fx:id="browsePosting" layoutX="429.0" layoutY="429.0" mnemonicParsing="false" onAction="#browsePosting" prefHeight="39.0" prefWidth="26.0" text="..." />
             <Button fx:id="browseCorpus1" layoutX="473.0" layoutY="436.0" mnemonicParsing="false" onAction="#loadPostingPath" prefHeight="12.0" prefWidth="101.0" text="load path" />
+            <TextField fx:id="queryPath" layoutX="54.0" layoutY="251.0" prefHeight="39.0" prefWidth="358.0" text="Enter path" />
+            <Button fx:id="runQueryPath" layoutX="444.0" layoutY="251.0" mnemonicParsing="false" onAction="#runQueryPath" prefHeight="39.0" prefWidth="120.0" text="Run queries path">
+               <font>
+                  <Font size="12.0" />
+               </font>
+            </Button>
          </children>
       </AnchorPane>
    </children>
