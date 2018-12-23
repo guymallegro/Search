@@ -1,5 +1,8 @@
 package Model;
-import java.util.HashMap;
+
+import java.util.*;
+
+import static org.json.XMLTokener.entity;
 
 /**
  * The document class which holds all of its required information
@@ -10,9 +13,10 @@ public class Document extends ADocument {
     private double rank;
     private String date;
     private String title;
-    private HashMap <String, Term> bigLetterTerms;
+    private HashSet<Term> bigLetterTerms;
     private HashMap<Term, Integer> titleTerms;
     private HashMap<Term, Integer> dateTerms;
+
 
     /**
      * The default document constructor
@@ -25,7 +29,7 @@ public class Document extends ADocument {
         max_tf = 0;
         indexId = documentsAmount++;
         content = "";
-        bigLetterTerms = new HashMap<>();
+        bigLetterTerms = new HashSet<Term>();
     }
 
     /**
@@ -45,13 +49,9 @@ public class Document extends ADocument {
             max_tf = textTerms.get(term.getValue()).getAmount();
     }
 
-    /**
-     * remove term from the terms' hash map of this document
-     * @param term the term to remove
-     */
     public void removeTermFromText(Term term) {
-        if (textTerms.containsKey(term.getValue().toUpperCase()))
-            textTerms.remove(term.getValue().toUpperCase());
+        if (textTerms.containsKey(term.getValue()))
+            textTerms.remove(term.getValue());
         removeEntity(term);
     }
 
@@ -65,39 +65,40 @@ public class Document extends ADocument {
 
     /**
      * add term to the hash map of entities
+     *
      * @param term - the entity to add
      */
-    void addBigLetter (Term term){
-        if (Character.isUpperCase(term.getValue().charAt(0))){
+    void addBigLetter(Term term) {
+        if (Character.isUpperCase(term.getValue().charAt(0))) {
+            if (bigLetterTerms.contains(term))
+                bigLetterTerms.remove(term);
             term.setRank(calculateDominantEntity(term));
-            bigLetterTerms.put(term.getValue(), term);
+            bigLetterTerms.add(term);
         }
     }
 
-    /**
-     * remove the entity from the hash map
-     * @param term the entity
-     */
-    void removeEntity (Term term) {
-        if (bigLetterTerms.containsKey(term.getValue().toUpperCase()))
-            bigLetterTerms.remove(term.getValue().toUpperCase());
+    void removeEntity(Term term) {
+        bigLetterTerms.remove(term);
     }
 
-    /**
-     *
-     * @param term the entity
-     * @return the domination rank of the entity
-     */
-    private double calculateDominantEntity (Term term){
-        double position = (1 / (int)term.getPositionInDocument().get(indexId) - 96);
+    private double calculateDominantEntity(Term term) {
+        double position = (1 / (int) term.getPositionInDocument().get(indexId) - 96);
         return (-1) * term.getAmount() * position;
     }
 
-    /**
-     * getter
-     * @return the hash map of the dominant entities
-     */
-    public HashMap<String, Term> getEntities() {return bigLetterTerms;}
+    public ArrayList<String> getEntities() {
+        ArrayList<String> entities = new ArrayList<>();
+        List<Term> mapValues = new ArrayList(bigLetterTerms);
+        Collections.sort(mapValues, (Comparator.comparingDouble((o) -> o.getRank())));
+        int num = 0;
+        for (int entity = mapValues.size() - 1; num < 10 && entity >= 0; entity--) {
+            if (Character.isUpperCase(mapValues.get(entity).getValue().charAt(0))) {
+                entities.add(mapValues.get(entity).getValue());
+                num++;
+            }
+        }
+        return entities;
+    }
 
     /**
      * Returns the document's max term frequency
@@ -109,16 +110,19 @@ public class Document extends ADocument {
     }
 
     /**
-     *
      * @return the rank of the document
      */
-    public double getRank () {return rank;}
+    public double getRank() {
+        return rank;
+    }
 
     /**
-     *
      * @param rank the rank of the document after calculation in ranker
      */
-    public void setRank (double rank){this.rank = rank;}
+    public void setRank(double rank) {
+        this.rank = rank;
+    }
+
 
     /**
      * Sets the document's date to the given date
@@ -137,8 +141,4 @@ public class Document extends ADocument {
     void setTitle(String title) {
         this.title = title;
     }
-
-    public void setMax_tf(int max_tf) { this.max_tf = max_tf; }
-
-
 }

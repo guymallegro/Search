@@ -5,19 +5,24 @@ import java.util.PriorityQueue;
 
 public abstract class ADocument {
     private String id;
+    Model model;
     HashMap<String, Term> textTerms;
     String content;
     private String city;
+
+    public void setIndexId(int indexId) {
+        this.indexId = indexId;
+    }
+
     int indexId;
+
     static int documentsAmount = 1;
     int length;
 
     public ADocument (){
         city = "";
         textTerms = new HashMap<String, Term>();
-        //textTerms = new HashMap<Term, Integer>();
     }
-
 
     abstract void addTermToText(Term term);
 

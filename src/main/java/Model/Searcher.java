@@ -11,7 +11,7 @@ public class Searcher {
     private QueryDocument currentQuery;
     ArrayList<QueryDocument> queryDocuments;
     private HashMap<String, City> cityDictionary;
-private HashMap<Integer, ArrayList<String>> documentsDictionary;
+    private HashMap<Integer, ArrayList<String>> documentsDictionary;
 
     public Searcher(Model model, HashMap<Integer, ArrayList<String>> documentsDictionary, HashMap<String, City> cityDictionary, ArrayList<QueryDocument> queryDocuments) {
         this.model = model;
@@ -28,19 +28,19 @@ private HashMap<Integer, ArrayList<String>> documentsDictionary;
         currentQuery = queryDocuments.get(i);
         retrieveData(findLinesOfTerms());
         ranker.setQueryDocument(currentQuery);
-        if (isSemantic){
+        if (isSemantic) {
 
         }
         ranker.rank();
     }
 
     /**
-     *find the posting lines of terms of the current query
+     * find the posting lines of terms of the current query
      *
      * @return ArrayList of the lines of each term in the query from the posting file
      */
     private ArrayList<String> findLinesOfTerms() {
-        HashMap <String, Term> terms = currentQuery.getTextTerms();
+        HashMap<String, Term> terms = currentQuery.getTextTerms();
         String[] sortedTerms = terms.keySet().toArray(new String[terms.size()]);
         Arrays.sort(sortedTerms, String.CASE_INSENSITIVE_ORDER);
         ArrayList<String> termsToFind = new ArrayList<>();
@@ -86,5 +86,7 @@ private HashMap<Integer, ArrayList<String>> documentsDictionary;
         }
     }
 
-    public void setSemantic(boolean selected) { isSemantic = selected; }
+    public void setSemantic(boolean selected) {
+        isSemantic = selected;
+    }
 }

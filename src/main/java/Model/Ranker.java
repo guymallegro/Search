@@ -56,8 +56,12 @@ public class Ranker {
             }
             Document currentDocument = new Document();
             currentDocument.setId(documentsDictionary.get(documentIndex).get(1));
-            if (documentsDictionary.get(documentIndex).size() > 4)
+            if (documentsDictionary.get(documentIndex).size() > 5) {
                 currentDocument.setCity(documentsDictionary.get(documentIndex).get(4));
+                currentDocument.setIndexId(Integer.parseInt(documentsDictionary.get(documentIndex).get(5)));
+            } else {
+                currentDocument.setIndexId(Integer.parseInt(documentsDictionary.get(documentIndex).get(4)));
+            }
             currentDocument.setRank(currentRank);
             queryDocument.getQueryDocuments().add(currentDocument);
             currentRank = 0;

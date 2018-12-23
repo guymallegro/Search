@@ -25,14 +25,14 @@ class Indexer {
     private HashMap<Integer, ArrayList<String>> documentsDictionary;
 
     /**
-    /**
+     * /**
      * The constructor of the indexer
      *
      * @param model     - The model
      * @param allTerms  - All the terms which were found
      * @param documents - All the documents which were found
      */
-    Indexer(Model model, HashMap<String, Term> allTerms,HashMap<String, Term> termsDictionary, ArrayList<Document> documents, HashMap<Integer, ArrayList<String>> documentsDictionary) {
+    Indexer(Model model, HashMap<String, Term> allTerms, HashMap<String, Term> termsDictionary, ArrayList<Document> documents, HashMap<Integer, ArrayList<String>> documentsDictionary) {
         currentAmountTempPostFiles = 0;
         this.allTerms = allTerms;
         this.documents = documents;
@@ -292,12 +292,11 @@ class Indexer {
                 attributes.add(4, document.getCity());
             else
                 attributes.add(4, "");
-            HashMap <String, Term> temp = document.getEntities();
-            List<Term> mapValues = new ArrayList<>(document.getEntities().values());
+            List<Term> mapValues = new ArrayList(document.getEntities());
             Collections.sort(mapValues, (Comparator.comparingDouble((o) -> o.getRank())));
             int num = 5;
-            for (int entity = mapValues.size() - 1; num < 10 && entity >= 0; entity--){
-                if (termsDictionary.containsKey(mapValues.get(entity).getValue().toUpperCase())){
+            for (int entity = mapValues.size() - 1; num < 10 && entity >= 0; entity--) {
+                if (termsDictionary.containsKey(mapValues.get(entity).getValue().toUpperCase())) {
                     attributes.add(num, mapValues.get(entity).getValue());
                     num++;
                 }

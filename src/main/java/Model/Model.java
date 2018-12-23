@@ -201,7 +201,6 @@ public class Model {
 
     /**
      * find the 50 most relevant documents for one or more queries by ranking the documents
-     *
      */
     public void findRelevantDocuments() {
         searcher = new Searcher(this, documentsDictionary, citiesDictionary, queriesDocuments);
@@ -254,20 +253,6 @@ public class Model {
                 line.append(",");
             }
             line.deleteCharAt(line.length() - 1);
-//            line.append(documentsDictionary.get(sortedDocuments[i]).get(0));
-//            line.append(",");
-//            line.append(documentsDictionary.get(sortedDocuments[i]).get(1));
-//            line.append(",");
-//            line.append(documentsDictionary.get(sortedDocuments[i]).get(2));
-//            line.append(",");
-//            line.append(documentsDictionary.get(sortedDocuments[i]).get(3));
-//            line.append(",");
-//            line.append(documentsDictionary.get(sortedDocuments[i]).get(4));
-//
-//            if (!documentsDictionary.get(sortedDocuments[i]).get(4).equals("")) {
-//                line.append(",");
-//                line.append(documentsDictionary.get(sortedDocuments[i]).get(4));
-//            }
             lines.add(line.toString());
             line.setLength(0);
         }
@@ -376,6 +361,7 @@ public class Model {
                 for (int i = 0; i < info.length; i++) {
                     attributes.add(i, info[i]);
                 }
+                attributes.add(info.length, "" + docIndex);
                 documentsDictionary.put(docIndex, attributes);
             }
         } catch (FileNotFoundException e) {
@@ -619,7 +605,7 @@ public class Model {
 
     public ArrayList<ArrayList<Document>> getQueriesResult() {
         ArrayList<ArrayList<Document>> results = new ArrayList<>();
-        for(int i=0;i<queriesDocuments.size();i++){
+        for (int i = 0; i < queriesDocuments.size(); i++) {
             results.add(sortDocuments(queriesDocuments.get(i).getQueryDocuments()));
         }
         return results;
@@ -657,12 +643,12 @@ public class Model {
         fileReader.readQueriesFile(path);
     }
 
-    public void writeSave(Object[] toWrite,String path){
+    public void writeSave(Object[] toWrite, String path) {
         List<String> lines = new LinkedList<>();
         for (int i = 0; i < toWrite.length; i++) {
-            lines.add((String)toWrite[i]);
+            lines.add((String) toWrite[i]);
         }
-        Path file = Paths.get(path+"/save.txt");
+        Path file = Paths.get(path + "/save.txt");
         try {
             Files.write(file, lines, Charset.forName("UTF-8"));
         } catch (Exception e) {
@@ -670,12 +656,12 @@ public class Model {
         }
     }
 
-    public ArrayList<QueryDocument> getQueriesDocuments(){
+    public ArrayList<QueryDocument> getQueriesDocuments() {
         return queriesDocuments;
     }
 
     public void setSemantic(boolean selected) {
         isSemantic = selected;
-        searcher.setSemantic(selected);
+//        searcher.setSemantic(selected);
     }
 }

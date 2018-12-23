@@ -10,22 +10,21 @@ public class QueryDocument extends ADocument {
     private HashSet<Integer> termsDocuments;
     private PriorityQueue<Document> rankDocuments;
 
-    public QueryDocument(){
+    public QueryDocument() {
         termsDocuments = new HashSet<>();
         rankDocuments = new PriorityQueue<Document>((Comparator.comparingDouble(o -> o.getRank())));
     }
 
-    public QueryDocument(String content){
+    public QueryDocument(String content) {
         this.content = content;
         termsDocuments = new HashSet<>();
         rankDocuments = new PriorityQueue<Document>(Comparator.comparingDouble(o -> o.getRank()));
     }
 
     void addTermToText(Term term) {
-        if (!textTerms.containsKey(term)){
+        if (!textTerms.containsKey(term)) {
             textTerms.put(term.getValue(), term);
-        }
-        else {
+        } else {
             term.setAmount(term.getAmount() + 1);
             textTerms.put(term.getValue(), term);
         }
@@ -36,11 +35,15 @@ public class QueryDocument extends ADocument {
             textTerms.remove(term);
     }
 
-    public void addDocument (int index) {
+    public void addDocument(int index) {
         termsDocuments.add(index);
     }
 
-    public HashSet<Integer> getTermsDocuments() { return termsDocuments; }
+    public HashSet<Integer> getTermsDocuments() {
+        return termsDocuments;
+    }
 
-    public PriorityQueue<Document> getQueryDocuments() { return rankDocuments; }
+    public PriorityQueue<Document> getQueryDocuments() {
+        return rankDocuments;
+    }
 }
