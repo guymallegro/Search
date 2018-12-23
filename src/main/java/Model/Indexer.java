@@ -37,6 +37,7 @@ class Indexer {
         this.allTerms = allTerms;
         this.documents = documents;
         capitalLetters = new HashMap<>();
+        currentAmountTempPostFiles = 0;
         this.termsDictionary = termsDictionary;
         this.documentsDictionary = documentsDictionary;
     }
@@ -288,18 +289,13 @@ class Indexer {
             attributes.add(1, document.getId());
             attributes.add(2, Integer.toString(document.getTextTerms().size()));
             attributes.add(3, Integer.toString(document.getLength()));
-            if (document.getCity().length() > 0)
-                attributes.add(4, document.getCity());
-            else
-                attributes.add(4, "");
-            List<Term> mapValues = new ArrayList(document.getEntities());
-            Collections.sort(mapValues, (Comparator.comparingDouble((o) -> o.getRank())));
-            int num = 5;
-            for (int entity = mapValues.size() - 1; num < 10 && entity >= 0; entity--) {
-                if (termsDictionary.containsKey(mapValues.get(entity).getValue().toUpperCase())) {
-                    attributes.add(num, mapValues.get(entity).getValue());
-                    num++;
-                }
+            attributes.add(4, document.getCity());
+            attributes.add(5, document.getTitle());
+            ArrayList <String> topFive = document.getEntities();
+            int position = 6;
+            for (int entity = 0; entity < topFive.size(); entity++) {
+                attributes.add(position, topFive.get(entity));
+                position++;
             }
             documentsDictionary.put(documents.get(i).getIndexId(), attributes);
         }

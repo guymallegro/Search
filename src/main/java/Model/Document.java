@@ -101,13 +101,17 @@ public class Document extends ADocument {
         List<Term> mapValues = new ArrayList(bigLetterTerms);
         Collections.sort(mapValues, (Comparator.comparingDouble((o) -> o.getRank())));
         int num = 0;
-        for (int entity = mapValues.size() - 1; num < 10 && entity >= 0; entity--) {
+        for (int entity = mapValues.size() - 1; num < 5 && entity >= 0; entity--) {
             if (Character.isUpperCase(mapValues.get(entity).getValue().charAt(0))) {
                 topFiveEntites.add(mapValues.get(entity).getValue());
                 num++;
             }
         }
         return topFiveEntites;
+    }
+
+    public String getTitle() {
+        return title;
     }
 
     public ArrayList<String> getTopFive() {

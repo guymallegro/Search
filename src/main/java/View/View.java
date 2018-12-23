@@ -358,8 +358,9 @@ public class View {
 
     private void showBigLetterTerms(String docId) {
         Stage stage = new Stage();
+        stage.setTitle("top Five");
         Scene scene = new Scene(new Group());
-        stage.initModality(Modality.APPLICATION_MODAL); //Lock the window until it closes
+        stage.initModality(Modality.APPLICATION_MODAL);
         final VBox vBox = new VBox();
         vBox.setSpacing(5);
         vBox.setPadding(new Insets(10, 0, 0, 10));

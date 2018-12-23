@@ -60,8 +60,9 @@ public class Ranker {
             currentDocument.setId(documentsDictionary.get(documentIndex).get(1));
             currentDocument.setCity(documentsDictionary.get(documentIndex).get(4));
             currentDocument.setTitle(documentsDictionary.get(documentIndex).get(5));
-            for (int i = 6; i < 11; i++) {
-                currentDocument.addEntity(documentsDictionary.get(documentIndex).get(i));
+            ArrayList <String> details = documentsDictionary.get(documentIndex);
+            for (int i = 6; i < details.size(); i++) {
+                currentDocument.addEntity(details.get(i));
             }
             currentDocument.setRank(currentRank);
             queryDocument.getQueryDocuments().add(currentDocument);

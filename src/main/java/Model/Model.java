@@ -44,17 +44,16 @@ public class Model {
      */
     public Model() {
         parse = new Parse(this);
-        fileReader = new ReadFile(this);
         citiesDictionary = new HashMap<>();
         cityChecker = new CityChecker(this, Main.citiesUrl, citiesDictionary);
-        indexer = new Indexer(this, parse.getAllTerms(), termsDictionary, documents, documentsDictionary);
+        fileReader = new ReadFile(this);
+        documents = new ArrayList<>();
+        languages = new HashSet<>();
         termsDictionary = new HashMap<>();
         documentsDictionary = new HashMap<>();
+        indexer = new Indexer(this, parse.getAllTerms(), termsDictionary, documents, documentsDictionary);
         document = new Document();
-        languages = new HashSet<>();
-        documents = new ArrayList<>();
         queriesDocuments = new ArrayList<QueryDocument>();
-
     }
 
     /**
@@ -108,8 +107,10 @@ public class Model {
                 currentDocument.setId(getId(document.substring(startTagIndex + 7, endTagIndex)));
             startTagIndex = document.indexOf("<TI>");
             endTagIndex = document.indexOf("</TI>");
-            if (startTagIndex != -1 && endTagIndex != -1)
-                title = document.substring(startTagIndex + 4, endTagIndex);
+            if (startTagIndex != -1 && endTagIndex != -1) {
+                title = cleanString(document.substring(startTagIndex + 4, endTagIndex));
+                currentDocument.setTitle(title);
+            }
             startTagIndex = document.indexOf("<TEXT>");
             endTagIndex = document.indexOf("</TEXT>");
             if (startTagIndex != -1 && endTagIndex != -1)
@@ -432,7 +433,7 @@ public class Model {
     /**
      * Tells the indexer to index all the terms and documents and clears them after
      */
-    private void index() {
+    private void index(){
         indexer.addAllTerms(postingPathDestination);
         indexer.addAllDocumentsToDictionary();
         parse.getAllTerms().clear();
