@@ -2,8 +2,11 @@ package View;
 
 import Controller.Controller;
 import Model.*;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.*;
@@ -14,6 +17,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.*;
 
@@ -45,6 +49,20 @@ public class View {
     public javafx.scene.control.ListView<String> allDocuments;
     boolean toInitCities = true;
     private HashSet<String> selectedCities;
+    private HashMap<String, ListView<String>> bigLetterTerms = new HashMap<>();
+    ;
+
+    public View() {
+        allDocuments = new ListView<>();
+        allDocuments.getSelectionModel().selectedItemProperty()
+                .addListener(new ChangeListener<String>() {
+                    public void changed(
+                            ObservableValue<? extends String> observable,
+                            String oldValue, String newValue) {
+                        showBigLetterTerms(newValue);
+                    }
+                });
+    }
 
     /**
      * The function which moves the user to the browser page
@@ -79,8 +97,6 @@ public class View {
         }
         languages.setDisable(false);
         query.setDisable(false);
-
-
     }
 
     public void initCities() {
@@ -102,7 +118,6 @@ public class View {
                     }
                 });
                 items.add(item);
-
             }
             citiesSelect.getItems().addAll(items);
             toInitCities = false;
@@ -147,7 +162,7 @@ public class View {
      */
     public void displayTermsDictionary() {
         Stage stage = new Stage();
-        allDocuments = new ListView<>();
+        allDocuments.getItems().clear();
         Map<Integer, Integer> map = new TreeMap(controller.getTermsToDisplay());
         Set set2 = map.entrySet();
         Iterator iterator2 = set2.iterator();
@@ -157,44 +172,6 @@ public class View {
         }
         Scene scene = new Scene(new Group());
         stage.initModality(Modality.APPLICATION_MODAL);
-        final VBox vBox = new VBox();
-        vBox.setSpacing(5);
-        vBox.setPadding(new Insets(10, 0, 0, 10));
-        vBox.getChildren().addAll(allDocuments);
-        vBox.setAlignment(Pos.CENTER);
-        Group group = ((Group) scene.getRoot());
-        group.getChildren().addAll(vBox);
-        stage.setScene(scene);
-        stage.show();
-    }
-
-    /**
-     * The function that sends the query to the model to be processed
-     */
-    public void run() {
-        controller.setStemming(stemming.isSelected());
-        controller.addQueryDocument(query.getText());
-        controller.setSemantic(semantic.isSelected());
-        //controller.findRelevantDocuments();
-        Stage stage = new Stage();
-        allDocuments = new ListView<>();
-        ArrayList<ArrayList<Document>> list = controller.getQueriesResult();
-        int counter = 50;
-        for (int i = 0; i < list.get(0).size(); i++) {
-            if (selectedCities.size() > 0) {
-                if (selectedCities.contains(list.get(0).get(i).getCity().toUpperCase())) {
-                    allDocuments.getItems().add(list.get(0).get(i).getId());
-                    counter--;
-                }
-            } else {
-                allDocuments.getItems().add(list.get(0).get(i).getId());
-                counter--;
-            }
-            if (counter == 0)
-                break;
-        }
-        Scene scene = new Scene(new Group());
-        stage.initModality(Modality.APPLICATION_MODAL); //Lock the window until it closes
         final VBox vBox = new VBox();
         vBox.setSpacing(5);
         vBox.setPadding(new Insets(10, 0, 0, 10));
@@ -257,21 +234,67 @@ public class View {
 
     }
 
+    /**
+     * The function that sends the query to the model to be processed
+     */
+    public void run() {
+        controller.setStemming(stemming.isSelected());
+        controller.addQueryDocument(query.getText());
+        controller.setSemantic(semantic.isSelected());
+        controller.findRelevantDocuments();
+        Stage stage = new Stage();
+        allDocuments.getItems().clear();
+        bigLetterTerms.clear();
+        ArrayList<ArrayList<Document>> list = controller.getQueriesResult();
+        int counter = 50;
+        for (int i = 0; i < list.get(0).size(); i++) {
+            if (selectedCities.size() > 0) {
+                if (selectedCities.contains(list.get(0).get(i).getCity().toUpperCase())) {
+                    allDocuments.getItems().add(list.get(0).get(i).getId());
+                    addBigLetterTerms(list.get(0).get(i).getId(), list.get(0).get(i).getTopFive());
+                    counter--;
+                }
+            } else {
+                allDocuments.getItems().add(list.get(0).get(i).getId());
+                addBigLetterTerms(list.get(0).get(i).getId(), list.get(0).get(i).getTopFive());
+                counter--;
+            }
+
+            if (counter == 0)
+                break;
+
+        }
+        Scene scene = new Scene(new Group());
+        stage.initModality(Modality.APPLICATION_MODAL); //Lock the window until it closes
+        final VBox vBox = new VBox();
+        vBox.setSpacing(5);
+        vBox.setPadding(new Insets(10, 0, 0, 10));
+        vBox.getChildren().addAll(allDocuments);
+        vBox.setAlignment(Pos.CENTER);
+        Group group = ((Group) scene.getRoot());
+        group.getChildren().addAll(vBox);
+        stage.setScene(scene);
+        stage.show();
+    }
+
     public void runQueryPath(ActionEvent actionEvent) {
         controller.readQueriesFile(queryPath.getText());
         Stage stage = new Stage();
-        allDocuments = new ListView<>();
+        allDocuments.getItems().clear();
         ArrayList<ArrayList<Document>> list = controller.getQueriesResult();
+        bigLetterTerms.clear();
         for (int i = 0; i < list.size(); i++) {
             int counter = 50;
             for (int j = 0; j < list.get(i).size(); j++) {
                 if (selectedCities.size() > i) {
                     if (selectedCities.contains(list.get(i).get(j).getCity().toUpperCase())) {
                         allDocuments.getItems().add(list.get(i).get(j).getId());
+                        addBigLetterTerms(list.get(j).get(i).getId(), list.get(j).get(i).getTopFive());
                         counter--;
                     }
                 } else {
                     allDocuments.getItems().add(list.get(i).get(j).getId());
+                    addBigLetterTerms(list.get(j).get(i).getId(), list.get(j).get(i).getTopFive());
                     counter--;
                 }
                 if (counter == 0)
@@ -311,7 +334,7 @@ public class View {
         }
     }
 
-    public void save(ActionEvent actionEvent) {
+    public void save() {
         ArrayList<ArrayList<Document>> list = controller.getQueriesResult();
         ArrayList<String> toWrite = new ArrayList<>();
         for (int i = 0; i < list.size(); i++) {
@@ -319,11 +342,11 @@ public class View {
             for (int j = 0; j < list.get(i).size(); j++) {
                 if (selectedCities.size() > i) {
                     if (selectedCities.contains(list.get(i).get(j).getCity().toUpperCase())) {
-                        toWrite.add(controller.getQueriesDocuments().get(i).getId() + " " + list.get(i).get(j).getId() + " 1.1 " + " st");
+                        toWrite.add(controller.getQueriesDocuments().get(i).getId() + " 1 " + list.get(i).get(j).getId() + " " + list.get(i).get(j).getRank() + " 1.1 " + "st");
                         counter--;
                     }
                 } else {
-                    toWrite.add(controller.getQueriesDocuments().get(i).getId() + " " + list.get(i).get(j).getId() + " 1.1 " + " st");
+                    toWrite.add(controller.getQueriesDocuments().get(i).getId() + " 1 " + list.get(i).get(j).getId() + " " + list.get(i).get(j).getRank() + " 1.1 " + "st");
                     counter--;
                 }
                 if (counter == 0)
@@ -331,5 +354,27 @@ public class View {
             }
         }
         controller.writeSave(toWrite.toArray(), savePath.getText());
+    }
+
+    private void showBigLetterTerms(String docId) {
+        Stage stage = new Stage();
+        Scene scene = new Scene(new Group());
+        stage.initModality(Modality.APPLICATION_MODAL); //Lock the window until it closes
+        final VBox vBox = new VBox();
+        vBox.setSpacing(5);
+        vBox.setPadding(new Insets(10, 0, 0, 10));
+        vBox.getChildren().addAll(bigLetterTerms.get(docId));
+        vBox.setAlignment(Pos.CENTER);
+        Group group = ((Group) scene.getRoot());
+        group.getChildren().addAll(vBox);
+        stage.setScene(scene);
+        stage.show();
+
+    }
+
+    private void addBigLetterTerms(String docId, ArrayList<String> docInfo) {
+        ListView<String> currentDoc = new ListView<>();
+        currentDoc.getItems().addAll(docInfo);
+        bigLetterTerms.put(docId, currentDoc);
     }
 }

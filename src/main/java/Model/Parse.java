@@ -74,9 +74,10 @@ class Parse {
                         } else if (checkPercent(i)) {
                         } else if (checkDate(i)) {
                         } else if (checkMoney(i)) {
-                        } else if (checkNumber(i)) { }
+                        } else if (checkNumber(i)) {
+                        }
                     } else if (checkSecondCaseOfDate(i)) {
-                    } else if (checkBetween (i)) {
+                    } else if (checkBetween(i)) {
                     }
                     parseByLetters(i);
                     removeRedundantZero(i);
@@ -220,15 +221,14 @@ class Parse {
         return false;
     }
 
-    private boolean checkSecondCaseOfDate (int i){
+    private boolean checkSecondCaseOfDate(int i) {
         if (date.containsKey(tokens.get(i))) {
             if (i + 1 < tokens.size()) {
                 if (tokens.get(i + 1).matches("[0-9]+")) {
                     if (tokens.get(i + 1).length() == 4) {
                         tokens.set(i, tokens.get(i + 1) + "-" + date.get(tokens.get(i)));
                         return true;
-                    }
-                    else if (tokens.get(i + 1).length() > 0) {
+                    } else if (tokens.get(i + 1).length() > 0) {
                         tokens.set(i, date.get(tokens.get(i)) + "-" + String.format("%02d", Integer.parseInt(tokens.get(i + 1))));
                         return true;
                     }
@@ -239,7 +239,7 @@ class Parse {
         return false;
     }
 
-    private boolean checkBetween (int i){
+    private boolean checkBetween(int i) {
         if (tokens.get(i).equals("Between") || tokens.get(i).equals("between")) {
             if (i < tokens.size() - 3) {
                 if (Character.isDigit(tokens.get(i + 1).charAt(0)) &&

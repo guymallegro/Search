@@ -23,7 +23,7 @@ public class Searcher {
         this.documentsDictionary = documentsDictionary;
         ranker = new Ranker(documentsDictionary);
         if (isSemantic) {
-            List <String> terms = new ArrayList<>(currentQuery.getTextTerms().keySet());
+            List<String> terms = new ArrayList<>(currentQuery.getTextTerms().keySet());
             semanticChecker = new SemanticChecker(model, terms);
         }
     }
@@ -34,6 +34,9 @@ public class Searcher {
     public void findRelevantDocs(QueryDocument queryDocument) {
         currentQuery = queryDocument;
         ranker.setQueryDocument(currentQuery);
+        if (isSemantic) {
+
+        }
         if (isSemantic)
             addSemantic();
         retrieveData(findLinesOfTerms());
@@ -41,7 +44,7 @@ public class Searcher {
     }
 
     private void addSemantic() {
-        ArrayList <String> semantic = semanticChecker.getSemantic();
+        ArrayList<String> semantic = semanticChecker.getSemantic();
         for (int i = 0; i < semantic.size(); i++) {
             double rank = model.getTermsDictionary().get(semantic.get(i)).getRank();
             model.getTermsDictionary().get(semantic.get(i)).setRank(rank * 0.8);
@@ -50,12 +53,12 @@ public class Searcher {
     }
 
     /**
-     *find the posting lines of terms of the current query
+     * find the posting lines of terms of the current query
      *
      * @return ArrayList of the lines of each term in the query from the posting file
      */
     private ArrayList<String> findLinesOfTerms() {
-        HashMap <String, Term> terms = currentQuery.getTextTerms();
+        HashMap<String, Term> terms = currentQuery.getTextTerms();
         String[] sortedTerms = terms.keySet().toArray(new String[terms.size()]);
         Arrays.sort(sortedTerms, String.CASE_INSENSITIVE_ORDER);
         ArrayList<String> termsToFind = new ArrayList<>();
@@ -101,5 +104,7 @@ public class Searcher {
         }
     }
 
-    public void setSemantic(boolean selected) { isSemantic = selected; }
+    public void setSemantic(boolean selected) {
+        isSemantic = selected;
+    }
 }

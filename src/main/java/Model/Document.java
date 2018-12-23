@@ -1,5 +1,8 @@
 package Model;
-import java.util.HashMap;
+
+import java.util.*;
+
+import static org.json.XMLTokener.entity;
 
 /**
  * The document class which holds all of its required information
@@ -10,9 +13,11 @@ public class Document extends ADocument {
     private double rank;
     private String date;
     private String title;
-    private HashMap <String, Term> bigLetterTerms;
+    private HashSet<Term> bigLetterTerms;
+    private ArrayList<String> topFiveEntites;
     private HashMap<Term, Integer> titleTerms;
     private HashMap<Term, Integer> dateTerms;
+
 
     /**
      * The default document constructor
@@ -25,7 +30,8 @@ public class Document extends ADocument {
         max_tf = 0;
         indexId = documentsAmount++;
         content = "";
-        bigLetterTerms = new HashMap<>();
+        bigLetterTerms = new HashSet<Term>();
+        topFiveEntites = new ArrayList<>();
     }
 
     /**
@@ -65,12 +71,15 @@ public class Document extends ADocument {
 
     /**
      * add term to the hash map of entities
+     *
      * @param term - the entity to add
      */
-    void addBigLetter (Term term){
-        if (Character.isUpperCase(term.getValue().charAt(0))){
+    void addBigLetter(Term term) {
+        if (Character.isUpperCase(term.getValue().charAt(0))) {
+            if (bigLetterTerms.contains(term))
+                bigLetterTerms.remove(term);
             term.setRank(calculateDominantEntity(term));
-            bigLetterTerms.put(term.getValue(), term);
+            bigLetterTerms.add(term);
         }
     }
 
@@ -79,29 +88,35 @@ public class Document extends ADocument {
      * @param term the entity
      */
     void removeEntity (Term term) {
-        if (bigLetterTerms.containsKey(term.getValue().toUpperCase()))
+        if (bigLetterTerms.contains(term.getValue().toUpperCase()))
             bigLetterTerms.remove(term.getValue().toUpperCase());
     }
 
-    /**
-     *
-     * @param term the entity
-     * @return the domination rank of the entity
-     */
-    private double calculateDominantEntity (Term term){
-        double position = (1 / (int)term.getPositionInDocument().get(indexId) - 96);
+    private double calculateDominantEntity(Term term) {
+        double position = (1 / (int) term.getPositionInDocument().get(indexId) - 96);
         return (-1) * term.getAmount() * position;
     }
 
-    public String getTitle() {
-        return title;
+    public ArrayList<String> getEntities() {
+        List<Term> mapValues = new ArrayList(bigLetterTerms);
+        Collections.sort(mapValues, (Comparator.comparingDouble((o) -> o.getRank())));
+        int num = 0;
+        for (int entity = mapValues.size() - 1; num < 10 && entity >= 0; entity--) {
+            if (Character.isUpperCase(mapValues.get(entity).getValue().charAt(0))) {
+                topFiveEntites.add(mapValues.get(entity).getValue());
+                num++;
+            }
+        }
+        return topFiveEntites;
     }
 
-    /**
-     * getter
-     * @return the hash map of the dominant entities
-     */
-    public HashMap<String, Term> getEntities() {return bigLetterTerms;}
+    public ArrayList<String> getTopFive() {
+        return topFiveEntites;
+    }
+
+    public void addEntity(String entity) {
+        topFiveEntites.add(entity);
+    }
 
     /**
      * Returns the document's max term frequency
@@ -113,16 +128,19 @@ public class Document extends ADocument {
     }
 
     /**
-     *
      * @return the rank of the document
      */
-    public double getRank () {return rank;}
+    public double getRank() {
+        return rank;
+    }
 
     /**
-     *
      * @param rank the rank of the document after calculation in ranker
      */
-    public void setRank (double rank){this.rank = rank;}
+    public void setRank(double rank) {
+        this.rank = rank;
+    }
+
 
     /**
      * Sets the document's date to the given date
