@@ -164,22 +164,25 @@ public class Model {
     }
 
     void processQuery(String fileAsString) {
+        queriesDocuments.clear();
         String[] allQueries = fileAsString.split("<top>");
-        QueryDocument currentQuery = new QueryDocument();
-        String allQuery = "";
+        String allQuery;
         for (int query = 0; query < allQueries.length; query++) {
             allQuery = allQueries[query];
-            int startTagIndex = allQuery.indexOf("<top>");
-            int endTagIndex = allQuery.indexOf("<title>");
-            if (startTagIndex != -1 && endTagIndex != -1)
-                currentQuery.setId(allQuery.substring(allQuery.indexOf(": "), endTagIndex));
-            startTagIndex = endTagIndex;
-            endTagIndex = allQuery.indexOf("<de");
-            if (startTagIndex != -1 && endTagIndex != -1)
-                currentQuery.setContent(allQuery.substring(startTagIndex + 8, endTagIndex));
-            queriesDocuments.add(currentQuery);
+            if (allQueries[query].length() > 1) {
+                QueryDocument currentQuery = new QueryDocument();
+                int startTagIndex = allQuery.indexOf("<top>");
+                int endTagIndex = allQuery.indexOf("<title>");
+                if (startTagIndex != -1 && endTagIndex != -1)
+                    currentQuery.setId(allQuery.substring(allQuery.indexOf(": "), endTagIndex));
+                startTagIndex = endTagIndex;
+                endTagIndex = allQuery.indexOf("<de");
+                if (startTagIndex != -1 && endTagIndex != -1)
+                    currentQuery.setContent(allQuery.substring(startTagIndex + 8, endTagIndex));
+                queriesDocuments.add(currentQuery);
+            }
         }
-        findRelevantDocuments(queriesDocuments);
+        findRelevantDocuments();
     }
 
     /**
@@ -187,26 +190,24 @@ public class Model {
      *
      * @param query - the query from the user or file
      */
-    public void findRelevantDocuments(String query) {
+    public void addQueryDocument(String query) {
         queriesDocuments.clear();
         QueryDocument queryDocument = new QueryDocument(query);
         queryDocument.setId(Integer.toString(queryIndex));
         queryIndex++;
         queriesDocuments.add(queryDocument);
-        findRelevantDocuments(queriesDocuments);
     }
 
     /**
      * find the 50 most relevant documents for one or more queries by ranking the documents
      *
-     * @param queriesDocuments - one or more queries from the user or file respectively
      */
-    private void findRelevantDocuments(ArrayList<QueryDocument> queriesDocuments) {
+    public void findRelevantDocuments() {
         searcher = new Searcher(this, documentsDictionary, citiesDictionary, queriesDocuments);
         for (int i = 0; i < queriesDocuments.size(); i++) {
             parse.getAllTerms().clear();
             parse.parseDocument(queriesDocuments.get(i));
-            searcher.findRelevantDocs();
+            searcher.findRelevantDocs(i);
         }
     }
 
@@ -686,9 +687,12 @@ public class Model {
         return fileReader.findTerms(terms);
     }
 
-    public ArrayList<Document> getQueryDocuments() {
-        print();
-        return sortDocuments(queriesDocuments.get(0).getQueryDocuments());
+    public ArrayList<ArrayList<Document>> getQueriesResult() {
+        ArrayList<ArrayList<Document>> results = new ArrayList<>();
+        for(int i=0;i<queriesDocuments.size();i++){
+            results.add(sortDocuments(queriesDocuments.get(i).getQueryDocuments()));
+        }
+        return results;
     }
 
     private ArrayList<Document> sortDocuments(PriorityQueue<Document> queryDocuments) {
@@ -717,5 +721,9 @@ public class Model {
 
     public HashMap<Integer, ArrayList<String>> getDocumentsDictionary() {
         return documentsDictionary;
+    }
+
+    public void readQueriesFile(String path) {
+        fileReader.readQueriesFile(path);
     }
 }

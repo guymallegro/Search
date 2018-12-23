@@ -24,13 +24,11 @@ private HashMap<Integer, ArrayList<String>> documentsDictionary;
     /**
      * find the 50 most relevant documents using the ranker
      */
-    public void findRelevantDocs() {
-        for (int i = 0; i < queryDocuments.size(); i++){
+    public void findRelevantDocs(int i) {
             currentQuery = queryDocuments.get(i);
             retrieveData(findLinesOfTerms());
             ranker.setQueryDocument(currentQuery);
             ranker.rank();
-        }
     }
 
     /**

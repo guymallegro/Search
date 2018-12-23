@@ -131,19 +131,27 @@ public class Controller {
         model.setPostingPathDestination(postingPath);
     }
 
-    public void findRelevantDocuments(String query) {
-        model.findRelevantDocuments(query);
+    public void addQueryDocument(String query) {
+        model.addQueryDocument(query);
+    }
+
+    public void findRelevantDocuments(){
+        model.findRelevantDocuments();
     }
 
     public HashMap<String, City> getCitiesDictionary() {
         return model.getCitiesDictionary();
     }
 
-    public ArrayList<Document> getQueryDocuments() {
-        return model.getQueryDocuments();
+    public ArrayList<ArrayList<Document>> getQueriesResult() {
+        return model.getQueriesResult();
     }
 
     public HashMap<Integer, ArrayList<String>> getDocumentsDictionary() {
         return model.getDocumentsDictionary();
+    }
+
+    public void readQueriesFile(String path) {
+        model.readQueriesFile(path);
     }
 }

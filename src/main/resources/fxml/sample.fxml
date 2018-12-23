@@ -39,12 +39,13 @@
             <Button fx:id="browseCorpus" layoutX="429.0" layoutY="340.0" mnemonicParsing="false" onAction="#browseCorpus" prefHeight="39.0" prefWidth="26.0" text="..." />
             <Button fx:id="browsePosting" layoutX="429.0" layoutY="429.0" mnemonicParsing="false" onAction="#browsePosting" prefHeight="39.0" prefWidth="26.0" text="..." />
             <Button fx:id="browseCorpus1" layoutX="473.0" layoutY="436.0" mnemonicParsing="false" onAction="#loadPostingPath" prefHeight="12.0" prefWidth="101.0" text="load path" />
-            <TextField fx:id="queryPath" layoutX="54.0" layoutY="251.0" prefHeight="39.0" prefWidth="358.0" text="Enter path" />
-            <Button fx:id="runQueryPath" layoutX="444.0" layoutY="251.0" mnemonicParsing="false" onAction="#runQueryPath" prefHeight="39.0" prefWidth="120.0" text="Run queries path">
+            <TextField fx:id="queryPath" layoutX="54.0" layoutY="251.0" prefHeight="39.0" prefWidth="338.0" text="Enter path" />
+            <Button fx:id="runQueryPath" layoutX="444.0" layoutY="251.0" mnemonicParsing="false" onAction="#runQueryPath" prefHeight="39.0" prefWidth="120.0" text="Browse">
                <font>
                   <Font size="12.0" />
                </font>
             </Button>
+            <Button fx:id="browseQueries" layoutX="400.0" layoutY="251.0" mnemonicParsing="false" onAction="#browseQueries" prefHeight="39.0" prefWidth="26.0" text="..." />
          </children>
       </AnchorPane>
    </children>

@@ -126,4 +126,18 @@ public class ReadFile {
     public void setPostPath(String postPath) {
         this.postPath = postPath;
     }
+
+    public void readQueriesFile(String path) {
+        StringBuilder sb = new StringBuilder();
+        try {
+            Scanner scanner = new Scanner(new File(path));
+            while (scanner.hasNextLine()) {
+                sb.append(scanner.nextLine());
+            }
+            scanner.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("Cannot open the file: " + path);
+        }
+        model.processQuery(sb.toString());
+    }
 }

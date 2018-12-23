@@ -13,21 +13,12 @@ public class Ranker {
 
     public Ranker(HashMap<Integer, ArrayList<String>> documentsDictionary) {
         this.documentsDictionary = documentsDictionary;
+        corpusAvgDocLength();
     }
 
     /**
      * calculate the average number of terms in document of all the corpus
      */
-/*
-    private void corpusAvgDocLength() {
-        int totalLength = 0;
-        for (Document document: documentsDictionary.values()){
-            docsAmount++;
-            totalLength += document.getLength();
-        }
-        avgDocLength = totalLength / docsAmount;
-    }
-*/
     private void corpusAvgDocLength() {
         int totalLength = 0;
         for (ArrayList details : documentsDictionary.values()) {
@@ -56,7 +47,6 @@ public class Ranker {
      * calculate the rank of all documents by M25 formula
      */
     public void rank() {
-        corpusAvgDocLength();
         double currentRank = 0;
         double firstCalculation = 0;
         double logCalculation = 0;
@@ -71,7 +61,8 @@ public class Ranker {
             }
             Document currentDocument = new Document();
             currentDocument.setId(documentsDictionary.get(documentIndex).get(1));
-            currentDocument.setCity(documentsDictionary.get(documentIndex).get(4));
+            if (documentsDictionary.get(documentIndex).size() > 4)
+                currentDocument.setCity(documentsDictionary.get(documentIndex).get(4));
             currentDocument.setRank(currentRank);
             queryDocument.getQueryDocuments().add(currentDocument);
             currentRank = 0;

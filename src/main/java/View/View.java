@@ -28,6 +28,9 @@ public class View {
     public TextField postingPath;
     public Button browseCorpus;
     public Button browsePosting;
+    public TextField queryPath;
+    public Button runQueryPath;
+    public Button browseQueries;
     private Controller controller;
     public javafx.scene.control.Button processCorpus;
     public javafx.scene.control.Button run;
@@ -67,6 +70,7 @@ public class View {
      */
     public void loadPostingPath() {
         controller.setPostingPath(postingPath.getText());
+        loadDictionaries.setDisable(false);
     }
 
     /**
@@ -169,19 +173,20 @@ public class View {
      * The function that sends the query to the model to be processed
      */
     public void run() {
-        controller.findRelevantDocuments(query.getText());
+        controller.addQueryDocument(query.getText());
+        controller.findRelevantDocuments();
         Stage stage = new Stage();
         allDocuments = new ListView<>();
-        ArrayList list = controller.getQueryDocuments();
+        ArrayList<ArrayList<Document>> list = controller.getQueriesResult();
         int counter = 50;
-        for (int i = 0; i < list.size(); i++) {
+        for (int i = 0; i < list.get(0).size(); i++) {
             if (selectedCities.size() > 0) {
-                if (selectedCities.contains(((ADocument) list.get(i)).getCity().toUpperCase())) {
-                    allDocuments.getItems().add(((ADocument) list.get(i)).getId());
+                if (selectedCities.contains(list.get(0).get(i).getCity().toUpperCase())) {
+                    allDocuments.getItems().add(list.get(0).get(i).getId());
                     counter--;
                 }
             } else {
-                allDocuments.getItems().add(((ADocument) list.get(i)).getId());
+                allDocuments.getItems().add(list.get(0).get(i).getId());
                 counter--;
             }
             if (counter == 0)
@@ -252,5 +257,47 @@ public class View {
     }
 
     public void runQueryPath(ActionEvent actionEvent) {
+        controller.readQueriesFile(queryPath.getText()+"/q.txt");
+        Stage stage = new Stage();
+        allDocuments = new ListView<>();
+        ArrayList<ArrayList<Document>> list = controller.getQueriesResult();
+        for(int i=0;i< list.size();i++) {
+            int counter = 50;
+            for (int j = 0; j < list.get(i).size(); j++) {
+                if (selectedCities.size() > i) {
+                    if (selectedCities.contains(list.get(i).get(j).getCity().toUpperCase())) {
+                        allDocuments.getItems().add(list.get(i).get(j).getId());
+                        counter--;
+                    }
+                } else {
+                    allDocuments.getItems().add(list.get(i).get(j).getId());
+                    counter--;
+                }
+                if (counter == 0)
+                    break;
+            }
+            allDocuments.getItems().add("---------------------");
+        }
+        Scene scene = new Scene(new Group());
+        stage.initModality(Modality.APPLICATION_MODAL); //Lock the window until it closes
+        final VBox vBox = new VBox();
+        vBox.setSpacing(5);
+        vBox.setPadding(new Insets(10, 0, 0, 10));
+        vBox.getChildren().addAll(allDocuments);
+        vBox.setAlignment(Pos.CENTER);
+        Group group = ((Group) scene.getRoot());
+        group.getChildren().addAll(vBox);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    public void browseQueries(ActionEvent actionEvent) {
+        DirectoryChooser chooser = new DirectoryChooser();
+        chooser.setTitle("Queries Directory");
+        Stage stage = new Stage();
+        File selectedDirectory = chooser.showDialog(stage);
+        if (selectedDirectory != null) {
+            queryPath.setText(selectedDirectory.getPath());
+        }
     }
 }
