@@ -137,6 +137,10 @@ public class View {
      * Tells the controller to load the dictionaries
      */
     public void loadDictionaries() {
+        if (postingPath.getText().equals("Enter Path")) {
+            showAlert("Please enter a posting path");
+            return;
+        }
         controller.loadDictionaries();
         loadDictionaries.setDisable(true);
         displayTermsDictionary.setDisable(false);
