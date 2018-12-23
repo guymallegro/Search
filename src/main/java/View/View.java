@@ -319,11 +319,11 @@ public class View {
             for (int j = 0; j < list.get(i).size(); j++) {
                 if (selectedCities.size() > i) {
                     if (selectedCities.contains(list.get(i).get(j).getCity().toUpperCase())) {
-                        toWrite.add(controller.getQueriesDocuments().get(i).getId() + " " + list.get(i).get(j).getId()+" 1.1 "+" st");
+                        toWrite.add(controller.getQueriesDocuments().get(i).getId() + " " + list.get(i).get(j).getId() + " 1.1 " + " st");
                         counter--;
                     }
                 } else {
-                    toWrite.add(controller.getQueriesDocuments().get(i).getId() + " " + list.get(i).get(j).getId()+" 1.1 "+" st");
+                    toWrite.add(controller.getQueriesDocuments().get(i).getId() + " " + list.get(i).get(j).getId() + " 1.1 " + " st");
                     counter--;
                 }
                 if (counter == 0)
