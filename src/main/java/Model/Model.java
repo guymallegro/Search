@@ -34,7 +34,6 @@ public class Model {
     private HashMap<Integer, ArrayList<String>> documentsDictionary;
     private HashMap<String, City> citiesDictionary;
     private boolean isStemming;
-    private boolean isSemantic;
     private int documentsAmount;
     private int termsAmount;
     private double totalTime;
@@ -45,15 +44,15 @@ public class Model {
      */
     public Model() {
         parse = new Parse(this);
+        fileReader = new ReadFile(this);
         citiesDictionary = new HashMap<>();
         cityChecker = new CityChecker(this, Main.citiesUrl, citiesDictionary);
-        fileReader = new ReadFile(this);
-        documents = new ArrayList<>();
-        languages = new HashSet<>();
+        indexer = new Indexer(this, parse.getAllTerms(), termsDictionary, documents, documentsDictionary);
         termsDictionary = new HashMap<>();
         documentsDictionary = new HashMap<>();
-        indexer = new Indexer(this, parse.getAllTerms(), termsDictionary, documents, documentsDictionary);
         document = new Document();
+        languages = new HashSet<>();
+        documents = new ArrayList<>();
         queriesDocuments = new ArrayList<QueryDocument>();
 
     }
@@ -64,13 +63,13 @@ public class Model {
      *
      * @param filesPath     - Path to the corpus
      * @param stopWordsPath - Path to the stop words file
-     * @param postingpath   - Path to save the posting files
+     * @param postingPath   - Path to save the posting files
      */
-    public void readFiles(String filesPath, String stopWordsPath, String postingpath) {
+    public void readFiles(String filesPath, String stopWordsPath, String postingPath) {
         indexer.initCurrentPostFile();
         resetDictionaries(false);
         document.initialize();
-        postingPathDestination = postingpath;
+        postingPathDestination = postingPath;
         long tStart = System.currentTimeMillis();
         stopWords = fileReader.readStopWords(stopWordsPath);
         parse.setStopWords(stopWords);
@@ -197,6 +196,7 @@ public class Model {
         queryDocument.setId(Integer.toString(queryIndex));
         queryIndex++;
         queriesDocuments.add(queryDocument);
+        findRelevantDocuments();
     }
 
     /**
@@ -204,11 +204,11 @@ public class Model {
      *
      */
     public void findRelevantDocuments() {
-        searcher = new Searcher(this, documentsDictionary, citiesDictionary, queriesDocuments);
+        searcher = new Searcher(this, documentsDictionary, citiesDictionary);
         for (int i = 0; i < queriesDocuments.size(); i++) {
             parse.getAllTerms().clear();
             parse.parseDocument(queriesDocuments.get(i));
-            searcher.findRelevantDocs(i);
+            searcher.findRelevantDocs(queriesDocuments.get(i));
         }
     }
 
@@ -675,7 +675,6 @@ public class Model {
     }
 
     public void setSemantic(boolean selected) {
-        isSemantic = selected;
         searcher.setSemantic(selected);
     }
 }

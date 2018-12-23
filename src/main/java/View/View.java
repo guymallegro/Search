@@ -175,7 +175,7 @@ public class View {
         controller.setStemming(stemming.isSelected());
         controller.addQueryDocument(query.getText());
         controller.setSemantic(semantic.isSelected());
-        controller.findRelevantDocuments();
+        //controller.findRelevantDocuments();
         Stage stage = new Stage();
         allDocuments = new ListView<>();
         ArrayList<ArrayList<Document>> list = controller.getQueriesResult();

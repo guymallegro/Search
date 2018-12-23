@@ -9,7 +9,6 @@ import java.util.HashMap;
  */
 class CityChecker {
     Model model;
-    private int capital=0;
 
     /**
      * The CityChecker constructor
@@ -22,11 +21,9 @@ class CityChecker {
         HTTPRequest request = new HTTPRequest();
         JSONObject jsonDetails = request.post(WebServiceURL);
         JSONArray result = jsonDetails.getJSONArray("result");
-
         for (Object obj : result) {
             JSONObject data = (JSONObject) obj;
             City city = new City(data);
-            capital++;
             cityDictionary.put(city.getCityName(), city);
         }
     }

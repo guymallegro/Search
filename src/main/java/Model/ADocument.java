@@ -15,7 +15,6 @@ public abstract class ADocument {
     public ADocument (){
         city = "";
         textTerms = new HashMap<String, Term>();
-        //textTerms = new HashMap<Term, Integer>();
     }
 
 

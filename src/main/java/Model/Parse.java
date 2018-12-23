@@ -431,25 +431,6 @@ class Parse {
                 newTerm.addInDocument(currentDocument.getIndexId(), ((double) i) / tokens.size());
                 currentDocument.addTermToText(newTerm);
                 allTerms.put(term, newTerm);
-                currentDocument.addTermToText(newTerm);
-//                if (Character.isUpperCase(term.charAt(0))) {
-//                    Term newTerm;
-//                    if (model.getTermsDictionary().containsKey(lowerCase)) {
-//                        newTerm = new Term(lowerCase);
-//                        currentDocument.removeTermFromText(newTerm);
-//                    }
-//                    else
-//                        newTerm = new Term(upper);
-//                    allTerms.put(term, newTerm);
-//                    newTerm.addInDocument(currentDocument.getIndexId(), ((double) i) / tokens.size());
-//                    currentDocument.addTermToText(newTerm);
-//                }
-//                else {
-//                    Term newTerm = new Term(lowerCase);
-//                    allTerms.put(term, newTerm);
-//                    newTerm.addInDocument(currentDocument.getIndexId(), ((double) i) / tokens.size());
-//                    currentDocument.addTermToText(newTerm);
-//                }
             }
         }
     }

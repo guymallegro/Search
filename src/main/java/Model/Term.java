@@ -105,7 +105,7 @@ public class Term {
         Map<Integer, Integer> map = new TreeMap(inDocuments);
         Set set2 = map.entrySet();
         Iterator iterator2 = set2.iterator();
-        while (iterator2.hasNext()) {
+        while (iterator2.hasNext()){
             Map.Entry me2 = (Map.Entry) iterator2.next();
             sb.append(positionInDocument.get(me2.getKey()));
             sb.append(me2.getValue()).append(",");
