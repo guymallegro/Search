@@ -101,18 +101,19 @@ public class Model {
             if (document.length() == 0 || document.equals(" ")) continue;
             Document currentDocument = new Document();
             nomOfDocs--;
+            String title = "";
             int startTagIndex = document.indexOf("<DOCNO>");
             int endTagIndex = document.indexOf("</DOCNO>");
             if (startTagIndex != -1 && endTagIndex != -1)
                 currentDocument.setId(getId(document.substring(startTagIndex + 7, endTagIndex)));
-            startTagIndex = document.indexOf("<TEXT>");
-            endTagIndex = document.indexOf("</TEXT>");
-            if (startTagIndex != -1 && endTagIndex != -1)
-                currentDocument.setContent(document.substring(startTagIndex + 6, endTagIndex));
             startTagIndex = document.indexOf("<TI>");
             endTagIndex = document.indexOf("</TI>");
             if (startTagIndex != -1 && endTagIndex != -1)
-                currentDocument.setTitle(document.substring(startTagIndex + 4, endTagIndex));
+                title = document.substring(startTagIndex + 4, endTagIndex);
+            startTagIndex = document.indexOf("<TEXT>");
+            endTagIndex = document.indexOf("</TEXT>");
+            if (startTagIndex != -1 && endTagIndex != -1)
+                currentDocument.setContent(title + " " + document.substring(startTagIndex + 6, endTagIndex));
             startTagIndex = document.indexOf("<DATE>");
             endTagIndex = document.indexOf("</DATE>");
             if (startTagIndex != -1 && endTagIndex != -1)
@@ -201,7 +202,6 @@ public class Model {
 
     /**
      * find the 50 most relevant documents for one or more queries by ranking the documents
-     *
      */
     public void findRelevantDocuments() {
         searcher = new Searcher(this, documentsDictionary, citiesDictionary);
@@ -254,20 +254,6 @@ public class Model {
                 line.append(",");
             }
             line.deleteCharAt(line.length() - 1);
-//            line.append(documentsDictionary.get(sortedDocuments[i]).get(0));
-//            line.append(",");
-//            line.append(documentsDictionary.get(sortedDocuments[i]).get(1));
-//            line.append(",");
-//            line.append(documentsDictionary.get(sortedDocuments[i]).get(2));
-//            line.append(",");
-//            line.append(documentsDictionary.get(sortedDocuments[i]).get(3));
-//            line.append(",");
-//            line.append(documentsDictionary.get(sortedDocuments[i]).get(4));
-//
-//            if (!documentsDictionary.get(sortedDocuments[i]).get(4).equals("")) {
-//                line.append(",");
-//                line.append(documentsDictionary.get(sortedDocuments[i]).get(4));
-//            }
             lines.add(line.toString());
             line.setLength(0);
         }
@@ -619,7 +605,7 @@ public class Model {
 
     public ArrayList<ArrayList<Document>> getQueriesResult() {
         ArrayList<ArrayList<Document>> results = new ArrayList<>();
-        for(int i=0;i<queriesDocuments.size();i++){
+        for (int i = 0; i < queriesDocuments.size(); i++) {
             results.add(sortDocuments(queriesDocuments.get(i).getQueryDocuments()));
         }
         return results;
@@ -657,12 +643,12 @@ public class Model {
         fileReader.readQueriesFile(path);
     }
 
-    public void writeSave(Object[] toWrite,String path){
+    public void writeSave(Object[] toWrite, String path) {
         List<String> lines = new LinkedList<>();
         for (int i = 0; i < toWrite.length; i++) {
-            lines.add((String)toWrite[i]);
+            lines.add((String) toWrite[i]);
         }
-        Path file = Paths.get(path+"/save.txt");
+        Path file = Paths.get(path + "/save.txt");
         try {
             Files.write(file, lines, Charset.forName("UTF-8"));
         } catch (Exception e) {
@@ -670,7 +656,7 @@ public class Model {
         }
     }
 
-    public ArrayList<QueryDocument> getQueriesDocuments(){
+    public ArrayList<QueryDocument> getQueriesDocuments() {
         return queriesDocuments;
     }
 
