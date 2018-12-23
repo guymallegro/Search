@@ -292,11 +292,12 @@ class Indexer {
                 attributes.add(4, document.getCity());
             else
                 attributes.add(4, "");
-            HashMap <String, Term> temp = document.getEntities();
+            attributes.add(5, document.getTitle());
+            //ArrayList <String> entities = document.getEntities();
             List<Term> mapValues = new ArrayList<>(document.getEntities().values());
             Collections.sort(mapValues, (Comparator.comparingDouble((o) -> o.getRank())));
-            int num = 5;
-            for (int entity = mapValues.size() - 1; num < 10 && entity >= 0; entity--){
+            int num = 6;
+            for (int entity = mapValues.size() - 1; num < 11 && entity >= 0; entity--){
                 if (termsDictionary.containsKey(mapValues.get(entity).getValue().toUpperCase())){
                     attributes.add(num, mapValues.get(entity).getValue());
                     num++;

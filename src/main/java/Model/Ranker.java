@@ -5,6 +5,7 @@ import java.util.*;
 public class Ranker {
     public final double K = 1.2;
     public final double B = 0.75;
+    private double titleRank;
     private double avgDocLength;
     private QueryDocument queryDocument;
     private HashMap<Integer, ArrayList<String>> documentsDictionary;
@@ -13,6 +14,7 @@ public class Ranker {
 
     public Ranker(HashMap<Integer, ArrayList<String>> documentsDictionary) {
         this.documentsDictionary = documentsDictionary;
+        titleRank = 1;
         corpusAvgDocLength();
     }
 
@@ -62,6 +64,10 @@ public class Ranker {
             queryDocument.getQueryDocuments().add(currentDocument);
             currentRank = 0;
         }
+    }
+
+    private void setTitleRank (){
+        titleRank = 1.2;
     }
 
     /**

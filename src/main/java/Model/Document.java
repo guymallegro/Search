@@ -93,6 +93,10 @@ public class Document extends ADocument {
         return (-1) * term.getAmount() * position;
     }
 
+    public String getTitle() {
+        return title;
+    }
+
     /**
      * getter
      * @return the hash map of the dominant entities
