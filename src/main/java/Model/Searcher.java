@@ -1,37 +1,55 @@
 package Model;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 public class Searcher {
     private Model model;
     private Ranker ranker;
+    private SemanticChecker semanticChecker;
     private boolean isSemantic;
     private QueryDocument currentQuery;
-    ArrayList<QueryDocument> queryDocuments;
     private HashMap<String, City> cityDictionary;
     private HashMap<Integer, ArrayList<String>> documentsDictionary;
 
-    public Searcher(Model model, HashMap<Integer, ArrayList<String>> documentsDictionary, HashMap<String, City> cityDictionary, ArrayList<QueryDocument> queryDocuments) {
+    public Searcher(Model model, HashMap<Integer, ArrayList<String>> documentsDictionary, HashMap<String, City> cityDictionary) {
         this.model = model;
-        this.queryDocuments = queryDocuments;
         this.cityDictionary = cityDictionary;
         this.documentsDictionary = documentsDictionary;
         ranker = new Ranker(documentsDictionary);
+        if (isSemantic) {
+            List <String> terms = new ArrayList<>(currentQuery.getTextTerms().keySet());
+            semanticChecker = new SemanticChecker(model, terms);
+        }
     }
 
     /**
      * find the 50 most relevant documents using the ranker
      */
-    public void findRelevantDocs(int i) {
-        currentQuery = queryDocuments.get(i);
-        retrieveData(findLinesOfTerms());
+    public void findRelevantDocs(QueryDocument queryDocument) {
+        currentQuery = queryDocument;
         ranker.setQueryDocument(currentQuery);
         if (isSemantic) {
 
         }
+        if (isSemantic)
+            addSemantic();
+        retrieveData(findLinesOfTerms());
         ranker.rank();
+    }
+
+    private void addSemantic() {
+        ArrayList <String> semantic = semanticChecker.getSemantic();
+        for (int i = 0; i < semantic.size(); i++) {
+            double rank = model.getTermsDictionary().get(semantic.get(i)).getRank();
+            model.getTermsDictionary().get(semantic.get(i)).setRank(rank * 0.8);
+            currentQuery.addTermToText(model.getTermsDictionary().get(semantic.get(i)));
+        }
     }
 
     /**

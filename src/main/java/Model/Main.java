@@ -13,6 +13,7 @@ import View.View;
  */
 public class Main extends Application {
     static String citiesUrl = "https://restcountries.eu/rest/v2/all?fields=name;capital;population;currencies"; // URL to the cities API
+    static String semanticUrl = "https://api.datamuse.com/words?ml="; // URL to the semantic API
 
     /**
      * The start function of the JAVAFX
