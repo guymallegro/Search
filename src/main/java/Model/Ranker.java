@@ -56,11 +56,10 @@ public class Ranker {
             }
             Document currentDocument = new Document();
             currentDocument.setId(documentsDictionary.get(documentIndex).get(1));
-            if (documentsDictionary.get(documentIndex).size() > 5) {
-                currentDocument.setCity(documentsDictionary.get(documentIndex).get(4));
-                currentDocument.setIndexId(Integer.parseInt(documentsDictionary.get(documentIndex).get(5)));
-            } else {
-                currentDocument.setIndexId(Integer.parseInt(documentsDictionary.get(documentIndex).get(4)));
+            currentDocument.setCity(documentsDictionary.get(documentIndex).get(4));
+            currentDocument.setTitle(documentsDictionary.get(documentIndex).get(5));
+            for (int i = 6; i < 11; i++) {
+                currentDocument.addEntity(documentsDictionary.get(documentIndex).get(i));
             }
             currentDocument.setRank(currentRank);
             queryDocument.getQueryDocuments().add(currentDocument);

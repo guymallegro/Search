@@ -23,7 +23,7 @@ public class Searcher {
         this.documentsDictionary = documentsDictionary;
         ranker = new Ranker(documentsDictionary);
         if (isSemantic) {
-            List <String> terms = new ArrayList<>(currentQuery.getTextTerms().keySet());
+            List<String> terms = new ArrayList<>(currentQuery.getTextTerms().keySet());
             semanticChecker = new SemanticChecker(model, terms);
         }
     }
@@ -44,7 +44,7 @@ public class Searcher {
     }
 
     private void addSemantic() {
-        ArrayList <String> semantic = semanticChecker.getSemantic();
+        ArrayList<String> semantic = semanticChecker.getSemantic();
         for (int i = 0; i < semantic.size(); i++) {
             double rank = model.getTermsDictionary().get(semantic.get(i)).getRank();
             model.getTermsDictionary().get(semantic.get(i)).setRank(rank * 0.8);

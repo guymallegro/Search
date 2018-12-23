@@ -251,12 +251,12 @@ public class View {
             if (selectedCities.size() > 0) {
                 if (selectedCities.contains(list.get(0).get(i).getCity().toUpperCase())) {
                     allDocuments.getItems().add(list.get(0).get(i).getId());
-                    addBigLetterTerms(list.get(0).get(i).getId(), list.get(0).get(i).getEntities());
+                    addBigLetterTerms(list.get(0).get(i).getId(), list.get(0).get(i).getTopFive());
                     counter--;
                 }
             } else {
                 allDocuments.getItems().add(list.get(0).get(i).getId());
-                addBigLetterTerms(list.get(0).get(i).getId(), list.get(0).get(i).getEntities());
+                addBigLetterTerms(list.get(0).get(i).getId(), list.get(0).get(i).getTopFive());
                 counter--;
             }
 
@@ -289,12 +289,12 @@ public class View {
                 if (selectedCities.size() > i) {
                     if (selectedCities.contains(list.get(i).get(j).getCity().toUpperCase())) {
                         allDocuments.getItems().add(list.get(i).get(j).getId());
-                        addBigLetterTerms(list.get(j).get(i).getId(), controller.getDocumentsDictionary().get(list.get(j).get(i).getIndexId()));
+                        addBigLetterTerms(list.get(j).get(i).getId(), list.get(j).get(i).getTopFive());
                         counter--;
                     }
                 } else {
                     allDocuments.getItems().add(list.get(i).get(j).getId());
-                    addBigLetterTerms(list.get(j).get(i).getId(), controller.getDocumentsDictionary().get(list.get(j).get(i).getIndexId()));
+                    addBigLetterTerms(list.get(j).get(i).getId(), list.get(j).get(i).getTopFive());
                     counter--;
                 }
                 if (counter == 0)
@@ -372,9 +372,9 @@ public class View {
 
     }
 
-    private void addBigLetterTerms(String docId, ArrayList<String> terms) {
+    private void addBigLetterTerms(String docId, ArrayList<String> docInfo) {
         ListView<String> currentDoc = new ListView<>();
-        currentDoc.getItems().addAll(terms);
+        currentDoc.getItems().addAll(docInfo);
         bigLetterTerms.put(docId, currentDoc);
     }
 }

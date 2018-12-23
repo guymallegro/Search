@@ -14,6 +14,7 @@ public class Document extends ADocument {
     private String date;
     private String title;
     private HashSet<Term> bigLetterTerms;
+    private ArrayList<String> topFiveEntites;
     private HashMap<Term, Integer> titleTerms;
     private HashMap<Term, Integer> dateTerms;
 
@@ -30,6 +31,7 @@ public class Document extends ADocument {
         indexId = documentsAmount++;
         content = "";
         bigLetterTerms = new HashSet<Term>();
+        topFiveEntites = new ArrayList<>();
     }
 
     /**
@@ -87,17 +89,24 @@ public class Document extends ADocument {
     }
 
     public ArrayList<String> getEntities() {
-        ArrayList<String> entities = new ArrayList<>();
         List<Term> mapValues = new ArrayList(bigLetterTerms);
         Collections.sort(mapValues, (Comparator.comparingDouble((o) -> o.getRank())));
         int num = 0;
         for (int entity = mapValues.size() - 1; num < 10 && entity >= 0; entity--) {
             if (Character.isUpperCase(mapValues.get(entity).getValue().charAt(0))) {
-                entities.add(mapValues.get(entity).getValue());
+                topFiveEntites.add(mapValues.get(entity).getValue());
                 num++;
             }
         }
-        return entities;
+        return topFiveEntites;
+    }
+
+    public ArrayList<String> getTopFive() {
+        return topFiveEntites;
+    }
+
+    public void addEntity(String entity) {
+        topFiveEntites.add(entity);
     }
 
     /**

@@ -362,7 +362,6 @@ public class Model {
                 for (int i = 0; i < info.length; i++) {
                     attributes.add(i, info[i]);
                 }
-                attributes.add(info.length, "" + docIndex);
                 documentsDictionary.put(docIndex, attributes);
             }
         } catch (FileNotFoundException e) {
