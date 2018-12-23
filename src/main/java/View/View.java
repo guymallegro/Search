@@ -1,10 +1,7 @@
 package View;
 
 import Controller.Controller;
-import Model.ADocument;
-import Model.City;
-import Model.Document;
-import Model.QueryDocument;
+import Model.*;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.geometry.Insets;
@@ -13,6 +10,7 @@ import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -155,10 +153,10 @@ public class View {
         Iterator iterator2 = set2.iterator();
         while (iterator2.hasNext()) {
             Map.Entry me2 = (Map.Entry) iterator2.next();
-            allDocuments.getItems().add(me2.getKey() + " (" + ((ArrayList) me2.getValue()).get(0) + ")");
+            allDocuments.getItems().add(me2.getKey() + " (" + ((Term) me2.getValue()).getAmount() + ")");
         }
         Scene scene = new Scene(new Group());
-        stage.initModality(Modality.APPLICATION_MODAL); //Lock the window until it closes
+        stage.initModality(Modality.APPLICATION_MODAL);
         final VBox vBox = new VBox();
         vBox.setSpacing(5);
         vBox.setPadding(new Insets(10, 0, 0, 10));
@@ -174,6 +172,7 @@ public class View {
      * The function that sends the query to the model to be processed
      */
     public void run() {
+        controller.setStemming(stemming.isSelected());
         controller.addQueryDocument(query.getText());
         controller.setSemantic(semantic.isSelected());
         controller.findRelevantDocuments();
@@ -259,7 +258,7 @@ public class View {
     }
 
     public void runQueryPath(ActionEvent actionEvent) {
-        controller.readQueriesFile(queryPath.getText() + "/q.txt");
+        controller.readQueriesFile(queryPath.getText());
         Stage stage = new Stage();
         allDocuments = new ListView<>();
         ArrayList<ArrayList<Document>> list = controller.getQueriesResult();
@@ -294,13 +293,12 @@ public class View {
     }
 
     public void browseQueries(ActionEvent actionEvent) {
-        DirectoryChooser chooser = new DirectoryChooser();
-        chooser.setTitle("Queries Directory");
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Queries File");
         Stage stage = new Stage();
-        File selectedDirectory = chooser.showDialog(stage);
-        if (selectedDirectory != null) {
-            queryPath.setText(selectedDirectory.getPath());
-        }
+        File selectedFile = chooser.showOpenDialog(stage);
+        if (selectedFile != null)
+            queryPath.setText(selectedFile.getPath());
     }
 
     public void browseSave(ActionEvent actionEvent) {

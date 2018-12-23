@@ -70,13 +70,13 @@ public class Term {
      * Returns the total amount of times the term was found
      * @return - THe total amount of times
      */
-    int getAmount() { return amount; }
+    public int getAmount() { return amount; }
 
     /**
      * Returns the value of the term
      * @return - The value of the term
      */
-    String getValue() {
+    public String getValue() {
         return value;
     }
 
@@ -84,7 +84,7 @@ public class Term {
      * Returns all the documents the term was found at sorted
      * @return - The documents the term was found at sorted
      */
-    Object[] getInDocuments() {
+    public Object[] getInDocuments() {
         Object[] sortedterms = inDocuments.keySet().toArray();
         Arrays.sort(sortedterms);
         return sortedterms;
@@ -94,13 +94,13 @@ public class Term {
      * Returns all the documents the term was found at sorted
      * @return - The documents the term was found without sorting
      */
-    HashMap<Integer, Integer> getUnsortedInDocuments () { return inDocuments;}
+    public HashMap<Integer, Integer> getUnsortedInDocuments () { return inDocuments;}
 
     /**
      * Returns a string with all the documents the term was found at with the amount of times it was found
      * @return string of all the documents o terms
      */
-    String getAmountInDocuments() {
+    public String getAmountInDocuments() {
         StringBuilder sb = new StringBuilder();
         Map<Integer, Integer> map = new TreeMap(inDocuments);
         Set set2 = map.entrySet();
