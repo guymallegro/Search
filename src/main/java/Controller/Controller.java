@@ -165,4 +165,8 @@ public class Controller {
     public ArrayList<QueryDocument> getQueriesDocuments() {
         return model.getQueriesDocuments();
     }
+
+    public void setSemantic(boolean selected) {
+        model.setSemantic(selected);
+    }
 }

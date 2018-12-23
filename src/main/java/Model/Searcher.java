@@ -3,11 +3,11 @@ package Model;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.PriorityQueue;
 
 public class Searcher {
     private Model model;
     private Ranker ranker;
+    private boolean isSemantic;
     private QueryDocument currentQuery;
     ArrayList<QueryDocument> queryDocuments;
     private HashMap<String, City> cityDictionary;
@@ -25,10 +25,13 @@ private HashMap<Integer, ArrayList<String>> documentsDictionary;
      * find the 50 most relevant documents using the ranker
      */
     public void findRelevantDocs(int i) {
-            currentQuery = queryDocuments.get(i);
-            retrieveData(findLinesOfTerms());
-            ranker.setQueryDocument(currentQuery);
-            ranker.rank();
+        currentQuery = queryDocuments.get(i);
+        retrieveData(findLinesOfTerms());
+        ranker.setQueryDocument(currentQuery);
+        if (isSemantic){
+
+        }
+        ranker.rank();
     }
 
     /**
@@ -82,4 +85,6 @@ private HashMap<Integer, ArrayList<String>> documentsDictionary;
             }
         }
     }
+
+    public void setSemantic(boolean selected) { isSemantic = selected; }
 }

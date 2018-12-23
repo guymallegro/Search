@@ -33,7 +33,8 @@ public class Model {
     private HashMap<String, Term> termsDictionary;
     private HashMap<Integer, ArrayList<String>> documentsDictionary;
     private HashMap<String, City> citiesDictionary;
-    private boolean isStemming = false;
+    private boolean isStemming;
+    private boolean isSemantic;
     private int documentsAmount;
     private int termsAmount;
     private double totalTime;
@@ -51,7 +52,7 @@ public class Model {
         languages = new HashSet<>();
         termsDictionary = new HashMap<>();
         documentsDictionary = new HashMap<>();
-        indexer = new Indexer(this, parse.getAllTerms(), documents);
+        indexer = new Indexer(this, parse.getAllTerms(), termsDictionary, documents, documentsDictionary);
         document = new Document();
         queriesDocuments = new ArrayList<QueryDocument>();
 
@@ -171,10 +172,10 @@ public class Model {
             allQuery = allQueries[query];
             if (allQueries[query].length() > 1) {
                 QueryDocument currentQuery = new QueryDocument();
-                int startTagIndex = allQuery.indexOf("<top>");
+                int startTagIndex = allQuery.indexOf("<num>");
                 int endTagIndex = allQuery.indexOf("<title>");
                 if (startTagIndex != -1 && endTagIndex != -1)
-                    currentQuery.setId(allQuery.substring(allQuery.indexOf(": "), endTagIndex));
+                    currentQuery.setId(allQuery.substring(allQuery.indexOf(": ") + 2, endTagIndex));
                 startTagIndex = endTagIndex;
                 endTagIndex = allQuery.indexOf("<de");
                 if (startTagIndex != -1 && endTagIndex != -1)
@@ -239,42 +240,6 @@ public class Model {
         }
     }
 
-    /**
-     * Writes the documents dictionary to the disk
-     */
-//    private void writeDocsDictionary() {
-//        Object[] sortedDocuments = documentsDictionary.keySet().toArray();
-//        Arrays.sort(sortedDocuments);
-//        StringBuilder line = new StringBuilder();
-//        List<String> lines = new LinkedList<>();
-//        int size = sortedDocuments.length;
-//        for (int i = 0; i < size; i++) {
-//            line.append("<");
-//            line.append(sortedDocuments[i]).append(":");
-//            line.append(documentsDictionary.get(sortedDocuments[i]).getMax_tf());
-//            line.append(",");
-//            line.append(documentsDictionary.get(sortedDocuments[i]).getId());
-//            line.append(",");
-//            line.append(documentsDictionary.get(sortedDocuments[i]).getTextTerms().size());
-//            line.append(",");
-//            line.append(documentsDictionary.get(sortedDocuments[i]).getLength());
-//            if (!documentsDictionary.get(sortedDocuments[i]).getCity().equals("")) {
-//                line.append(",");
-//                line.append(documentsDictionary.get(sortedDocuments[i]).getCity());
-//            }
-//            lines.add(line.toString());
-//            line.setLength(0);
-//        }
-//        String path = postingPathDestination + "/documentsDictionary.txt";
-//        if (isStemming)
-//            path = postingPathDestination + "/documentsDictionaryWithStemming.txt";
-//        Path file = Paths.get(path);
-//        try {
-//            Files.write(file, lines, Charset.forName("UTF-8"));
-//        } catch (Exception e) {
-//            System.out.println("cannot write to dictionary");
-//        }
-//    }
     private void writeDocsDictionary() {
         Object[] sortedDocuments = documentsDictionary.keySet().toArray();
         Arrays.sort(sortedDocuments);
@@ -396,33 +361,6 @@ public class Model {
         }
     }
 
-    /**
-     * Loads the documents dictionary from the disk.
-     */
-//    public void loadDocsDictionary() {
-//        String path = postingPathDestination + "/documentsDictionary.txt";
-//        if (isStemming)
-//            path = postingPathDestination + "/documentsDictionaryWithStemming.txt";
-//        File file = new File(path);
-//        try {
-//            Scanner scanner = new Scanner(file);
-//            while (scanner.hasNextLine()) {
-//                String line = scanner.nextLine();
-//                int docIndex = Integer.parseInt(line.substring(1, line.indexOf(":")));
-//                String[] info = line.substring(line.indexOf(":") + 1).split(",");
-//                Document document = new Document();
-//                document.setMax_tf(Integer.parseInt(info[0]));
-//                document.setId(info[1]);
-//                //document.setTextTerms(new HashMap<Term, Integer>(Integer.parseInt(info[2])));
-//                document.setLength(Integer.parseInt(info[3]));
-//                if (info.length == 5)
-//                    document.setCity(info[4]);
-//                documentsDictionary.put(docIndex, document);
-//            }
-//        } catch (FileNotFoundException e) {
-//            System.out.println("Cannot open the documents dictionary");
-//        }
-//    }
     public void loadDocsDictionary() {
         String path = postingPathDestination + "/documentsDictionary.txt";
         if (isStemming)
@@ -438,14 +376,6 @@ public class Model {
                 for (int i = 0; i < info.length; i++) {
                     attributes.add(i, info[i]);
                 }
-//                attributes.add(0, info[0]);
-//                attributes.add(1, info[1]);
-//                attributes.add(2, info[2]);
-//                attributes.add(3, info[3]);
-//                if (info.length == 5)
-//                    attributes.add(4, info[4]);
-//                else
-//                    attributes.add(4, "");
                 documentsDictionary.put(docIndex, attributes);
             }
         } catch (FileNotFoundException e) {
@@ -742,5 +672,10 @@ public class Model {
 
     public ArrayList<QueryDocument> getQueriesDocuments(){
         return queriesDocuments;
+    }
+
+    public void setSemantic(boolean selected) {
+        isSemantic = selected;
+        searcher.setSemantic(selected);
     }
 }

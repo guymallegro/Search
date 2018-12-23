@@ -11,7 +11,6 @@ import java.util.*;
  * The indexer class, responsible of all the indexing of the search engine
  */
 class Indexer {
-    private Model model;
     private HashMap<String, Term> allTerms;
     private ArrayList<Document> documents;
     private int currentAmountTempPostFiles;
@@ -22,6 +21,8 @@ class Indexer {
     private String postingPath;
     private boolean isStemming;
     private HashMap<String, String> capitalLetters;
+    private HashMap<String, Term> termsDictionary;
+    private HashMap<Integer, ArrayList<String>> documentsDictionary;
 
     /**
     /**
@@ -31,12 +32,13 @@ class Indexer {
      * @param allTerms  - All the terms which were found
      * @param documents - All the documents which were found
      */
-    Indexer(Model model, HashMap<String, Term> allTerms, ArrayList<Document> documents) {
+    Indexer(Model model, HashMap<String, Term> allTerms,HashMap<String, Term> termsDictionary, ArrayList<Document> documents, HashMap<Integer, ArrayList<String>> documentsDictionary) {
         currentAmountTempPostFiles = 0;
-        this.model = model;
         this.allTerms = allTerms;
         this.documents = documents;
         capitalLetters = new HashMap<>();
+        this.termsDictionary = termsDictionary;
+        this.documentsDictionary = documentsDictionary;
     }
 
     /**
@@ -149,12 +151,12 @@ class Indexer {
                 }
                 String current = toWrite.toString().substring(1, toWrite.toString().indexOf('^'));
                 if (Character.isUpperCase(current.charAt(0))) {
-                    if (model.getTermsDictionary().containsKey(current.toLowerCase())) {
+                    if (termsDictionary.containsKey(current.toLowerCase())) {
                         capitalLetters.put(current.toLowerCase(), toWrite.toString().toLowerCase());
-                        int toAdd = model.getTermsDictionary().get(current).getAmount();
-                        int amount = model.getTermsDictionary().get(current.toLowerCase()).getAmount();
-                        model.getTermsDictionary().get(current.toLowerCase()).setAmount(amount + toAdd);
-                        model.getTermsDictionary().remove(current.toUpperCase());
+                        int toAdd = termsDictionary.get(current).getAmount();
+                        int amount = termsDictionary.get(current.toLowerCase()).getAmount();
+                        termsDictionary.get(current.toLowerCase()).setAmount(amount + toAdd);
+                        termsDictionary.remove(current.toUpperCase());
                         toWrite.setLength(0);
                     }
                 } else if (Character.isLowerCase(current.charAt(0))) {
@@ -262,13 +264,13 @@ class Indexer {
      * @param term - The term to add to the dictionary
      */
     private void addTermToDictionary(String term) {
-        if (model.getTermsDictionary().containsKey(term)) {
-            int amount = model.getTermsDictionary().get(term).getAmount();
-            model.getTermsDictionary().get(term).setAmount(amount + allTerms.get(term).getAmount());
+        if (termsDictionary.containsKey(term)) {
+            int amount = termsDictionary.get(term).getAmount();
+            termsDictionary.get(term).setAmount(amount + allTerms.get(term).getAmount());
         } else {
             Term newTerm = new Term(term);
             newTerm.setAmount(allTerms.get(term).getAmount());
-            model.getTermsDictionary().put(term, newTerm);
+            termsDictionary.put(term, newTerm);
         }
     }
 
@@ -281,8 +283,6 @@ class Indexer {
         Document document;
         for (int i = 0; i < size; i++) {
             document = documents.get(i);
-//            Document document = new Document();
-//          model.getDocsDictionary().put(documents.get(i).getIndexId(), documents.get(i));
             ArrayList<String> attributes = new ArrayList<>();
             attributes.add(0, Integer.toString(document.getMax_tf()));
             attributes.add(1, document.getId());
@@ -297,12 +297,12 @@ class Indexer {
             Collections.sort(mapValues, (Comparator.comparingDouble((o) -> o.getRank())));
             int num = 5;
             for (int entity = mapValues.size() - 1; num < 10 && entity >= 0; entity--){
-                if (model.getTermsDictionary().containsKey(mapValues.get(entity).getValue().toUpperCase())){
+                if (termsDictionary.containsKey(mapValues.get(entity).getValue().toUpperCase())){
                     attributes.add(num, mapValues.get(entity).getValue());
                     num++;
                 }
             }
-            model.getDocsDictionary().put(documents.get(i).getIndexId(), attributes);
+            documentsDictionary.put(documents.get(i).getIndexId(), attributes);
         }
         documents.clear();
     }

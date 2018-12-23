@@ -33,11 +33,6 @@ public class Ranker {
      *
      * @param documentIndex - the index of the document as it appear in the documentsDictionary file
      */
-/*
-    private int getDocumentLength(int documentIndex) {
-        return documentsDictionary.get(documentIndex).getLength();
-    }
-*/
     private int getDocumentLength(int documentIndex) {
         String length = documentsDictionary.get(documentIndex).get(2);
         return Integer.parseInt(length);

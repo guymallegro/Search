@@ -42,6 +42,7 @@ public class View {
     public javafx.scene.control.Button displayTermsDictionary;
     public javafx.scene.control.TextField query;
     public javafx.scene.control.CheckBox stemming;
+    public javafx.scene.control.CheckBox semantic;
     public javafx.scene.control.ComboBox languages;
     public javafx.scene.control.ListView<String> allDocuments;
     boolean toInitCities = true;
@@ -174,6 +175,7 @@ public class View {
      */
     public void run() {
         controller.addQueryDocument(query.getText());
+        controller.setSemantic(semantic.isSelected());
         controller.findRelevantDocuments();
         Stage stage = new Stage();
         allDocuments = new ListView<>();
