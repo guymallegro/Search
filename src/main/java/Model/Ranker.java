@@ -47,15 +47,21 @@ public class Ranker {
         double currentRank = 0;
         double firstCalculation = 0;
         double logCalculation = 0;
+        String title;
         for (Integer documentIndex : queryDocument.getTermsDocuments()) {
+            title = documentsDictionary.get(documentIndex).get(5);
+            initialTitleRank();
             for (Term queryTerm : queryDocument.getTextTerms().values()) {
                 if (queryTerm.getUnsortedInDocuments().containsKey(documentIndex)) {
+                    if (title.contains(queryTerm.getValue()))
+                        titleRank = 1.2;
                     int len = getDocumentLength(documentIndex);
                     firstCalculation = (K + 1) / (1 + K * ((1 - B) + (B * len) / avgDocLength));
                     logCalculation = Math.log((1 + documentsDictionary.size()) / queryTerm.getInDocuments().length);
                     currentRank += firstCalculation * logCalculation;
                 }
             }
+            currentRank *= titleRank;
             Document currentDocument = new Document();
             currentDocument.setId(documentsDictionary.get(documentIndex).get(1));
             currentDocument.setCity(documentsDictionary.get(documentIndex).get(4));
@@ -70,8 +76,8 @@ public class Ranker {
         }
     }
 
-    private void setTitleRank (){
-        titleRank = 1.2;
+    private void initialTitleRank (){
+        titleRank = 1;
     }
 
     /**
