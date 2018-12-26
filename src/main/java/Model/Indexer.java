@@ -285,16 +285,16 @@ class Indexer {
         for (int i = 0; i < size; i++) {
             document = documents.get(i);
             ArrayList<String> attributes = new ArrayList<>();
-            attributes.add(0, Integer.toString(document.getMax_tf()));
-            attributes.add(1, document.getId());
-            attributes.add(2, Integer.toString(document.getTextTerms().size()));
-            attributes.add(3, Integer.toString(document.getLength()));
-            attributes.add(4, document.getCity());
-            attributes.add(5, document.getTitle());
+            attributes.add(0, ""+Integer.toString(document.getMax_tf()));
+            attributes.add(1, ""+document.getId());
+            attributes.add(2, ""+Integer.toString(document.getTextTerms().size()));
+            attributes.add(3, ""+Integer.toString(document.getLength()));
+            attributes.add(4, ""+document.getCity());
+            attributes.add(5, ""+document.getTitle());
             ArrayList <String> topFive = document.getEntities();
             int position = 6;
             for (int entity = 0; entity < topFive.size(); entity++) {
-                attributes.add(position, topFive.get(entity));
+                attributes.add(position, ""+topFive.get(entity));
                 position++;
             }
             documentsDictionary.put(documents.get(i).getIndexId(), attributes);

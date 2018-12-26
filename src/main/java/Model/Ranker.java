@@ -1,5 +1,7 @@
 package Model;
 
+import jdk.nashorn.internal.ir.CatchNode;
+
 import java.util.*;
 
 public class Ranker {
@@ -45,8 +47,8 @@ public class Ranker {
      */
     public void rank() {
         double currentRank = 0;
-        double firstCalculation = 0;
-        double logCalculation = 0;
+        double firstCalculation;
+        double logCalculation;
         String title;
         for (Integer documentIndex : queryDocument.getTermsDocuments()) {
             title = documentsDictionary.get(documentIndex).get(5);
@@ -66,7 +68,7 @@ public class Ranker {
             currentDocument.setId(documentsDictionary.get(documentIndex).get(1));
             currentDocument.setCity(documentsDictionary.get(documentIndex).get(4));
             currentDocument.setTitle(documentsDictionary.get(documentIndex).get(5));
-            ArrayList <String> details = documentsDictionary.get(documentIndex);
+            ArrayList<String> details = documentsDictionary.get(documentIndex);
             for (int i = 6; i < details.size(); i++) {
                 currentDocument.addEntity(details.get(i));
             }
@@ -76,7 +78,7 @@ public class Ranker {
         }
     }
 
-    private void initialTitleRank (){
+    private void initialTitleRank() {
         titleRank = 1;
     }
 

@@ -26,7 +26,7 @@
             <ComboBox fx:id="languages" disable="true" layoutX="54.0" layoutY="201.0" prefHeight="39.0" prefWidth="180.0" promptText="Choose Language" />
              <Button fx:id="displayTermsDictionary" disable="true" layoutX="322.0" layoutY="52.0" mnemonicParsing="false" onAction="#displayTermsDictionary" prefHeight="26.0" prefWidth="140.0" text="Display Terms" />
              <Button fx:id="loadDictionaries" layoutX="451.0" layoutY="468.0" mnemonicParsing="false" onAction="#loadDictionaries" prefHeight="26.0" prefWidth="140.0" text="Load Dictionaries" />
-            <Button fx:id="run" layoutX="444.0" layoutY="99.0" mnemonicParsing="false" onAction="#run" prefHeight="39.0" prefWidth="120.0" text="Run">
+            <Button fx:id="run" layoutX="444.0" layoutY="99.0" mnemonicParsing="false" onAction="#runQuery" prefHeight="39.0" prefWidth="120.0" text="Run">
                <font>
                   <Font name="Segoe UI Italic" size="18.0" />
                </font>
@@ -39,7 +39,7 @@
             <Button fx:id="browseCorpus" layoutX="416.0" layoutY="385.0" mnemonicParsing="false" onAction="#browseCorpus" prefHeight="39.0" prefWidth="26.0" text="..." />
             <Button fx:id="browsePosting" layoutX="416.0" layoutY="461.0" mnemonicParsing="false" onAction="#browsePosting" prefHeight="39.0" prefWidth="26.0" text="..." />
             <TextField fx:id="queryPath" layoutX="54.0" layoutY="153.0" prefHeight="39.0" prefWidth="338.0" text="Enter queries path" />
-            <Button fx:id="runQueryPath" layoutX="444.0" layoutY="153.0" mnemonicParsing="false" onAction="#runQueryPath" prefHeight="39.0" prefWidth="120.0" text="Browse">
+            <Button fx:id="runQueryPath" layoutX="444.0" layoutY="153.0" mnemonicParsing="false" onAction="#runQuery" prefHeight="39.0" prefWidth="120.0" text="Browse">
                <font>
                   <Font size="12.0" />
                </font>

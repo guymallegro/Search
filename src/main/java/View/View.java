@@ -46,11 +46,10 @@ public class View {
     public javafx.scene.control.CheckBox stemming;
     public javafx.scene.control.CheckBox semantic;
     public javafx.scene.control.ComboBox languages;
-    public javafx.scene.control.ListView<String> allDocuments;
-    boolean toInitCities = true;
+    private javafx.scene.control.ListView<String> allDocuments;
+    private boolean toInitCities = true;
     private HashSet<String> selectedCities;
     private HashMap<String, ListView<String>> bigLetterTerms = new HashMap<>();
-    ;
 
     public View() {
         allDocuments = new ListView<>();
@@ -88,7 +87,7 @@ public class View {
     /**
      * Initializes the languages
      */
-    void initializeLanguages() {
+    private void initializeLanguages() {
         HashSet<String> languageList = controller.getLanguages();
         Object[] sortedTerms = languageList.toArray();
         Arrays.sort(sortedTerms);
@@ -183,102 +182,14 @@ public class View {
         stage.show();
     }
 
-    /**
-     * Sets the controller to the given controller
-     *
-     * @param controller - The given controller
-     */
-    public void setController(Controller controller) {
-        this.controller = controller;
-    }
-
-    public void browseCorpus() {
-        DirectoryChooser chooser = new DirectoryChooser();
-        chooser.setTitle("Corpus Directory");
-        Stage stage = new Stage();
-        File selectedDirectory = chooser.showDialog(stage);
-        if (selectedDirectory != null) {
-            corpusPath.setText(selectedDirectory.getPath());
+    public void runQuery(ActionEvent actionEvent) {
+        if (((Button) actionEvent.getSource()).getId().equals("run")) {
+            controller.addQueryDocument(query.getText());
+        } else {
+            controller.readQueriesFile(queryPath.getText());
         }
-    }
-
-    public void browsePosting() {
-        DirectoryChooser chooser = new DirectoryChooser();
-        chooser.setTitle("Posting Directory");
-        Stage stage = new Stage();
-        File selectedDirectory = chooser.showDialog(stage);
-        if (selectedDirectory != null) {
-            postingPath.setText(selectedDirectory.getPath());
-        }
-    }
-
-    /**
-     * A function which shows an alret to the user showing the given string
-     *
-     * @param property - The given string
-     */
-    private void showAlert(String property) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setContentText(property);
-        alert.showAndWait();
-    }
-
-    /**
-     * A function which shows the user the finish message with its required information
-     */
-    private void showFinishMessage() {
-        String property = "Number Of Documents : " + controller.getTotalDocuments() + "\n" + "Number Of Terms : " + controller.getTotalTerms() + "\nTotal Time : " + controller.getTotalTime() + " seconds";
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setContentText(property);
-        alert.showAndWait();
-
-    }
-
-    /**
-     * The function that sends the query to the model to be processed
-     */
-    public void run() {
         controller.setStemming(stemming.isSelected());
-        controller.addQueryDocument(query.getText());
         controller.setSemantic(semantic.isSelected());
-        controller.findRelevantDocuments();
-        Stage stage = new Stage();
-        allDocuments.getItems().clear();
-        bigLetterTerms.clear();
-        ArrayList<ArrayList<Document>> list = controller.getQueriesResult();
-        int counter = 50;
-        for (int i = 0; i < list.get(0).size(); i++) {
-            if (selectedCities.size() > 0) {
-                if (selectedCities.contains(list.get(0).get(i).getCity().toUpperCase())) {
-                    allDocuments.getItems().add(list.get(0).get(i).getId());
-                    addBigLetterTerms(list.get(0).get(i).getId(), list.get(0).get(i).getTopFive());
-                    counter--;
-                }
-            } else {
-                allDocuments.getItems().add(list.get(0).get(i).getId());
-                addBigLetterTerms(list.get(0).get(i).getId(), list.get(0).get(i).getTopFive());
-                counter--;
-            }
-
-            if (counter == 0)
-                break;
-
-        }
-        Scene scene = new Scene(new Group());
-        stage.initModality(Modality.APPLICATION_MODAL); //Lock the window until it closes
-        final VBox vBox = new VBox();
-        vBox.setSpacing(5);
-        vBox.setPadding(new Insets(10, 0, 0, 10));
-        vBox.getChildren().addAll(allDocuments);
-        vBox.setAlignment(Pos.CENTER);
-        Group group = ((Group) scene.getRoot());
-        group.getChildren().addAll(vBox);
-        stage.setScene(scene);
-        stage.show();
-    }
-
-    public void runQueryPath(ActionEvent actionEvent) {
-        controller.readQueriesFile(queryPath.getText());
         Stage stage = new Stage();
         allDocuments.getItems().clear();
         ArrayList<ArrayList<Document>> list = controller.getQueriesResult();
@@ -286,15 +197,15 @@ public class View {
         for (int i = 0; i < list.size(); i++) {
             int counter = 50;
             for (int j = 0; j < list.get(i).size(); j++) {
-                if (selectedCities.size() > i) {
+                if (selectedCities.size() > 0) {
                     if (selectedCities.contains(list.get(i).get(j).getCity().toUpperCase())) {
                         allDocuments.getItems().add(list.get(i).get(j).getId());
-                        addBigLetterTerms(list.get(j).get(i).getId(), list.get(j).get(i).getTopFive());
+                        addBigLetterTerms(list.get(i).get(j).getId(), list.get(i).get(j).getTopFive());
                         counter--;
                     }
                 } else {
                     allDocuments.getItems().add(list.get(i).get(j).getId());
-                    addBigLetterTerms(list.get(j).get(i).getId(), list.get(j).get(i).getTopFive());
+                    addBigLetterTerms(list.get(i).get(j).getId(), list.get(i).get(j).getTopFive());
                     counter--;
                 }
                 if (counter == 0)
@@ -313,25 +224,6 @@ public class View {
         group.getChildren().addAll(vBox);
         stage.setScene(scene);
         stage.show();
-    }
-
-    public void browseQueries(ActionEvent actionEvent) {
-        FileChooser chooser = new FileChooser();
-        chooser.setTitle("Queries File");
-        Stage stage = new Stage();
-        File selectedFile = chooser.showOpenDialog(stage);
-        if (selectedFile != null)
-            queryPath.setText(selectedFile.getPath());
-    }
-
-    public void browseSave(ActionEvent actionEvent) {
-        DirectoryChooser chooser = new DirectoryChooser();
-        chooser.setTitle("Save results directory");
-        Stage stage = new Stage();
-        File selectedDirectory = chooser.showDialog(stage);
-        if (selectedDirectory != null) {
-            savePath.setText(selectedDirectory.getPath());
-        }
     }
 
     public void save() {
@@ -377,5 +269,75 @@ public class View {
         ListView<String> currentDoc = new ListView<>();
         currentDoc.getItems().addAll(docInfo);
         bigLetterTerms.put(docId, currentDoc);
+    }
+
+    /**
+     * A function which shows an alret to the user showing the given string
+     *
+     * @param property - The given string
+     */
+    private void showAlert(String property) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setContentText(property);
+        alert.showAndWait();
+    }
+
+    /**
+     * A function which shows the user the finish message with its required information
+     */
+    private void showFinishMessage() {
+        String property = "Number Of Documents : " + controller.getTotalDocuments() + "\n" + "Number Of Terms : " + controller.getTotalTerms() + "\nTotal Time : " + controller.getTotalTime() + " seconds";
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setContentText(property);
+        alert.showAndWait();
+
+    }
+
+    public void browseQueries(ActionEvent actionEvent) {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Queries File");
+        Stage stage = new Stage();
+        File selectedFile = chooser.showOpenDialog(stage);
+        if (selectedFile != null)
+            queryPath.setText(selectedFile.getPath());
+    }
+
+    public void browseSave(ActionEvent actionEvent) {
+        DirectoryChooser chooser = new DirectoryChooser();
+        chooser.setTitle("Save results directory");
+        Stage stage = new Stage();
+        File selectedDirectory = chooser.showDialog(stage);
+        if (selectedDirectory != null) {
+            savePath.setText(selectedDirectory.getPath());
+        }
+    }
+
+    public void browseCorpus() {
+        DirectoryChooser chooser = new DirectoryChooser();
+        chooser.setTitle("Corpus Directory");
+        Stage stage = new Stage();
+        File selectedDirectory = chooser.showDialog(stage);
+        if (selectedDirectory != null) {
+            corpusPath.setText(selectedDirectory.getPath());
+        }
+    }
+
+    public void browsePosting() {
+        DirectoryChooser chooser = new DirectoryChooser();
+        chooser.setTitle("Posting Directory");
+        Stage stage = new Stage();
+        File selectedDirectory = chooser.showDialog(stage);
+        if (selectedDirectory != null) {
+            postingPath.setText(selectedDirectory.getPath());
+        }
+    }
+
+    /**
+     * Sets the controller to the given controller
+     *
+     * @param controller - The given controller
+     */
+    public void setController(Controller controller) {
+        this.controller = controller;
     }
 }
