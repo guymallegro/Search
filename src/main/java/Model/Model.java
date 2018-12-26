@@ -1,7 +1,6 @@
 package Model;
 
-import jdk.nashorn.internal.runtime.regexp.joni.SearchAlgorithm;
-import sun.plugin2.os.windows.SECURITY_ATTRIBUTES;
+import javafx.scene.control.ListView;
 
 import java.util.*;
 import java.io.File;
@@ -38,6 +37,7 @@ public class Model {
     private int termsAmount;
     private double totalTime;
     private Searcher searcher;
+    private ArrayList<String> queryResultToWrite = new ArrayList<>();
 
     /**
      * The model default constructor
@@ -433,7 +433,7 @@ public class Model {
     /**
      * Tells the indexer to index all the terms and documents and clears them after
      */
-    private void index(){
+    private void index() {
         indexer.addAllTerms(postingPathDestination);
         indexer.addAllDocumentsToDictionary();
         parse.getAllTerms().clear();
@@ -604,12 +604,38 @@ public class Model {
         return fileReader.findTerms(terms);
     }
 
-    public ArrayList<ArrayList<Document>> getQueriesResult() {
+    public void getQueriesResult(HashSet<String> selectedCities, ListView<String> allDocuments, HashMap<String, ListView<String>> bigLetterTerms) {
         ArrayList<ArrayList<Document>> results = new ArrayList<>();
         for (int i = 0; i < queriesDocuments.size(); i++) {
             results.add(sortDocuments(queriesDocuments.get(i).getQueryDocuments()));
         }
-        return results;
+        for (int i = 0; i < results.size(); i++) {
+            int counter = 50;
+            for (int j = 0; j < results.get(i).size(); j++) {
+                if (selectedCities.size() > 0) {
+                    if (selectedCities.contains(results.get(i).get(j).getCity().toUpperCase())) {
+                        allDocuments.getItems().add(results.get(i).get(j).getId());
+                        addBigLetterTerms(results.get(i).get(j).getId(), results.get(i).get(j).getTopFive(), bigLetterTerms);
+                        queryResultToWrite.add(queriesDocuments.get(i).getId() + " 1 " + results.get(i).get(j).getId() + " " + results.get(i).get(j).getRank() + " 1.1 " + "st");
+                        counter--;
+                    }
+                } else {
+                    allDocuments.getItems().add(results.get(i).get(j).getId());
+                    addBigLetterTerms(results.get(i).get(j).getId(), results.get(i).get(j).getTopFive(), bigLetterTerms);
+                    queryResultToWrite.add(queriesDocuments.get(i).getId() + " 1 " + results.get(i).get(j).getId() + " " + results.get(i).get(j).getRank() + " 1.1 " + "st");
+                    counter--;
+                }
+                if (counter == 0)
+                    break;
+            }
+            allDocuments.getItems().add("---------------------");
+        }
+    }
+
+    private void addBigLetterTerms(String docId, ArrayList<String> docInfo, HashMap<String, ListView<String>> bigLetterTerms) {
+        ListView<String> currentDoc = new ListView<>();
+        currentDoc.getItems().addAll(docInfo);
+        bigLetterTerms.put(docId, currentDoc);
     }
 
     private ArrayList<Document> sortDocuments(PriorityQueue<Document> queryDocuments) {
@@ -644,10 +670,10 @@ public class Model {
         fileReader.readQueriesFile(path);
     }
 
-    public void writeSave(Object[] toWrite, String path) {
+    public void writeSave(String path) {
         List<String> lines = new LinkedList<>();
-        for (int i = 0; i < toWrite.length; i++) {
-            lines.add((String) toWrite[i]);
+        for (int i = 0; i < queryResultToWrite.size(); i++) {
+            lines.add(queryResultToWrite.get(i));
         }
         Path file = Paths.get(path + "/save.txt");
         try {

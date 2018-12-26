@@ -5,8 +5,6 @@ import Model.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.*;
@@ -17,7 +15,6 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.*;
 
@@ -49,10 +46,11 @@ public class View {
     private javafx.scene.control.ListView<String> allDocuments;
     private boolean toInitCities = true;
     private HashSet<String> selectedCities;
-    private HashMap<String, ListView<String>> bigLetterTerms = new HashMap<>();
+    private HashMap<String, ListView<String>> bigLetterTerms;
 
     public View() {
         allDocuments = new ListView<>();
+        bigLetterTerms = new HashMap<>();
         allDocuments.getSelectionModel().selectedItemProperty()
                 .addListener(new ChangeListener<String>() {
                     public void changed(
@@ -192,27 +190,8 @@ public class View {
         controller.setSemantic(semantic.isSelected());
         Stage stage = new Stage();
         allDocuments.getItems().clear();
-        ArrayList<ArrayList<Document>> list = controller.getQueriesResult();
         bigLetterTerms.clear();
-        for (int i = 0; i < list.size(); i++) {
-            int counter = 50;
-            for (int j = 0; j < list.get(i).size(); j++) {
-                if (selectedCities.size() > 0) {
-                    if (selectedCities.contains(list.get(i).get(j).getCity().toUpperCase())) {
-                        allDocuments.getItems().add(list.get(i).get(j).getId());
-                        addBigLetterTerms(list.get(i).get(j).getId(), list.get(i).get(j).getTopFive());
-                        counter--;
-                    }
-                } else {
-                    allDocuments.getItems().add(list.get(i).get(j).getId());
-                    addBigLetterTerms(list.get(i).get(j).getId(), list.get(i).get(j).getTopFive());
-                    counter--;
-                }
-                if (counter == 0)
-                    break;
-            }
-            allDocuments.getItems().add("---------------------");
-        }
+        controller.setQueriesResult(selectedCities, allDocuments, bigLetterTerms);
         Scene scene = new Scene(new Group());
         stage.initModality(Modality.APPLICATION_MODAL); //Lock the window until it closes
         final VBox vBox = new VBox();
@@ -227,25 +206,7 @@ public class View {
     }
 
     public void save() {
-        ArrayList<ArrayList<Document>> list = controller.getQueriesResult();
-        ArrayList<String> toWrite = new ArrayList<>();
-        for (int i = 0; i < list.size(); i++) {
-            int counter = 50;
-            for (int j = 0; j < list.get(i).size(); j++) {
-                if (selectedCities.size() > i) {
-                    if (selectedCities.contains(list.get(i).get(j).getCity().toUpperCase())) {
-                        toWrite.add(controller.getQueriesDocuments().get(i).getId() + " 1 " + list.get(i).get(j).getId() + " " + list.get(i).get(j).getRank() + " 1.1 " + "st");
-                        counter--;
-                    }
-                } else {
-                    toWrite.add(controller.getQueriesDocuments().get(i).getId() + " 1 " + list.get(i).get(j).getId() + " " + list.get(i).get(j).getRank() + " 1.1 " + "st");
-                    counter--;
-                }
-                if (counter == 0)
-                    break;
-            }
-        }
-        controller.writeSave(toWrite.toArray(), savePath.getText());
+        controller.writeSave(savePath.getText());
     }
 
     private void showBigLetterTerms(String docId) {
@@ -263,12 +224,6 @@ public class View {
         stage.setScene(scene);
         stage.show();
 
-    }
-
-    private void addBigLetterTerms(String docId, ArrayList<String> docInfo) {
-        ListView<String> currentDoc = new ListView<>();
-        currentDoc.getItems().addAll(docInfo);
-        bigLetterTerms.put(docId, currentDoc);
     }
 
     /**

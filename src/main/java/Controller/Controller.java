@@ -10,6 +10,7 @@ import java.util.HashSet;
 import Model.Document;
 import Model.City;
 import Model.QueryDocument;
+import javafx.scene.control.ListView;
 
 /**
  * The controller class of the search engine, controls the application.
@@ -138,16 +139,12 @@ public class Controller {
         model.addQueryDocument(query);
     }
 
-    public void findRelevantDocuments() {
-        model.findRelevantDocuments();
-    }
-
     public HashMap<String, City> getCitiesDictionary() {
         return model.getCitiesDictionary();
     }
 
-    public ArrayList<ArrayList<Document>> getQueriesResult() {
-        return model.getQueriesResult();
+    public void setQueriesResult(HashSet<String> selectedCities, ListView<String> allDocuments, HashMap<String, ListView<String>> bigLetterTerms) {
+        model.getQueriesResult(selectedCities, allDocuments, bigLetterTerms);
     }
 
     public HashMap<Integer, ArrayList<String>> getDocumentsDictionary() {
@@ -158,8 +155,8 @@ public class Controller {
         model.readQueriesFile(path);
     }
 
-    public void writeSave(Object[] toWrite, String savePath) {
-        model.writeSave(toWrite, savePath);
+    public void writeSave(String savePath) {
+        model.writeSave(savePath);
     }
 
     public ArrayList<QueryDocument> getQueriesDocuments() {
