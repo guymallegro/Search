@@ -117,7 +117,4 @@ public abstract class ADocument {
     int getLength() {
         return length;
     }
-
-
-    public void setTextTerms(HashMap<String, Term> tempHash) {textTerms = tempHash;}
 }

@@ -92,21 +92,51 @@ public class ReadFile {
      * @param terms- ArrayList of the terms appears in the query
      * @return ArrayList of the line of each term from the posting file
      */
+//    public ArrayList<String> findTerms(ArrayList<String> terms) {
+//        Collections.sort(terms);
+//        ArrayList<String> termsLines = new ArrayList<>();
+//        char firstChar = terms.get(0).charAt(0);
+//        if (Character.isLetter(firstChar))
+//            currentFile = new File(postPath + "/post" + Character.toUpperCase(firstChar) + ".txt");
+//        else if (firstChar == '$')
+//            currentFile = new File(postPath + "/post" + "$" + ".txt");
+//        else
+//            currentFile = new File(postPath + "numbers.txt");
+//        try {
+//            InputStream is = new FileInputStream(currentFile);
+//            BufferedReader buf = new BufferedReader(new InputStreamReader(is));
+//            String line = buf.readLine();
+//            for (int i = 0; i < terms.size(); i ++) {
+//                while (line != null) {
+//                    if (line.substring(1, line.indexOf(";")).equals(terms.get(i))) {
+//                        termsLines.add(line);
+//                        break;
+//                    }
+//                    line = buf.readLine();
+//                }
+//            }
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        return termsLines;
+//    }
+
     public ArrayList<String> findTerms(ArrayList<String> terms) {
-        Collections.sort(terms);
         ArrayList<String> termsLines = new ArrayList<>();
-        char firstChar = terms.get(0).charAt(0);
-        if (Character.isLetter(firstChar))
-            currentFile = new File(postPath + "/post" + Character.toUpperCase(firstChar) + ".txt");
-        else if (firstChar == '$')
-            currentFile = new File(postPath + "/post" + "$" + ".txt");
-        else
-            currentFile = new File(postPath + "numbers.txt");
-        try {
-            InputStream is = new FileInputStream(currentFile);
-            BufferedReader buf = new BufferedReader(new InputStreamReader(is));
-            String line = buf.readLine();
-            for (int i = 0; i < terms.size(); i ++) {
+        for (int i = 0; i < terms.size(); i++) {
+            char firstChar = terms.get(i).charAt(0);
+            if (Character.isLetter(firstChar))
+                currentFile = new File(postPath + "/post" + Character.toUpperCase(firstChar) + ".txt");
+            else if (firstChar == '$')
+                currentFile = new File(postPath + "/post" + "$" + ".txt");
+            else
+                currentFile = new File(postPath + "numbers.txt");
+            try {
+                InputStream is = new FileInputStream(currentFile);
+                BufferedReader buf = new BufferedReader(new InputStreamReader(is));
+                String line = buf.readLine();
                 while (line != null) {
                     if (line.substring(1, line.indexOf(";")).equals(terms.get(i))) {
                         termsLines.add(line);
@@ -114,11 +144,11 @@ public class ReadFile {
                     }
                     line = buf.readLine();
                 }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
         return termsLines;
     }
@@ -139,5 +169,6 @@ public class ReadFile {
             System.out.println("Cannot open the file: " + path);
         }
         model.processQuery(sb.toString());
+        System.out.println("finish read query file");
     }
 }

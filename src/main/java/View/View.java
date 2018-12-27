@@ -181,6 +181,8 @@ public class View {
     }
 
     public void runQuery(ActionEvent actionEvent) {
+        System.out.println("start run query - view");
+        controller.loadStopWords("./src/main/resources/stop_words.txt");
         if (((Button) actionEvent.getSource()).getId().equals("run")) {
             controller.addQueryDocument(query.getText());
         } else {
@@ -191,6 +193,7 @@ public class View {
         Stage stage = new Stage();
         allDocuments.getItems().clear();
         bigLetterTerms.clear();
+        System.out.println("start setQueriesResults - view");
         controller.setQueriesResult(selectedCities, allDocuments, bigLetterTerms);
         Scene scene = new Scene(new Group());
         stage.initModality(Modality.APPLICATION_MODAL); //Lock the window until it closes
@@ -207,6 +210,7 @@ public class View {
 
     public void save() {
         controller.writeSave(savePath.getText());
+        showAlert("the results saved successfully");
     }
 
     private void showBigLetterTerms(String docId) {

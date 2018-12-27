@@ -85,6 +85,7 @@ public class Model {
         totalTime = tDelta / 1000.0;
     }
 
+
     /**
      * Function which receives a file as a string, splits it into documents with the relevant data and sends them
      * to parsing.
@@ -176,7 +177,7 @@ public class Model {
                 int startTagIndex = allQuery.indexOf("<num>");
                 int endTagIndex = allQuery.indexOf("<title>");
                 if (startTagIndex != -1 && endTagIndex != -1)
-                    currentQuery.setId(allQuery.substring(allQuery.indexOf(": ") + 2, endTagIndex));
+                    currentQuery.setId(removeAllSpaces(allQuery.substring(allQuery.indexOf(": ") + 2, endTagIndex)));
                 startTagIndex = endTagIndex;
                 endTagIndex = allQuery.indexOf("<de");
                 if (startTagIndex != -1 && endTagIndex != -1)
@@ -185,6 +186,30 @@ public class Model {
             }
         }
         findRelevantDocuments();
+    }
+
+    private String removeAllSpaces(String str) {
+        if (str.length() == 0)
+            return "";
+        char current = str.charAt(0);
+        while (!(Character.isDigit(current))) {
+            if (str.length() == 1) {
+                return "";
+            } else {
+                str = str.substring(1);
+                current = str.charAt(0);
+            }
+        }
+        current = str.charAt(str.length() - 1);
+        while (!(Character.isDigit(current))) {
+            if (str.length() == 1) {
+                return "";
+            } else {
+                str = str.substring(0, str.length() - 1);
+                current = str.charAt(str.length() - 1);
+            }
+        }
+        return str;
     }
 
     /**
@@ -202,7 +227,7 @@ public class Model {
     }
 
     /**
-     * find the 50 most relevant documents for one or more queries by ranking the documents
+     * find the relevant documents for one or more queries by ranking the documents
      */
     public void findRelevantDocuments() {
         searcher = new Searcher(this, documentsDictionary, citiesDictionary);
@@ -604,10 +629,13 @@ public class Model {
         return fileReader.findTerms(terms);
     }
 
-    public void getQueriesResult(HashSet<String> selectedCities, ListView<String> allDocuments, HashMap<String, ListView<String>> bigLetterTerms) {
+    public void setQueriesResult(HashSet<String> selectedCities, ListView<String> allDocuments, HashMap<String, ListView<String>> bigLetterTerms) {
         ArrayList<ArrayList<Document>> results = new ArrayList<>();
         for (int i = 0; i < queriesDocuments.size(); i++) {
-            results.add(sortDocuments(queriesDocuments.get(i).getQueryDocuments()));
+            ArrayList<Document> temp = new ArrayList<Document>();
+            while (!queriesDocuments.get(i).getRankedQueryDocuments().isEmpty())
+                temp.add(queriesDocuments.get(i).getRankedQueryDocuments().poll());
+            results.add(temp);
         }
         for (int i = 0; i < results.size(); i++) {
             int counter = 50;
@@ -656,7 +684,7 @@ public class Model {
 
 
     private void print() {
-        ArrayList<Document> list = sortDocuments(queriesDocuments.get(0).getQueryDocuments());
+        ArrayList<Document> list = sortDocuments(queriesDocuments.get(0).getRankedQueryDocuments());
         for (int i = 0; i < 50 && i < list.size(); i++) {
             System.out.println("Doc: " + list.get(i).getId() + " rank: " + list.get(i).getRank());
         }
@@ -689,5 +717,9 @@ public class Model {
 
     public void setSemantic(boolean selected) {
         searcher.setSemantic(selected);
+    }
+
+    public void loadStopWords(String stopWordsPath) {
+        stopWords = fileReader.readStopWords(stopWordsPath);
     }
 }

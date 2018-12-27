@@ -50,6 +50,11 @@ public class Term {
         }
     }
 
+    void setInDocument (int documentId, int amount, char position) {
+        inDocuments.put(documentId, amount);
+        positionInDocument.put(documentId, position);
+    }
+
     /**
      * Custom toString function which returns the term total amount and the amount of documents it was found at.
      * @return - The total amount and the amount of documents it was found at
@@ -86,7 +91,7 @@ public class Term {
      */
     public Object[] getInDocuments() {
         Object[] sortedterms = inDocuments.keySet().toArray();
-        Arrays.sort(sortedterms);
+        Arrays.sort(inDocuments.keySet().toArray());
         return sortedterms;
     }
 

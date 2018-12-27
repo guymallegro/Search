@@ -411,8 +411,6 @@ class Parse {
      */
     private void addTerm(String term, int i) {
         if (term.length() > 1 || (term.length() == 1 && Character.isDigit(term.charAt(0)))) {
-//            String upper = term.toUpperCase();
-//            String lowerCase = term.toLowerCase();
             if (allTerms.containsKey(term)) {
                 allTerms.get(term).increaseAmount();
                 allTerms.get(term).addInDocument(currentDocument.getIndexId(), ((double) i) / tokens.size());

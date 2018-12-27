@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import Model.Document;
 import Model.City;
 import Model.QueryDocument;
 import javafx.scene.control.ListView;
@@ -125,6 +124,10 @@ public class Controller {
         this.stopWordsPath = stopWordsPath;
     }
 
+    public void loadStopWords (String stopwordsPath){
+        model.loadStopWords(stopwordsPath);
+    }
+
     /**
      * Tells the model where to create the posting files
      *
@@ -135,16 +138,32 @@ public class Controller {
         model.setPostingPathDestination(postingPath);
     }
 
+    /*
+     *  call to function in the model to create a queryDocument from the user query
+     *
+     * @param query - the query from the user or file
+     */
     public void addQueryDocument(String query) {
         model.addQueryDocument(query);
     }
 
+
+    /*
+     *  call to function in the model fet all the cities in corpus
+     *
+     */
     public HashMap<String, City> getCitiesDictionary() {
         return model.getCitiesDictionary();
     }
 
+    /**
+     *
+     * @param selectedCities - the cities the user selevct
+     * @param allDocuments - the documents dictionary
+     * @param bigLetterTerms - all the
+     */
     public void setQueriesResult(HashSet<String> selectedCities, ListView<String> allDocuments, HashMap<String, ListView<String>> bigLetterTerms) {
-        model.getQueriesResult(selectedCities, allDocuments, bigLetterTerms);
+        model.setQueriesResult(selectedCities, allDocuments, bigLetterTerms);
     }
 
     public HashMap<Integer, ArrayList<String>> getDocumentsDictionary() {
@@ -155,13 +174,20 @@ public class Controller {
         model.readQueriesFile(path);
     }
 
+    /*
+     *  call to function in the model to save the results of the query
+     *
+     * @param savePath - the path that the user choose to save the results
+     */
     public void writeSave(String savePath) {
         model.writeSave(savePath);
     }
 
+
     public ArrayList<QueryDocument> getQueriesDocuments() {
         return model.getQueriesDocuments();
     }
+
 
     public void setSemantic(boolean selected) {
         model.setSemantic(selected);

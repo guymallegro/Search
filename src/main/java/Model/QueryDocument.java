@@ -43,7 +43,7 @@ public class QueryDocument extends ADocument {
         return termsDocuments;
     }
 
-    public PriorityQueue<Document> getQueryDocuments() {
+    public PriorityQueue<Document> getRankedQueryDocuments() {
         return rankDocuments;
     }
 }
