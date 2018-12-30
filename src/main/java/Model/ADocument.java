@@ -109,6 +109,10 @@ public abstract class ADocument {
         this.length = length;
     }
 
+    void increaseLength(){
+        length++;
+    }
+
     /**
      * Returns the document content length
      *

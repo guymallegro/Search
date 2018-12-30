@@ -54,9 +54,9 @@ class Parse {
         currentDocument = document;
         if (document.getContent() != null) {
             splitDocument(document.getContent());
-            currentDocument.setLength(tokens.size());
             for (int i = 0; i < tokens.size(); i++) {
                 if (tokens.get(i).length() > 0 && (!isStopWord(tokens.get(i)) || (tokens.get(i).equals("between") && (i < tokens.size() - 1 && tokens.get(i + 1).length() > 0 && Character.isDigit(tokens.get(i + 1).charAt(0)))))) {
+                    currentDocument.increaseLength();
                     checkNumberName(i);
                     checkCity(i);
                     if (doStemming) {
