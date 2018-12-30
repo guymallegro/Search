@@ -29,7 +29,6 @@ public class Ranker {
             totalLength += Integer.parseInt("" + details.get(3));
         }
         avgDocLength = totalLength / docsAmount;
-        //avgDocLength = 229;
     }
 
     /**
@@ -50,6 +49,7 @@ public class Ranker {
         double firstCalculation;
         double logCalculation;
         String title;
+        int N = documentsDictionary.size();
         for (Integer documentIndex : queryDocument.getTermsDocuments()) {
             title = documentsDictionary.get(documentIndex).get(5);
             titleRank = 1;
@@ -60,17 +60,20 @@ public class Ranker {
                     positionRank = (1 - (0.1 * ((int) queryTerm.getPositionInDocument().get(documentIndex) - 96)));
                     int len = getDocumentLength(documentIndex);
                     int tf = queryTerm.getUnsortedInDocuments().get(documentIndex);
-                    firstCalculation = ((K + 1) * tf) / (tf + K * ((1 - B) + ((B * len) / avgDocLength)));
-                    logCalculation = Math.log((1 + documentsDictionary.size()) / queryTerm.getInDocuments().length) / Math.log(2);
+                    int nqi = queryTerm.getInDocuments().length - 1;
+                    double top=(K + 1) * tf;
+                    double bottom = (tf + (K * ((1 - B) + B * (len / avgDocLength))));
+                    firstCalculation = top / bottom;
+                    logCalculation = Math.log((N - nqi + 0.5) / (nqi + 0.5));
                     currentRank += (firstCalculation * logCalculation);
                     currentRank *= titleRank;
-                    currentRank *= positionRank;
+                     currentRank *= positionRank;
                 }
             }
             Document currentDocument = new Document();
             currentDocument.setId(documentsDictionary.get(documentIndex).get(1));
             currentDocument.setCity(documentsDictionary.get(documentIndex).get(4));
-            //currentDocument.setTitle(documentsDictionary.get(documentIndex).get(5));
+            currentDocument.setTitle(documentsDictionary.get(documentIndex).get(5));
             ArrayList<String> details = documentsDictionary.get(documentIndex);
             for (int i = 6; i < details.size(); i++) {
                 currentDocument.addEntity(details.get(i));

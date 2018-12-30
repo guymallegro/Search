@@ -109,9 +109,8 @@ public class Searcher {
             documents = termLine.substring(termLine.indexOf(";") + 1, termLine.indexOf(" ")).split(",");
             positionAndAmount = termLine.substring(termLine.indexOf("(") + 1, termLine.indexOf(")")).split(",");
             for (int i = 0; i < documents.length; i++) {
-                documentIndex += Integer.parseInt(documents[i]);
+                documentIndex = Integer.parseInt(documents[i]);
                 currentQuery.getTextTerms().get(term).setInDocument(documentIndex, Integer.parseInt(positionAndAmount[i].substring(1)), positionAndAmount[i].charAt(0));
-
                 if (documentsDictionary.containsKey(documentIndex))
                     currentQuery.addDocument(documentIndex);
             }

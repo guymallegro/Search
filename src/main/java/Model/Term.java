@@ -91,7 +91,7 @@ public class Term {
      */
     public Object[] getInDocuments() {
         Object[] sortedterms = inDocuments.keySet().toArray();
-        Arrays.sort(inDocuments.keySet().toArray());
+        Arrays.sort(sortedterms);
         return sortedterms;
     }
 

@@ -2,8 +2,6 @@ package Model;
 
 import java.util.*;
 
-import static org.json.XMLTokener.entity;
-
 /**
  * The document class which holds all of its required information
  */
@@ -64,9 +62,8 @@ public class Document extends ADocument {
     /**
      * Initialize the documents amount to 1
      */
-    void initialize() {
+    static void initialize() {
         documentsAmount = 1;
-        indexId = documentsAmount;
     }
 
     /**
@@ -97,7 +94,7 @@ public class Document extends ADocument {
         return (-1) * term.getAmount() * position;
     }
 
-    public ArrayList<String> getEntities() {
+    ArrayList<String> getEntities() {
         List<Term> mapValues = new ArrayList(bigLetterTerms);
         Collections.sort(mapValues, (Comparator.comparingDouble((o) -> o.getRank())));
         int num = 0;

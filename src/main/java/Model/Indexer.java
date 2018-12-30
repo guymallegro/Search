@@ -58,13 +58,10 @@ class Indexer {
             Object[] documentsOfTerm = allTerms.get(sortedTerm).getInDocuments();
             int size = documentsOfTerm.length;
             addTermToDictionary((String) sortedTerm);
-            line.append((int) documentsOfTerm[0]).append(";");
-            line.append((int) documentsOfTerm[0]).append(",");
-            for (int i = 1; i < size; i++) {
-                line.append((int) documentsOfTerm[i] - (int) documentsOfTerm[i - 1]).append(",");
+            for (int i = 0; i < size; i++) {
+                line.append((int) documentsOfTerm[i]).append(",");
             }
             line.deleteCharAt(line.toString().length() - 1);
-            line.append(";").append((int) documentsOfTerm[size - 1]);
             line.append("!");
             line.append(allTerms.get(sortedTerm).getAmountInDocuments());
             lines.add(line.toString());
@@ -131,7 +128,7 @@ class Indexer {
                         currentIndex = i;
                         isChanged = true;
                     } else if (compare == 0) {
-                        toWrite = calculateGaps(toWrite.toString(), currentLine[i]);
+                        toWrite = combineLines(toWrite.toString(), currentLine[i]);
                         if (scanners[i].hasNext())
                             currentLine[i] = scanners[i].nextLine();
                         else {
@@ -162,7 +159,7 @@ class Indexer {
                     }
                 } else if (Character.isLowerCase(current.charAt(0))) {
                     if (capitalLetters.containsKey(current))
-                        toWrite = calculateGaps(capitalLetters.get(current), toWrite.toString());
+                        toWrite = combineLines(capitalLetters.get(current), toWrite.toString());
                 }
                 toWrite = lastLineVersion(toWrite.toString());
                 if (toWrite.length() != 0)
@@ -176,6 +173,18 @@ class Indexer {
         }
         removeTempPostFiles();
         out.close();
+    }
+
+    private StringBuilder combineLines(String first, String second) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(first.substring(first.indexOf('<'),first.indexOf('!')));
+        sb.append(",");
+        sb.append(second.substring(second.indexOf('^')+1, second.indexOf('!')));
+        sb.append("!");
+        sb.append(first.substring(first.indexOf('!')+1));
+        sb.append(",");
+        sb.append(second.substring(second.indexOf('!')+1));
+        return sb;
     }
 
     private void removeTempPostFiles() {
@@ -195,13 +204,9 @@ class Indexer {
         StringBuilder ans = new StringBuilder();
         if (line.length() == 0)
             return ans;
-        String term = line.substring(0, line.indexOf("^"));
-        ans.append(term);
-        String temp = line.substring(line.indexOf(";"), line.lastIndexOf(";"));
-        if (temp.equals(""))
-            ans.append(line.substring(line.lastIndexOf(";") + 1));
-        else
-            ans.append(temp);
+        ans.append(line.substring(0, line.indexOf("^")));
+        ans.append(";");
+        ans.append(line.substring(line.indexOf('^')+1, line.indexOf("!")));
         ans.append(" (");
         ans.append(line.substring(line.indexOf("!") + 1)).append(")");
         return ans;

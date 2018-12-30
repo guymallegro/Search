@@ -70,6 +70,7 @@ public class View {
         else if (postingPath.getText().equals("Enter Path"))
             showAlert("Enter please a posting destination directory");
         else {
+            controller.setStemming(stemming.isSelected());
             controller.setCorpusPath(corpusPath.getText() + "/");
             controller.setStopWordsPath(corpusPath.getText() + "/stop_words.txt");
             controller.setPostingPath(postingPath.getText());
@@ -77,9 +78,8 @@ public class View {
             initializeLanguages();
             reset.setDisable(false);
             showFinishMessage();
+            displayTermsDictionary.setDisable(false);
         }
-        controller.setStemming(stemming.isSelected());
-        displayTermsDictionary.setDisable(false);
     }
 
     /**

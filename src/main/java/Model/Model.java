@@ -21,7 +21,6 @@ public class Model {
     private Parse parse;
     private ReadFile fileReader;
     private Indexer indexer;
-    private Document document;
     private CityChecker cityChecker;
     private String postingPathDestination;
     private int nomOfDocs = 8000;
@@ -52,7 +51,6 @@ public class Model {
         termsDictionary = new HashMap<>();
         documentsDictionary = new HashMap<>();
         indexer = new Indexer(this, parse.getAllTerms(), termsDictionary, documents, documentsDictionary);
-        document = new Document();
         queriesDocuments = new ArrayList<QueryDocument>();
     }
 
@@ -67,7 +65,7 @@ public class Model {
     public void readFiles(String filesPath, String stopWordsPath, String postingPath) {
         indexer.initCurrentPostFile();
         resetDictionaries(false);
-        document.initialize();
+        Document.initialize();
         postingPathDestination = postingPath;
         long tStart = System.currentTimeMillis();
         stopWords = fileReader.readStopWords(stopWordsPath);
@@ -433,7 +431,7 @@ public class Model {
         String city = "";
         int size = allDocuments.length;
         for (int i = 0; i < size; i++) {
-            if (allDocuments[i].length() == 0 || document.equals(" ")) continue;
+            if (allDocuments[i].length() == 0) continue;
             int endTagIndex = allDocuments[i].indexOf("</F>");
             if (endTagIndex != -1) {
                 addCityToDictionary(allDocuments[i].substring(0, endTagIndex));

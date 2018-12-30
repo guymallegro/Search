@@ -9,15 +9,13 @@ public abstract class ADocument {
     HashMap<String, Term> textTerms;
     String content;
     private String city;
+    int indexId;
+    static int documentsAmount = 1;
+    int length;
 
     public void setIndexId(int indexId) {
         this.indexId = indexId;
     }
-
-    int indexId;
-
-    static int documentsAmount = 1;
-    int length;
 
     public ADocument (){
         city = "";
