@@ -162,8 +162,9 @@ class Indexer {
                         toWrite = combineLines(capitalLetters.get(current), toWrite.toString());
                 }
                 toWrite = lastLineVersion(toWrite.toString());
-                if (toWrite.length() != 0)
+                if (toWrite.length() != 0) {
                     out.println(toWrite.toString());
+                }
                 isChanged = true;
             } else
                 break;
@@ -212,14 +213,34 @@ class Indexer {
      */
     private StringBuilder lastLineVersion(String line) {
         StringBuilder ans = new StringBuilder();
+        StringBuilder last = new StringBuilder();
         if (line.length() == 0)
             return ans;
-        ans.append(line.substring(0, line.indexOf("^")));
-        ans.append(";");
+        last.append(line.substring(0, line.indexOf("^")));
+        last.append(";");
         ans.append(line.substring(line.indexOf('^') + 1, line.indexOf("!")));
-        ans.append(" (");
-        ans.append(line.substring(line.indexOf("!") + 1)).append(")");
-        return ans;
+        last.append(calculateGaps(ans.toString()));
+        last.append(" (");
+        last.append(line.substring(line.indexOf("!") + 1)).append(")");
+        return last;
+    }
+
+    /**
+     * this function calculate the gaps for the posting print
+     * @param allDocuments - all the documents as string
+     */
+    private String calculateGaps(String allDocuments) {
+        StringBuilder ans = new StringBuilder();
+        String [] docs = allDocuments.split(",");
+        if (docs.length == 1){
+            ans.append(Integer.parseInt(docs[0]));
+            return ans.toString();
+        }
+        for (int i = 1 ; i < docs.length; i++) {
+            ans.append(Integer.parseInt(docs[i]) - Integer.parseInt(docs[i - 1])).append(",");
+        }
+        ans.deleteCharAt(ans.length() - 1);
+        return ans.toString();
     }
 
     /**

@@ -250,8 +250,8 @@ class Parse {
     private boolean checkBetween(int i) {
         if (tokens.get(i).equals("Between") || tokens.get(i).equals("between")) {
             if (i < tokens.size() - 3) {
-                if (Character.isDigit(tokens.get(i + 1).charAt(0)) &&
-                        tokens.get(i + 2).equals("and") &&
+                if (tokens.get(i + 3).length() > 0 && tokens.get(i+1).length() > 0 && Character.isDigit(tokens.get(i + 1).charAt(0)) &&
+                        tokens.get(i+2).length() > 0 && tokens.get(i + 2).equals("and") &&
                         Character.isDigit(tokens.get(i + 3).charAt(0))) {
                     tokens.set(i, tokens.get(i + 1) + "-" + tokens.get(i + 3));
                     tokens.set(i + 3, "");
@@ -438,17 +438,19 @@ class Parse {
      * @param content - The content to split
      */
     private void splitDocument(String content) {
+        content = content.replaceAll("\\...", " ");
         tokens = new ArrayList<>();
         int i = 0;
         while (i < content.length()) {
             String token = "";
             while (i < content.length() && content.charAt(i) != ' ') {
-                token += content.charAt(i);
+                if (token.length() > 0 && Character.isLetter(token.charAt(token.length() - 1)) && content.charAt(i) == ',')
+                    token += " ";
+                else
+                    token += content.charAt(i);
                 i++;
             }
-            if (!token.equals("")) {
-                tokens.add(cleanString(token));
-            }
+            tokens.add(cleanString(token));
             i++;
         }
     }
