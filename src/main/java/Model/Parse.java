@@ -19,11 +19,8 @@ class Parse {
     private HashMap<String, String> numberNames;
     private HashMap<String, Term> allTerms;
     private HashSet dollars;
-    private String[] tests;
     private ArrayList<String> tokens;
-    private int currentTest = 0;
     private ADocument currentDocument;
-    private boolean toTest = false;
 
     /**
      * The parse default constructor
@@ -42,7 +39,6 @@ class Parse {
         date = new HashMap<>();
         money = new HashMap<>();
         initRules();
-        initTests();
     }
 
     /**
@@ -221,6 +217,12 @@ class Parse {
         return false;
     }
 
+    /**
+     * Checks if the token at position i is a date, and parse it if it its
+     *
+     * @param i - The position
+     * @return - If it is a date
+     */
     private boolean checkSecondCaseOfDate(int i) {
         if (date.containsKey(tokens.get(i))) {
             if (i + 1 < tokens.size()) {
@@ -239,6 +241,12 @@ class Parse {
         return false;
     }
 
+    /**
+     * Checks if the token at position i is 'between', and parse it if it is
+     *
+     * @param i - The position
+     * @return - If it is between
+     */
     private boolean checkBetween(int i) {
         if (tokens.get(i).equals("Between") || tokens.get(i).equals("between")) {
             if (i < tokens.size() - 3) {
@@ -753,7 +761,6 @@ class Parse {
         money.put("bn", "0.001");
         money.put("trillion", "0.000001");
         money.put("T", "0.000001");
-
         numberNames.put("zero", "0");
         numberNames.put("one", "1");
         numberNames.put("two", "2");
@@ -787,63 +794,9 @@ class Parse {
         numberNames.put("million", "1000000");
         numberNames.put("billion", "1000000000");
         numberNames.put("and", "");
-
         dollars.add("Dollar");
         dollars.add("Dollars");
         dollars.add("dollar");
         dollars.add("dollars");
-    }
-
-    private void initTests() {
-        tests = new String[50];
-        tests[0] = "10.123K";
-        tests[1] = "123K";
-        tests[2] = "1.01056K";
-        tests[3] = "10.123M";
-        tests[4] = "55M";
-        tests[5] = "10.123B";
-        tests[6] = "55B";
-        tests[7] = "700B";
-        tests[8] = "204";
-        tests[9] = "35.66";
-        tests[10] = "35 3/4";
-        tests[11] = "6%";
-        tests[12] = "10.6%";
-        tests[13] = "10.6%";
-        tests[14] = "1.7320 Dollars";
-        tests[15] = "22 3/4 Dollars";
-        tests[16] = "450,000 Dollars";
-        tests[17] = "1 M Dollars";
-        tests[18] = "450 M Dollars";
-        tests[19] = "100 M Dollars";
-        tests[20] = "20.6 M Dollars";
-        tests[21] = "100000 M Dollars";
-        tests[22] = "100000 M Dollars";
-        tests[23] = "100000 M Dollars";
-        tests[24] = "320 M Dollars";
-        tests[25] = "1000000 M Dollars";
-        tests[26] = "05-14";
-        tests[27] = "06-04";
-        tests[28] = "1994-05";
-        tests[29] = "Value-added";
-        tests[30] = "step-by-step";
-        tests[31] = "10-part";
-        tests[32] = "6-7";
-        tests[33] = "18-24";
-        tests[34] = "1";
-        tests[35] = "2";
-        tests[36] = "3";
-        tests[37] = "4";
-        tests[38] = "5";
-        tests[39] = "6";
-        tests[40] = "7";
-        tests[41] = "8";
-        tests[42] = "9";
-        tests[43] = "0";
-        tests[44] = "134";
-        tests[45] = "26.000157M";
-        tests[46] = "5 Dollars";
-        tests[47] = "1.000003 M Dollars";
-        tests[48] = ".15";
     }
 }

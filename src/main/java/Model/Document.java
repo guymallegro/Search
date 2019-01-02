@@ -51,6 +51,7 @@ public class Document extends ADocument {
 
     /**
      * remove term from the terms' hash map of this document
+     *
      * @param term the term to remove
      */
     public void removeTermFromText(Term term) {
@@ -82,18 +83,30 @@ public class Document extends ADocument {
 
     /**
      * remove the entity from the hash map
+     *
      * @param term the entity
      */
-    void removeEntity (Term term) {
+    private void removeEntity(Term term) {
         if (bigLetterTerms.contains(term.getValue().toUpperCase()))
             bigLetterTerms.remove(term.getValue().toUpperCase());
     }
 
+    /**
+     * Method for calculating the rank of a term(Used for finding the dominant entities of a document)
+     *
+     * @param term - The term to rank
+     * @return - The term's rank
+     */
     private double calculateDominantEntity(Term term) {
         double position = (1 / (int) term.getPositionInDocument().get(indexId) - 96);
         return (-1) * term.getAmount() * position;
     }
 
+    /**
+     * Finds and returns the dominant entities of the document
+     *
+     * @return - The dominant entities
+     */
     ArrayList<String> getEntities() {
         List<Term> mapValues = new ArrayList(bigLetterTerms);
         Collections.sort(mapValues, (Comparator.comparingDouble((o) -> o.getRank())));
@@ -107,15 +120,30 @@ public class Document extends ADocument {
         return topFiveEntites;
     }
 
-    public String getTitle() {
+    /**
+     * Retruns the title of the document
+     *
+     * @return
+     */
+    String getTitle() {
         return title;
     }
 
-    public ArrayList<String> getTopFive() {
+    /**
+     * Returns the dominant entities of a document
+     *
+     * @return - The top five entities
+     */
+    ArrayList<String> getTopFive() {
         return topFiveEntites;
     }
 
-    public void addEntity(String entity) {
+    /**
+     * Adds an entity to the top five entities
+     *
+     * @param entity - The entity to add
+     */
+    void addEntity(String entity) {
         topFiveEntites.add(entity);
     }
 
@@ -131,14 +159,14 @@ public class Document extends ADocument {
     /**
      * @return the rank of the document
      */
-    public double getRank() {
+    double getRank() {
         return rank;
     }
 
     /**
      * @param rank the rank of the document after calculation in ranker
      */
-    public void setRank(double rank) {
+    void setRank(double rank) {
         this.rank = rank;
     }
 
@@ -160,8 +188,5 @@ public class Document extends ADocument {
     void setTitle(String title) {
         this.title = title;
     }
-
-    public void setMax_tf(int max_tf) { this.max_tf = max_tf; }
-
 
 }

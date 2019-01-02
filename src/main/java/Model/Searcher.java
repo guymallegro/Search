@@ -1,10 +1,10 @@
 package Model;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.util.*;
 
+/**
+ * The searcher class
+ */
 public class Searcher {
     private Model model;
     private Ranker ranker;
@@ -14,7 +14,14 @@ public class Searcher {
     private HashMap<String, City> cityDictionary;
     private HashMap<Integer, ArrayList<String>> documentsDictionary;
 
-    public Searcher(Model model, HashMap<Integer, ArrayList<String>> documentsDictionary, HashMap<String, City> cityDictionary) {
+    /**
+     * The searcher constructor
+     *
+     * @param model               - The model
+     * @param documentsDictionary - The documents dictionary
+     * @param cityDictionary      - The cities dictionary
+     */
+    Searcher(Model model, HashMap<Integer, ArrayList<String>> documentsDictionary, HashMap<String, City> cityDictionary) {
         this.model = model;
         this.cityDictionary = cityDictionary;
         this.documentsDictionary = documentsDictionary;
@@ -37,6 +44,9 @@ public class Searcher {
         ranker.rank();
     }
 
+    /**
+     * Adds the semantic terms to the query
+     */
     private void addSemantic() {
         ArrayList<String> semantic = semanticChecker.getSemantic();
         for (int i = 0; i < semantic.size(); i++) {
@@ -47,35 +57,10 @@ public class Searcher {
     }
 
     /**
-     * find the posting lines of terms of the current query
+     * Tells the model to find the posting lines of the given terms
      *
-     * @return ArrayList of the lines of each term in the query from the posting file
+     * @return - The posting lines of the terms
      */
-//    private ArrayList<String> findLinesOfTerms() {
-//        HashMap<String, Term> terms = currentQuery.getTextTerms();
-//        String[] sortedTerms = terms.keySet().toArray(new String[terms.size()]);
-//        Arrays.sort(sortedTerms, String.CASE_INSENSITIVE_ORDER);
-//        ArrayList<String> termsToFind = new ArrayList<>();
-//        ArrayList<String> allLines = new ArrayList<>();
-//        char currentLetter = (terms.get(sortedTerms[0])).getValue().charAt(0);
-//        for (int i = 0; i < sortedTerms.length; i++) {
-//            while (currentLetter == Character.toLowerCase((terms.get(sortedTerms[i])).getValue().charAt(0)) ||
-//                    currentLetter == Character.toUpperCase((terms.get(sortedTerms[i])).getValue().charAt(0))) {
-//                termsToFind.add((terms.get(sortedTerms[i])).getValue());
-//                if (i + 1 < sortedTerms.length)
-//                    i++;
-//                else
-//                    break;
-//            }
-//            allLines.addAll(model.findTermFromPosting(termsToFind));
-//            currentLetter = Character.toLowerCase((terms.get(sortedTerms[i])).getValue().charAt(0));
-//            termsToFind = new ArrayList<>();
-//            termsToFind.add((terms.get(sortedTerms[i])).getValue());
-//        }
-//        allLines.addAll(model.findTermFromPosting(termsToFind));
-//        return allLines;
-//    }
-
     private ArrayList<String> findLinesOfTerms() {
         System.out.println("start to find lines of terms - searcher");
         HashMap<String, Term> terms = currentQuery.getTextTerms();
@@ -86,7 +71,7 @@ public class Searcher {
         Iterator iterator2 = set2.iterator();
         while (iterator2.hasNext()) {
             Map.Entry me2 = (Map.Entry) iterator2.next();
-            termsToFind.add((String)me2.getKey());
+            termsToFind.add((String) me2.getKey());
         }
         allLines.addAll(model.findTermFromPosting(termsToFind));
         return allLines;
@@ -117,7 +102,12 @@ public class Searcher {
         }
     }
 
-    public void setSemantic(boolean selected) {
+    /**
+     * Tells to use semantic when processing queries
+     *
+     * @param selected
+     */
+    void setSemantic(boolean selected) {
         isSemantic = selected;
     }
 }

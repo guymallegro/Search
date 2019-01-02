@@ -48,6 +48,9 @@ public class View {
     private HashSet<String> selectedCities;
     private HashMap<String, ListView<String>> bigLetterTerms;
 
+    /**
+     * The view constructor
+     */
     public View() {
         allDocuments = new ListView<>();
         bigLetterTerms = new HashMap<>();
@@ -96,6 +99,9 @@ public class View {
         query.setDisable(false);
     }
 
+    /**
+     * Initialising the cities
+     */
     public void initCities() {
         if (toInitCities) {
             selectedCities = new HashSet<>();
@@ -180,6 +186,11 @@ public class View {
         stage.show();
     }
 
+    /**
+     * Runs the query/queries
+     *
+     * @param actionEvent
+     */
     public void runQuery(ActionEvent actionEvent) {
         System.out.println("start run query - view");
         controller.loadStopWords("./src/main/resources/stop_words.txt");
@@ -208,11 +219,19 @@ public class View {
         stage.show();
     }
 
+    /**
+     * Tells the controller to save the results
+     */
     public void save() {
         controller.writeSave(savePath.getText());
         showAlert("the results saved successfully");
     }
 
+    /**
+     * Shows the big letter terms to the user of the document
+     *
+     * @param docId - The document's id
+     */
     private void showBigLetterTerms(String docId) {
         Stage stage = new Stage();
         stage.setTitle("top Five");
@@ -252,6 +271,11 @@ public class View {
 
     }
 
+    /**
+     * Lets the user choose the path to the queries file
+     *
+     * @param actionEvent
+     */
     public void browseQueries(ActionEvent actionEvent) {
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Queries File");
@@ -261,6 +285,11 @@ public class View {
             queryPath.setText(selectedFile.getPath());
     }
 
+    /**
+     * Lets the user choose where to save the results to
+     *
+     * @param actionEvent
+     */
     public void browseSave(ActionEvent actionEvent) {
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("Save results directory");
@@ -271,6 +300,9 @@ public class View {
         }
     }
 
+    /**
+     * Lets the user choose the destination to the corpus
+     */
     public void browseCorpus() {
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("Corpus Directory");
@@ -281,6 +313,9 @@ public class View {
         }
     }
 
+    /**
+     * Lets the user choose where to save the posting files
+     */
     public void browsePosting() {
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("Posting Directory");

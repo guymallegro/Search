@@ -2,9 +2,9 @@ package Model;
 
 import java.util.*;
 
-public class Ranker {
-    public final double K = 1.2;
-    public final double B = 0.75;
+class Ranker {
+    private final double K = 1.2;
+    private final double B = 0.75;
     private double titleRank;
     private double positionRank;
     private double avgDocLength;
@@ -13,7 +13,12 @@ public class Ranker {
     private double docsAmount = 0;
 
 
-    public Ranker(HashMap<Integer, ArrayList<String>> documentsDictionary) {
+    /**
+     * The ranker's constructor
+     *
+     * @param documentsDictionary - The documents dictionary
+     */
+    Ranker(HashMap<Integer, ArrayList<String>> documentsDictionary) {
         this.documentsDictionary = documentsDictionary;
         titleRank = 1;
         corpusAvgDocLength();
@@ -61,13 +66,13 @@ public class Ranker {
                     int len = getDocumentLength(documentIndex);
                     int tf = queryTerm.getUnsortedInDocuments().get(documentIndex);
                     int nqi = queryTerm.getInDocuments().length - 1;
-                    double top=(K + 1) * tf;
+                    double top = (K + 1) * tf;
                     double bottom = (tf + (K * ((1 - B) + B * (len / avgDocLength))));
                     firstCalculation = top / bottom;
                     logCalculation = Math.log((N - nqi + 0.5) / (nqi + 0.5));
                     currentRank += (firstCalculation * logCalculation);
                     currentRank *= titleRank;
-                     currentRank *= positionRank;
+                    currentRank *= positionRank;
                 }
             }
             Document currentDocument = new Document();

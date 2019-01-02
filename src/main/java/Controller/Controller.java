@@ -2,13 +2,9 @@ package Controller;
 
 import Model.Model;
 import Model.Term;
-
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-
 import Model.City;
-import Model.QueryDocument;
 import javafx.scene.control.ListView;
 
 /**
@@ -124,8 +120,12 @@ public class Controller {
         this.stopWordsPath = stopWordsPath;
     }
 
-    public void loadStopWords (String stopwordsPath){
-        model.loadStopWords(stopwordsPath);
+    /**
+     * Tells the model to load the stop words
+     * @param stopWordsPath - The path to the stop words file
+     */
+    public void loadStopWords (String stopWordsPath){
+        model.loadStopWords(stopWordsPath);
     }
 
     /**
@@ -157,8 +157,9 @@ public class Controller {
     }
 
     /**
+     *Sets the results for the given queries
      *
-     * @param selectedCities - the cities the user selevct
+     * @param selectedCities - the cities the user selected
      * @param allDocuments - the documents dictionary
      * @param bigLetterTerms - all the
      */
@@ -166,10 +167,10 @@ public class Controller {
         model.setQueriesResult(selectedCities, allDocuments, bigLetterTerms);
     }
 
-    public HashMap<Integer, ArrayList<String>> getDocumentsDictionary() {
-        return model.getDocumentsDictionary();
-    }
-
+    /**
+     * Tells the model to read the queries file
+     * @param path - The path to the quries
+     */
     public void readQueriesFile(String path) {
         model.readQueriesFile(path);
     }
@@ -183,12 +184,10 @@ public class Controller {
         model.writeSave(savePath);
     }
 
-
-    public ArrayList<QueryDocument> getQueriesDocuments() {
-        return model.getQueriesDocuments();
-    }
-
-
+    /**
+     * Tells the model if to use semantic reference when processing the queries
+     * @param selected
+     */
     public void setSemantic(boolean selected) {
         model.setSemantic(selected);
     }

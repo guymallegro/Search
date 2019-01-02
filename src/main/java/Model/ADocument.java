@@ -13,17 +13,24 @@ public abstract class ADocument {
     static int documentsAmount = 1;
     int length;
 
-    public void setIndexId(int indexId) {
-        this.indexId = indexId;
-    }
-
+    /**
+     * The basic constructor for any document
+     */
     public ADocument (){
         city = "";
         textTerms = new HashMap<String, Term>();
     }
 
+    /**
+     * Abstract method for adding a term to the documents text
+     * @param term - The term to be added
+     */
     abstract void addTermToText(Term term);
 
+    /**
+     * Abstract method for removing a term from a documents text
+     * @param term - The term to be removed
+     */
     abstract void removeTermFromText(Term term);
 
     /**

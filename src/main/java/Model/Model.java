@@ -103,7 +103,7 @@ public class Model {
             int startTagIndex = document.indexOf("<DOCNO>");
             int endTagIndex = document.indexOf("</DOCNO>");
             if (startTagIndex != -1 && endTagIndex != -1)
-                currentDocument.setId(getId(document.substring(startTagIndex + 7, endTagIndex)));
+                currentDocument.setId(getDocumentID(document.substring(startTagIndex + 7, endTagIndex)));
             startTagIndex = document.indexOf("<TI>");
             endTagIndex = document.indexOf("</TI>");
             if (startTagIndex != -1 && endTagIndex != -1) {
@@ -140,7 +140,13 @@ public class Model {
         }
     }
 
-    private String getId(String str) {
+    /**
+     * Returns the id of a document from a given string
+     *
+     * @param str - The given string
+     * @return - The id
+     */
+    private String getDocumentID(String str) {
         if (str.length() == 0)
             return "";
         char current = str.charAt(0);
@@ -164,6 +170,11 @@ public class Model {
         return str;
     }
 
+    /**
+     * Process a query
+     *
+     * @param fileAsString - The query as a string
+     */
     void processQuery(String fileAsString) {
         queriesDocuments.clear();
         String[] allQueries = fileAsString.split("<top>");
@@ -186,6 +197,12 @@ public class Model {
         findRelevantDocuments();
     }
 
+    /**
+     * Removes all the spaces from a string
+     *
+     * @param str - The string to removes the spaces from
+     * @return - The string without the spaces
+     */
     private String removeAllSpaces(String str) {
         if (str.length() == 0)
             return "";
@@ -264,6 +281,9 @@ public class Model {
         }
     }
 
+    /**
+     * Writes the documents dictionary to the disk
+     */
     private void writeDocsDictionary() {
         Object[] sortedDocuments = documentsDictionary.keySet().toArray();
         Arrays.sort(sortedDocuments);
@@ -371,6 +391,9 @@ public class Model {
         }
     }
 
+    /**
+     * Loads the documents dictionary from the disk to the main memory
+     */
     public void loadDocsDictionary() {
         String path = postingPathDestination + "/documentsDictionary.txt";
         if (isStemming)
@@ -623,7 +646,7 @@ public class Model {
      * @param terms - ArrayList of the terms from the query
      * @return ArrayList with the line of each term
      */
-    public ArrayList<String> findTermFromPosting(ArrayList<String> terms) {
+    ArrayList<String> findTermFromPosting(ArrayList<String> terms) {
         return fileReader.findTerms(terms);
     }
 
@@ -658,12 +681,25 @@ public class Model {
         }
     }
 
+    /**
+     * Adds the big letter terms that will be shown to the user
+     *
+     * @param docId          - The document id the terms belong to
+     * @param docInfo        - The documents info
+     * @param bigLetterTerms - The list the big letter terms are added to
+     */
     private void addBigLetterTerms(String docId, ArrayList<String> docInfo, HashMap<String, ListView<String>> bigLetterTerms) {
         ListView<String> currentDoc = new ListView<>();
         currentDoc.getItems().addAll(docInfo);
         bigLetterTerms.put(docId, currentDoc);
     }
 
+    /**
+     * Sorts the documents returned by their rank
+     *
+     * @param queryDocuments - The documents to sort
+     * @return - The documents sorted
+     */
     private ArrayList<Document> sortDocuments(PriorityQueue<Document> queryDocuments) {
         Comparator<Document> comparator = new Comparator<Document>() {
             @Override
@@ -680,22 +716,20 @@ public class Model {
         return list;
     }
 
-
-    private void print() {
-        ArrayList<Document> list = sortDocuments(queriesDocuments.get(0).getRankedQueryDocuments());
-        for (int i = 0; i < 50 && i < list.size(); i++) {
-            System.out.println("Doc: " + list.get(i).getId() + " rank: " + list.get(i).getRank());
-        }
-    }
-
-    public HashMap<Integer, ArrayList<String>> getDocumentsDictionary() {
-        return documentsDictionary;
-    }
-
+    /**
+     * Tells the file reader to read the queries file
+     *
+     * @param path - The path to the queries file
+     */
     public void readQueriesFile(String path) {
         fileReader.readQueriesFile(path);
     }
 
+    /**
+     * Writes the results from the queries process to a save file
+     *
+     * @param path - Path to the chosen save location
+     */
     public void writeSave(String path) {
         List<String> lines = new LinkedList<>();
         for (int i = 0; i < queryResultToWrite.size(); i++) {
@@ -709,14 +743,20 @@ public class Model {
         }
     }
 
-    public ArrayList<QueryDocument> getQueriesDocuments() {
-        return queriesDocuments;
-    }
-
+    /**
+     * Tells the searcher if semantic is being used
+     *
+     * @param selected - Input from the user if to use semantic
+     */
     public void setSemantic(boolean selected) {
         searcher.setSemantic(selected);
     }
 
+    /**
+     * Tells the file reader to read the stop words file
+     *
+     * @param stopWordsPath - Path to the stop words file
+     */
     public void loadStopWords(String stopWordsPath) {
         stopWords = fileReader.readStopWords(stopWordsPath);
     }

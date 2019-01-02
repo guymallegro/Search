@@ -12,9 +12,9 @@ import View.View;
  * The main class
  */
 public class Main extends Application {
-    static String citiesUrl = "https://restcountries.eu/rest/v2/all?fields=name;capital;population;currencies"; // URL to the cities API
+    final static String citiesUrl = "https://restcountries.eu/rest/v2/all?fields=name;capital;population;currencies"; // URL to the cities API
     //static String semanticUrl = "https://api.datamuse.com/words?ml="; // URL to the semantic API
-    static String semanticUrl = "https://relatedwords.org/relatedto/"; // URL to the semantic API
+    final static String semanticUrl = "https://relatedwords.org/relatedto/"; // URL to the semantic API
 
     /**
      * The start function of the JAVAFX

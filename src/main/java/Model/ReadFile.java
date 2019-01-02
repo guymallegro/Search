@@ -35,7 +35,7 @@ public class ReadFile {
         File currentDirectory = new File(path);
         String[] allDirectories = currentDirectory.list();
         int size = allDirectories.length;
-        for (int i = 0; i < size; i ++) {
+        for (int i = 0; i < size; i++) {
             if (allDirectories[i].equals("stop_words.txt"))
                 continue;
             currentFile = new File(path + allDirectories[i]);
@@ -66,11 +66,10 @@ public class ReadFile {
     }
 
     /**
-     *
      * @param path - the path of the folder of the stop-words file
      * @return HashSet of all the stop-words appears in the file
      */
-    public HashSet<String> readStopWords(String path) {
+    HashSet<String> readStopWords(String path) {
         HashSet<String> stopWords = new HashSet<>();
         try {
             Scanner scanner = new Scanner(new File(path));
@@ -88,41 +87,11 @@ public class ReadFile {
 
 
     /**
+     * Find the given terms from the post files
      *
-     * @param terms- ArrayList of the terms appears in the query
-     * @return ArrayList of the line of each term from the posting file
+     * @param terms - The given terms
+     * @return - The given terms line from posting
      */
-//    public ArrayList<String> findTerms(ArrayList<String> terms) {
-//        Collections.sort(terms);
-//        ArrayList<String> termsLines = new ArrayList<>();
-//        char firstChar = terms.get(0).charAt(0);
-//        if (Character.isLetter(firstChar))
-//            currentFile = new File(postPath + "/post" + Character.toUpperCase(firstChar) + ".txt");
-//        else if (firstChar == '$')
-//            currentFile = new File(postPath + "/post" + "$" + ".txt");
-//        else
-//            currentFile = new File(postPath + "numbers.txt");
-//        try {
-//            InputStream is = new FileInputStream(currentFile);
-//            BufferedReader buf = new BufferedReader(new InputStreamReader(is));
-//            String line = buf.readLine();
-//            for (int i = 0; i < terms.size(); i ++) {
-//                while (line != null) {
-//                    if (line.substring(1, line.indexOf(";")).equals(terms.get(i))) {
-//                        termsLines.add(line);
-//                        break;
-//                    }
-//                    line = buf.readLine();
-//                }
-//            }
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        return termsLines;
-//    }
-
     public ArrayList<String> findTerms(ArrayList<String> terms) {
         ArrayList<String> termsLines = new ArrayList<>();
         for (int i = 0; i < terms.size(); i++) {
@@ -153,11 +122,21 @@ public class ReadFile {
         return termsLines;
     }
 
-    public void setPostPath(String postPath) {
+    /**
+     * Sets the post path
+     *
+     * @param postPath - The post path
+     */
+    void setPostPath(String postPath) {
         this.postPath = postPath;
     }
 
-    public void readQueriesFile(String path) {
+    /**
+     * Reads the queries file
+     *
+     * @param path - Path to the queries file
+     */
+    void readQueriesFile(String path) {
         StringBuilder sb = new StringBuilder();
         try {
             Scanner scanner = new Scanner(new File(path));

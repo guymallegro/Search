@@ -175,18 +175,28 @@ class Indexer {
         out.close();
     }
 
+    /**
+     * Combines two post lines into one line
+     *
+     * @param first  - The first line
+     * @param second - The second line
+     * @return - The combined line
+     */
     private StringBuilder combineLines(String first, String second) {
         StringBuilder sb = new StringBuilder();
-        sb.append(first.substring(first.indexOf('<'),first.indexOf('!')));
+        sb.append(first.substring(first.indexOf('<'), first.indexOf('!')));
         sb.append(",");
-        sb.append(second.substring(second.indexOf('^')+1, second.indexOf('!')));
+        sb.append(second.substring(second.indexOf('^') + 1, second.indexOf('!')));
         sb.append("!");
-        sb.append(first.substring(first.indexOf('!')+1));
+        sb.append(first.substring(first.indexOf('!') + 1));
         sb.append(",");
-        sb.append(second.substring(second.indexOf('!')+1));
+        sb.append(second.substring(second.indexOf('!') + 1));
         return sb;
     }
 
+    /**
+     * Removes the temporary post files
+     */
     private void removeTempPostFiles() {
         for (int i = 0; i < currentAmountTempPostFiles; i++) {
             File currentFile = new File(postingPath + "\\" + "post" + i + ".txt");
@@ -206,43 +216,17 @@ class Indexer {
             return ans;
         ans.append(line.substring(0, line.indexOf("^")));
         ans.append(";");
-        ans.append(line.substring(line.indexOf('^')+1, line.indexOf("!")));
+        ans.append(line.substring(line.indexOf('^') + 1, line.indexOf("!")));
         ans.append(" (");
         ans.append(line.substring(line.indexOf("!") + 1)).append(")");
         return ans;
     }
 
     /**
-     * Accepts two strings, calculates the gaps and merges them into one string.
+     * Changes the current temporary post file the application is writing to
      *
-     * @param toWrite - The first string
-     * @param next    - The second string
-     * @return - The two strings merged
+     * @param nextFile - The new file to write to
      */
-    private StringBuilder calculateGaps(String toWrite, String next) {
-        String[] term = toWrite.split(";");
-        term[2] = term[2].substring(0, term[2].indexOf('!'));
-        StringBuilder ans = new StringBuilder(term[0]);
-        ans.append(";");
-        if (!term[1].equals(""))
-            ans.append(term[1]).append(",");
-        String firstDoc = next.substring(next.indexOf("^") + 1, next.indexOf(";"));
-        ans.append(Integer.parseInt(firstDoc) - Integer.valueOf(term[2]));
-        int comma = next.indexOf(",", next.indexOf(";"));
-        if (comma != -1) {
-            int index = next.indexOf("!");
-            String last = next.substring(comma, index);
-            ans.append(last);
-        } else {
-            int index = next.indexOf("!");
-            String last = next.substring(next.lastIndexOf(";"), index);
-            ans.append(last);
-        }
-        ans.append(toWrite.substring(toWrite.indexOf("!")));
-        ans.append(",").append(next.substring(next.indexOf("!") + 1));
-        return ans;
-    }
-
     private void changePostFile(String nextFile) {
         out.close();
         if (nextFile.equals("."))
@@ -290,16 +274,16 @@ class Indexer {
         for (int i = 0; i < size; i++) {
             document = documents.get(i);
             ArrayList<String> attributes = new ArrayList<>();
-            attributes.add(0, ""+Integer.toString(document.getMax_tf()));
-            attributes.add(1, ""+document.getId());
-            attributes.add(2, ""+Integer.toString(document.getTextTerms().size()));
-            attributes.add(3, ""+Integer.toString(document.getLength()));
-            attributes.add(4, ""+document.getCity());
-            attributes.add(5, ""+document.getTitle());
-            ArrayList <String> topFive = document.getEntities();
+            attributes.add(0, "" + Integer.toString(document.getMax_tf()));
+            attributes.add(1, "" + document.getId());
+            attributes.add(2, "" + Integer.toString(document.getTextTerms().size()));
+            attributes.add(3, "" + Integer.toString(document.getLength()));
+            attributes.add(4, "" + document.getCity());
+            attributes.add(5, "" + document.getTitle());
+            ArrayList<String> topFive = document.getEntities();
             int position = 6;
             for (int entity = 0; entity < topFive.size(); entity++) {
-                attributes.add(position, ""+topFive.get(entity));
+                attributes.add(position, "" + topFive.get(entity));
                 position++;
             }
             documentsDictionary.put(documents.get(i).getIndexId(), attributes);
