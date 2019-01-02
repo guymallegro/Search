@@ -23,7 +23,7 @@ public class Model {
     private Indexer indexer;
     private CityChecker cityChecker;
     private String postingPathDestination;
-    private int nomOfDocs = 10;
+    private int nomOfDocs = 8000;
     private HashSet<String> languages;
     private ArrayList<Document> documents;
     private ArrayList<QueryDocument> queriesDocuments;
@@ -137,7 +137,7 @@ public class Model {
                 for (int i = 0; i < size; i++)
                     parse.parseDocument(documents.get(i));
                 index();
-                nomOfDocs = 10;
+                nomOfDocs = 8000;
             }
         }
     }
@@ -247,7 +247,6 @@ public class Model {
      * find the relevant documents for one or more queries by ranking the documents
      */
     public void findRelevantDocuments() {
-        searcher = new Searcher(this, documentsDictionary, citiesDictionary, selectedCities);
         searcher.setSemantic(isSemantic);
         for (int i = 0; i < queriesDocuments.size(); i++) {
             parse.getAllTerms().clear();
@@ -742,6 +741,7 @@ public class Model {
      * @param selected - Input from the user if to use semantic
      */
     public void setSemantic(boolean selected) {
+        searcher = new Searcher(this, documentsDictionary, citiesDictionary, selectedCities);
         searcher.setSemantic(selected);
     }
 

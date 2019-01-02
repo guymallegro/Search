@@ -14,7 +14,6 @@ import javafx.scene.control.ListView;
  */
 public class Controller {
     private Model model;
-    private String corpusPath;
     private String stopWordsPath;
     private String postingPath;
 
@@ -102,15 +101,6 @@ public class Controller {
      */
     public void setStemming(boolean selected) {
         model.setStemming(selected);
-    }
-
-    /**
-     * Tells the model which corpus path to use
-     *
-     * @param corpusPath - The corpus path
-     */
-    public void setCorpusPath(String corpusPath) {
-        this.corpusPath = corpusPath;
     }
 
     /**
