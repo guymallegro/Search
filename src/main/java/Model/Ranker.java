@@ -2,6 +2,9 @@ package Model;
 
 import java.util.*;
 
+/**
+ * The ranker class
+ */
 class Ranker {
     private final double K = 1.2;
     private final double B = 0.75;
@@ -62,7 +65,7 @@ class Ranker {
                 if (queryTerm.getUnsortedInDocuments().containsKey(documentIndex)) {
                     if (title.contains(queryTerm.getValue()))
                         titleRank = 1.2;
-                    positionRank = (1 - (0.1 * ((int) queryTerm.getPositionInDocument().get(documentIndex) - 96)));
+                    positionRank = (0.01 - (0.001 * ((int) queryTerm.getPositionInDocument().get(documentIndex) - 96)));
                     int len = getDocumentLength(documentIndex);
                     int tf = queryTerm.getUnsortedInDocuments().get(documentIndex);
                     int nqi = queryTerm.getInDocuments().length - 1;
@@ -70,9 +73,12 @@ class Ranker {
                     double bottom = (tf + (K * ((1 - B) + B * (len / avgDocLength))));
                     firstCalculation = top / bottom;
                     logCalculation = Math.log((N - nqi + 0.5) / (nqi + 0.5));
-                    currentRank += (firstCalculation * logCalculation);
+                    if (queryTerm.isSemantic())
+                        currentRank += (queryTerm.getRank() * firstCalculation * logCalculation);
+                    else
+                        currentRank += (firstCalculation * logCalculation);
                     currentRank *= titleRank;
-                    currentRank *= positionRank;
+                    currentRank += positionRank;
                 }
             }
             Document currentDocument = new Document();

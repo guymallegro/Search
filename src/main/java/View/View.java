@@ -48,12 +48,10 @@ public class View {
     private HashSet<String> selectedCities;
     private HashMap<String, ListView<String>> bigLetterTerms;
 
-    /**
-     * The view constructor
-     */
     public View() {
         allDocuments = new ListView<>();
         bigLetterTerms = new HashMap<>();
+        selectedCities = new HashSet<>();
         allDocuments.getSelectionModel().selectedItemProperty()
                 .addListener(new ChangeListener<String>() {
                     public void changed(
@@ -73,11 +71,11 @@ public class View {
         else if (postingPath.getText().equals("Enter Path"))
             showAlert("Enter please a posting destination directory");
         else {
+            showAlert("start in processing");
             controller.setStemming(stemming.isSelected());
-            controller.setCorpusPath(corpusPath.getText() + "/");
             controller.setStopWordsPath(corpusPath.getText() + "/stop_words.txt");
             controller.setPostingPath(postingPath.getText());
-            controller.readFiles();
+            controller.readFiles(corpusPath.getText() + "/");
             initializeLanguages();
             reset.setDisable(false);
             showFinishMessage();
@@ -99,9 +97,6 @@ public class View {
         query.setDisable(false);
     }
 
-    /**
-     * Initialising the cities
-     */
     public void initCities() {
         if (toInitCities) {
             selectedCities = new HashSet<>();
@@ -143,12 +138,14 @@ public class View {
             System.out.println("Some of the information is already clear");
         }
         loadDictionaries.setDisable(false);
+        showAlert("reset done successfully");
     }
 
     /**
      * Tells the controller to load the dictionaries
      */
     public void loadDictionaries() {
+        showAlert("start load dictionaries");
         controller.setPostingPath(postingPath.getText());
         if (postingPath.getText().equals("Enter Path")) {
             showAlert("Please enter a posting path");
@@ -186,26 +183,21 @@ public class View {
         stage.show();
     }
 
-    /**
-     * Runs the query/queries
-     *
-     * @param actionEvent
-     */
     public void runQuery(ActionEvent actionEvent) {
-        System.out.println("start run query - view");
+        showAlert("start find the 50 most relevant documents");
         controller.loadStopWords("./src/main/resources/stop_words.txt");
+        controller.setSelectedCities(selectedCities);
+        controller.setStemming(stemming.isSelected());
+        controller.setSemantic(semantic.isSelected());
         if (((Button) actionEvent.getSource()).getId().equals("run")) {
             controller.addQueryDocument(query.getText());
         } else {
             controller.readQueriesFile(queryPath.getText());
         }
-        controller.setStemming(stemming.isSelected());
-        controller.setSemantic(semantic.isSelected());
         Stage stage = new Stage();
         allDocuments.getItems().clear();
         bigLetterTerms.clear();
-        System.out.println("start setQueriesResults - view");
-        controller.setQueriesResult(selectedCities, allDocuments, bigLetterTerms);
+        controller.setQueriesResult(allDocuments, bigLetterTerms);
         Scene scene = new Scene(new Group());
         stage.initModality(Modality.APPLICATION_MODAL); //Lock the window until it closes
         final VBox vBox = new VBox();
@@ -219,19 +211,11 @@ public class View {
         stage.show();
     }
 
-    /**
-     * Tells the controller to save the results
-     */
     public void save() {
         controller.writeSave(savePath.getText());
         showAlert("the results saved successfully");
     }
 
-    /**
-     * Shows the big letter terms to the user of the document
-     *
-     * @param docId - The document's id
-     */
     private void showBigLetterTerms(String docId) {
         Stage stage = new Stage();
         stage.setTitle("top Five");
@@ -271,11 +255,6 @@ public class View {
 
     }
 
-    /**
-     * Lets the user choose the path to the queries file
-     *
-     * @param actionEvent
-     */
     public void browseQueries(ActionEvent actionEvent) {
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Queries File");
@@ -285,11 +264,6 @@ public class View {
             queryPath.setText(selectedFile.getPath());
     }
 
-    /**
-     * Lets the user choose where to save the results to
-     *
-     * @param actionEvent
-     */
     public void browseSave(ActionEvent actionEvent) {
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("Save results directory");
@@ -300,9 +274,6 @@ public class View {
         }
     }
 
-    /**
-     * Lets the user choose the destination to the corpus
-     */
     public void browseCorpus() {
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("Corpus Directory");
@@ -313,9 +284,6 @@ public class View {
         }
     }
 
-    /**
-     * Lets the user choose where to save the posting files
-     */
     public void browsePosting() {
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("Posting Directory");

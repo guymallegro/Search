@@ -98,7 +98,7 @@ public class Document extends ADocument {
      * @return - The term's rank
      */
     private double calculateDominantEntity(Term term) {
-        double position = (1 / (int) term.getPositionInDocument().get(indexId) - 96);
+        double position = (1 - (0.1 * ((int) term.getPositionInDocument().get(indexId) - 96)));
         return (-1) * term.getAmount() * position;
     }
 

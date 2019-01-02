@@ -23,7 +23,7 @@ public class Model {
     private Indexer indexer;
     private CityChecker cityChecker;
     private String postingPathDestination;
-    private int nomOfDocs = 50;
+    private int nomOfDocs = 10;
     private HashSet<String> languages;
     private ArrayList<Document> documents;
     private ArrayList<QueryDocument> queriesDocuments;
@@ -37,6 +37,8 @@ public class Model {
     private double totalTime;
     private Searcher searcher;
     private ArrayList<String> queryResultToWrite = new ArrayList<>();
+    private HashSet<String>  selectedCities;
+    private boolean isSemantic;
 
     /**
      * The model default constructor
@@ -135,7 +137,7 @@ public class Model {
                 for (int i = 0; i < size; i++)
                     parse.parseDocument(documents.get(i));
                 index();
-                nomOfDocs = 50;
+                nomOfDocs = 10;
             }
         }
     }
@@ -245,7 +247,8 @@ public class Model {
      * find the relevant documents for one or more queries by ranking the documents
      */
     public void findRelevantDocuments() {
-        searcher = new Searcher(this, documentsDictionary, citiesDictionary);
+        searcher = new Searcher(this, documentsDictionary, citiesDictionary, selectedCities);
+        searcher.setSemantic(isSemantic);
         for (int i = 0; i < queriesDocuments.size(); i++) {
             parse.getAllTerms().clear();
             parse.parseDocument(queriesDocuments.get(i));
@@ -650,32 +653,22 @@ public class Model {
         return fileReader.findTerms(terms);
     }
 
-    public void setQueriesResult(HashSet<String> selectedCities, ListView<String> allDocuments, HashMap<String, ListView<String>> bigLetterTerms) {
+    /**
+     * Sets the query process results which will be displayed to the user and saved to the disk
+     * @param allDocuments - All the documents
+     * @param bigLetterTerms - Big letter terms
+     */
+    public void setQueriesResult(ListView<String> allDocuments, HashMap<String, ListView<String>> bigLetterTerms) {
         ArrayList<ArrayList<Document>> results = new ArrayList<>();
         for (int i = 0; i < queriesDocuments.size(); i++) {
-            ArrayList<Document> temp = new ArrayList<Document>();
-            while (!queriesDocuments.get(i).getRankedQueryDocuments().isEmpty())
-                temp.add(queriesDocuments.get(i).getRankedQueryDocuments().poll());
+            ArrayList<Document> temp = queriesDocuments.get(i).getRankedQueryDocuments();
             results.add(temp);
         }
         for (int i = 0; i < results.size(); i++) {
-            int counter = 50;
             for (int j = 0; j < results.get(i).size(); j++) {
-                if (selectedCities.size() > 0) {
-                    if (selectedCities.contains(results.get(i).get(j).getCity().toUpperCase())) {
-                        allDocuments.getItems().add(results.get(i).get(j).getId());
-                        addBigLetterTerms(results.get(i).get(j).getId(), results.get(i).get(j).getTopFive(), bigLetterTerms);
-                        queryResultToWrite.add(queriesDocuments.get(i).getId() + " 1 " + results.get(i).get(j).getId() + " " + results.get(i).get(j).getRank() + " 1.1 " + "st");
-                        counter--;
-                    }
-                } else {
-                    allDocuments.getItems().add(results.get(i).get(j).getId());
-                    addBigLetterTerms(results.get(i).get(j).getId(), results.get(i).get(j).getTopFive(), bigLetterTerms);
-                    queryResultToWrite.add(queriesDocuments.get(i).getId() + " 1 " + results.get(i).get(j).getId() + " " + results.get(i).get(j).getRank() + " 1.1 " + "st");
-                    counter--;
-                }
-                if (counter == 0)
-                    break;
+                allDocuments.getItems().add(results.get(i).get(j).getId());
+                addBigLetterTerms(results.get(i).get(j).getId(), results.get(i).get(j).getTopFive(), bigLetterTerms);
+                queryResultToWrite.add(queriesDocuments.get(i).getId() + " 1 " + results.get(i).get(j).getId() + " " + results.get(i).get(j).getRank() + " 1.1 " + "st");
             }
             allDocuments.getItems().add("---------------------");
         }
@@ -759,5 +752,39 @@ public class Model {
      */
     public void loadStopWords(String stopWordsPath) {
         stopWords = fileReader.readStopWords(stopWordsPath);
+    }
+
+    private void writeLanguages() {
+        Object[] sortedLanguages = languages.toArray();
+        Arrays.sort(sortedLanguages);
+        List<String> lines = new LinkedList<>();
+        int size = languages.size();
+        for (int i = 0; i < size; i++) {
+            lines.add((String)sortedLanguages[i]);
+        }
+        String path = postingPathDestination + "/languages.txt";
+        Path file = Paths.get(path);
+        try {
+            Files.write(file, lines, Charset.forName("UTF-8"));
+        } catch (Exception e) {
+            System.out.println("cannot write to dictionary");
+        }
+    }
+
+    public void loadLanguages(){
+        String path = postingPathDestination + "/languages.txt";
+        File file = new File(path);
+        try {
+            Scanner scanner = new Scanner(file);
+            while (scanner.hasNextLine()) {
+                languages.add(scanner.nextLine());
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("Cannot open the languages file");
+        }
+    }
+
+    public void setSelectedCities(HashSet<String> selectedCities) {
+        this.selectedCities = selectedCities;
     }
 }

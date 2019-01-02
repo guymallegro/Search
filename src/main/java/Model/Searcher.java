@@ -13,6 +13,9 @@ public class Searcher {
     private QueryDocument currentQuery;
     private HashMap<String, City> cityDictionary;
     private HashMap<Integer, ArrayList<String>> documentsDictionary;
+    private HashSet<String> selectedCities;
+    String[] documents;
+    String[] positionAndAmount;
 
     /**
      * The searcher constructor
@@ -21,8 +24,9 @@ public class Searcher {
      * @param documentsDictionary - The documents dictionary
      * @param cityDictionary      - The cities dictionary
      */
-    Searcher(Model model, HashMap<Integer, ArrayList<String>> documentsDictionary, HashMap<String, City> cityDictionary) {
+    public Searcher(Model model, HashMap<Integer, ArrayList<String>> documentsDictionary, HashMap<String, City> cityDictionary, HashSet<String> selectedCities) {
         this.model = model;
+        this.selectedCities = selectedCities;
         this.cityDictionary = cityDictionary;
         this.documentsDictionary = documentsDictionary;
         ranker = new Ranker(documentsDictionary);
@@ -51,6 +55,7 @@ public class Searcher {
         ArrayList<String> semantic = semanticChecker.getSemantic();
         for (int i = 0; i < semantic.size(); i++) {
             double rank = model.getTermsDictionary().get(semantic.get(i)).getRank();
+            model.getTermsDictionary().get(semantic.get(i)).setSemantic(true);
             model.getTermsDictionary().get(semantic.get(i)).setRank(rank * 0.8);
             currentQuery.addTermToText(model.getTermsDictionary().get(semantic.get(i)));
         }
@@ -83,8 +88,6 @@ public class Searcher {
      * @param allLines - ArrayList of the lines of each term from the posting file
      */
     private void retrieveData(ArrayList<String> allLines) {
-        String[] documents;
-        String[] positionAndAmount;
         String termLine = "";
         String term = "";
         int documentIndex = 0;
@@ -94,10 +97,17 @@ public class Searcher {
             documents = termLine.substring(termLine.indexOf(";") + 1, termLine.indexOf(" ")).split(",");
             positionAndAmount = termLine.substring(termLine.indexOf("(") + 1, termLine.indexOf(")")).split(",");
             for (int i = 0; i < documents.length; i++) {
-                documentIndex += Integer.parseInt(documents[i]);
-                currentQuery.getTextTerms().get(term).setInDocument(documentIndex, Integer.parseInt(positionAndAmount[i].substring(1)), positionAndAmount[i].charAt(0));
-                if (documentsDictionary.containsKey(documentIndex))
+                documentIndex = Integer.parseInt(documents[i]);
+                if (selectedCities.size() > 0){
+                    if (selectedCities.contains(model.getDocsDictionary().get(documentIndex).get(4))){
+                        currentQuery.getTextTerms().get(term).setInDocument(documentIndex, Integer.parseInt(positionAndAmount[i].substring(1)), positionAndAmount[i].charAt(0));
+                        currentQuery.addDocument(documentIndex);
+                    }
+                }
+                else {
+                    currentQuery.getTextTerms().get(term).setInDocument(documentIndex, Integer.parseInt(positionAndAmount[i].substring(1)), positionAndAmount[i].charAt(0));
                     currentQuery.addDocument(documentIndex);
+                }
             }
         }
     }

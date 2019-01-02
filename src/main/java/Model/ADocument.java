@@ -3,6 +3,9 @@ package Model;
 import java.util.HashMap;
 import java.util.PriorityQueue;
 
+/**
+ * Abstract ADocument class
+ */
 public abstract class ADocument {
     private String id;
     Model model;
@@ -114,6 +117,9 @@ public abstract class ADocument {
         this.length = length;
     }
 
+    /**
+     * Increase the documents length by 1
+     */
     void increaseLength(){
         length++;
     }

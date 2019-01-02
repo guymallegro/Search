@@ -2,8 +2,10 @@ package Controller;
 
 import Model.Model;
 import Model.Term;
+
 import java.util.HashMap;
 import java.util.HashSet;
+
 import Model.City;
 import javafx.scene.control.ListView;
 
@@ -35,7 +37,7 @@ public class Controller {
     /**
      * Tells the model to read the files with the given parameters
      */
-    public void readFiles() {
+    public void readFiles(String corpusPath) {
         model.readFiles(corpusPath, stopWordsPath, postingPath);
     }
 
@@ -122,9 +124,10 @@ public class Controller {
 
     /**
      * Tells the model to load the stop words
+     *
      * @param stopWordsPath - The path to the stop words file
      */
-    public void loadStopWords (String stopWordsPath){
+    public void loadStopWords(String stopWordsPath) {
         model.loadStopWords(stopWordsPath);
     }
 
@@ -157,18 +160,16 @@ public class Controller {
     }
 
     /**
-     *Sets the results for the given queries
-     *
-     * @param selectedCities - the cities the user selected
-     * @param allDocuments - the documents dictionary
+     * @param allDocuments   - the documents dictionary
      * @param bigLetterTerms - all the
      */
-    public void setQueriesResult(HashSet<String> selectedCities, ListView<String> allDocuments, HashMap<String, ListView<String>> bigLetterTerms) {
-        model.setQueriesResult(selectedCities, allDocuments, bigLetterTerms);
+    public void setQueriesResult(ListView<String> allDocuments, HashMap<String, ListView<String>> bigLetterTerms) {
+        model.setQueriesResult(allDocuments, bigLetterTerms);
     }
 
     /**
      * Tells the model to read the queries file
+     *
      * @param path - The path to the quries
      */
     public void readQueriesFile(String path) {
@@ -186,9 +187,15 @@ public class Controller {
 
     /**
      * Tells the model if to use semantic reference when processing the queries
+     *
      * @param selected
      */
     public void setSemantic(boolean selected) {
         model.setSemantic(selected);
     }
+
+    public void setSelectedCities(HashSet<String> selectedCities) {
+        model.setSelectedCities(selectedCities);
+    }
+
 }

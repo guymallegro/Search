@@ -11,6 +11,7 @@ public class Term {
     private double rank;
     private HashMap<Integer, Integer> inDocuments;
     private HashMap<Integer, Character> positionInDocument;
+    private boolean isSemantic = false;
 
     /**
      * The terms construction which create a term with a given string
@@ -172,5 +173,13 @@ public class Term {
      */
     void setRank(double rank) {
         this.rank = rank;
+    }
+
+    boolean isSemantic() {
+        return isSemantic;
+    }
+
+    void setSemantic(boolean semantic) {
+        isSemantic = semantic;
     }
 }
