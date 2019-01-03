@@ -147,6 +147,7 @@ public class View {
     public void loadDictionaries() {
         showAlert("start load dictionaries");
         controller.setPostingPath(postingPath.getText());
+        controller.setStemming(stemming.isSelected());
         if (postingPath.getText().equals("Enter Path")) {
             showAlert("Please enter a posting path");
             return;

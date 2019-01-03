@@ -59,7 +59,10 @@ class Ranker {
         String title;
         int N = documentsDictionary.size();
         for (Integer documentIndex : queryDocument.getTermsDocuments()) {
-            title = documentsDictionary.get(documentIndex).get(5);
+            title = "";
+            if (documentsDictionary.get(documentIndex).size() > 5) {
+                title = documentsDictionary.get(documentIndex).get(5);
+            }
             titleRank = 1;
             for (Term queryTerm : queryDocument.getTextTerms().values()) {
                 if (queryTerm.getUnsortedInDocuments().containsKey(documentIndex)) {
@@ -81,11 +84,15 @@ class Ranker {
             }
             Document currentDocument = new Document();
             currentDocument.setId(documentsDictionary.get(documentIndex).get(1));
-            currentDocument.setCity(documentsDictionary.get(documentIndex).get(4));
-            currentDocument.setTitle(documentsDictionary.get(documentIndex).get(5));
-            ArrayList<String> details = documentsDictionary.get(documentIndex);
-            for (int i = 6; i < details.size(); i++) {
-                currentDocument.addEntity(details.get(i));
+            if (documentsDictionary.get(documentIndex).size() > 4) {
+                currentDocument.setCity(documentsDictionary.get(documentIndex).get(4));
+            }
+            if (documentsDictionary.get(documentIndex).size() > 6) {
+                ArrayList<String> details = documentsDictionary.get(documentIndex);
+
+                for (int i = 6; i < details.size(); i++) {
+                    currentDocument.addEntity(details.get(i));
+                }
             }
             currentDocument.setRank(currentRank);
             queryDocument.addRankedDocument(currentDocument);
