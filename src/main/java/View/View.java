@@ -97,6 +97,7 @@ public class View {
         query.setDisable(false);
     }
 
+
     public void initCities() {
         if (toInitCities) {
             selectedCities = new HashSet<>();
@@ -146,6 +147,7 @@ public class View {
      */
     public void loadDictionaries() {
         showAlert("start load dictionaries");
+        controller.setStemming(stemming.isSelected());
         controller.setPostingPath(postingPath.getText());
         if (postingPath.getText().equals("Enter Path")) {
             showAlert("Please enter a posting path");
