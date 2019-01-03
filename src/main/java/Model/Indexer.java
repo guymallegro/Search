@@ -82,11 +82,11 @@ class Indexer {
      */
     void mergeAllPostFiles() {
         Scanner[] scanners = new Scanner[currentAmountTempPostFiles];
-        PriorityQueue<String> lines = new PriorityQueue<String>((o1, o2) -> o1.substring(1, o1.indexOf("^")).compareTo(o2.substring(1, o2.indexOf("^"))));
-        HashMap<String, Integer> postNumber = new HashMap<>();
+        String[] currentLine = new String[currentAmountTempPostFiles];
         fw = null;
         StringBuilder toWrite;
-        int finishCounter = 0;
+        int currentIndex = 0;
+        boolean isChanged = true;
         String lastPosting = "/termsPosting.txt";
         if (isStemming)
             lastPosting = "/termsPostingWithStemming.txt";
@@ -104,49 +104,44 @@ class Indexer {
                 System.out.println("Failed to create a scanner");
             }
             try {
-                String tempLine = scanners[i].nextLine();
-                lines.add(tempLine);
-                postNumber.put(tempLine, i);
+                currentLine[i] = scanners[i].nextLine();
             } catch (Exception e) {
                 currentAmountTempPostFiles--;
             }
         }
         while (true) {
-            int currentFile = 0;
-            String next = "";
-            try {
-                toWrite = new StringBuilder(lines.peek());
-                currentFile = postNumber.get(lines.peek());
-            } catch (Exception e) {
-                break;
-            }
-            try {
-                next = scanners[currentFile].nextLine();
-                postNumber.put(next, currentFile);
-                lines.add(next);
-            } catch (Exception e) {
-                System.out.println("ee");
-            }
-            try {
-                lines.poll();
-            } catch (Exception e) {
-                break;
-            }
-            String fromCompare = toWrite.substring(1, toWrite.toString().indexOf('^'));
-            while (true) {
-                if (lines.size() > 0 && lines.peek().substring(1, lines.peek().indexOf('^')).equals(fromCompare)) {
-                    try {
-                        currentFile = postNumber.get(lines.peek());
-                        next = scanners[currentFile].nextLine();
-                        lines.add(next);
-                        postNumber.put(next, currentFile);
-                        toWrite = combineLines(toWrite.toString(), lines.poll());
-                    } catch (Exception e) {
-                        System.out.println("End of file");
-                        break;
+            toWrite = new StringBuilder("~");
+            String fromCompare = "";
+            for (int i = 0; i < currentAmountTempPostFiles; i++) {
+                if (!currentLine[i].equals("~")) {
+                    if (isChanged) {
+                        if (!toWrite.toString().equals("~"))
+                            fromCompare = toWrite.substring(1, toWrite.toString().indexOf('^'));
+                        else
+                            fromCompare = "~";
+                        isChanged = false;
                     }
-                } else
-                    break;
+                    String toCompare = currentLine[i].substring(1, currentLine[i].indexOf('^'));
+                    double compare = fromCompare.compareTo(toCompare);
+                    if (compare > 0) {
+                        toWrite = new StringBuilder(currentLine[i]);
+                        currentIndex = i;
+                        isChanged = true;
+                    } else if (compare == 0) {
+                        toWrite = combineLines(toWrite.toString(), currentLine[i]);
+                        if (scanners[i].hasNext())
+                            currentLine[i] = scanners[i].nextLine();
+                        else {
+                            currentLine[i] = "~";
+                            scanners[i].close();
+                        }
+                    }
+                }
+            }
+            if (scanners[currentIndex].hasNext())
+                currentLine[currentIndex] = scanners[currentIndex].nextLine();
+            else {
+                currentLine[currentIndex] = "~";
             }
             if (!toWrite.toString().equals("~")) {
                 if (!Character.isDigit(toWrite.charAt(1)) && toWrite.charAt(1) != currentPartOfPostFile.charAt(0)) {
@@ -159,19 +154,17 @@ class Indexer {
                         int toAdd = termsDictionary.get(current).getAmount();
                         int amount = termsDictionary.get(current.toLowerCase()).getAmount();
                         termsDictionary.get(current.toLowerCase()).setAmount(amount + toAdd);
+                        termsDictionary.remove(current.toUpperCase());
                         toWrite.setLength(0);
                     }
                 } else if (Character.isLowerCase(current.charAt(0))) {
-                    if (capitalLetters.containsKey(current)) {
+                    if (capitalLetters.containsKey(current))
                         toWrite = combineLines(capitalLetters.get(current), toWrite.toString());
-                        if (termsDictionary.containsKey(current.toUpperCase()))
-                            termsDictionary.remove(current.toUpperCase());
-                    }
                 }
                 toWrite = lastLineVersion(toWrite.toString());
-                if (toWrite.length() != 0) {
+                if (toWrite.length() != 0)
                     out.println(toWrite.toString());
-                }
+                isChanged = true;
             } else
                 break;
         }
@@ -219,40 +212,14 @@ class Indexer {
      */
     private StringBuilder lastLineVersion(String line) {
         StringBuilder ans = new StringBuilder();
-        StringBuilder last = new StringBuilder();
         if (line.length() == 0)
             return ans;
-        last.append(line.substring(0, line.indexOf("^")));
-        last.append(";");
+        ans.append(line.substring(0, line.indexOf("^")));
+        ans.append(";");
         ans.append(line.substring(line.indexOf('^') + 1, line.indexOf("!")));
-        last.append(calculateGaps(ans.toString()));
-        last.append(" (");
-        last.append(line.substring(line.indexOf("!") + 1)).append(")");
-        return last;
-    }
-
-    /**
-     * this function calculate the gaps for the posting print
-     *
-     * @param allDocuments - all the documents as string
-     */
-    private String calculateGaps(String allDocuments) {
-        StringBuilder ans = new StringBuilder();
-        String[] docs = allDocuments.split(",");
-        Integer[] docsNumbers = new Integer[docs.length];
-        for(int i=0;i<docs.length;i++){
-            docsNumbers[i]=Integer.parseInt(docs[i]);
-        }
-        Arrays.sort(docsNumbers);
-        ans.append(Integer.parseInt(docs[0]));
-        if (docs.length > 1) {
-            ans.append(",");
-            for (int i = 1; i < docs.length; i++) {
-                ans.append(docsNumbers[i] - docsNumbers[i-1]).append(",");
-            }
-            ans.deleteCharAt(ans.length() - 1);
-        }
-        return ans.toString();
+        ans.append(" (");
+        ans.append(line.substring(line.indexOf("!") + 1)).append(")");
+        return ans;
     }
 
     /**

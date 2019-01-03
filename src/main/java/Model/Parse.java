@@ -444,13 +444,12 @@ class Parse {
         while (i < content.length()) {
             String token = "";
             while (i < content.length() && content.charAt(i) != ' ') {
-                if (token.length() > 0 && Character.isLetter(token.charAt(token.length() - 1)) && content.charAt(i) == ',')
-                    token += " ";
-                else
-                    token += content.charAt(i);
+                token += content.charAt(i);
                 i++;
             }
-            tokens.add(cleanString(token));
+            if (!token.equals("")) {
+                tokens.add(cleanString(token));
+            }
             i++;
         }
     }

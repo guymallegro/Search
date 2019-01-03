@@ -47,6 +47,7 @@ public class Controller {
         model.loadTermsDictionary();
         model.loadDocsDictionary();
         model.loadCitiesDictionary();
+        model.loadLanguages();
     }
 
     /**

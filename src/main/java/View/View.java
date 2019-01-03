@@ -255,6 +255,10 @@ public class View {
 
     }
 
+    /**
+     * browse path for the queries file
+     * @param actionEvent
+     */
     public void browseQueries(ActionEvent actionEvent) {
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Queries File");
@@ -264,6 +268,10 @@ public class View {
             queryPath.setText(selectedFile.getPath());
     }
 
+    /**
+     * browse path for the saving of results
+     * @param actionEvent
+     */
     public void browseSave(ActionEvent actionEvent) {
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("Save results directory");
@@ -274,6 +282,9 @@ public class View {
         }
     }
 
+    /**
+     * browse path for corpus
+     */
     public void browseCorpus() {
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("Corpus Directory");
@@ -284,6 +295,9 @@ public class View {
         }
     }
 
+    /**
+     * browse path for posting files
+     */
     public void browsePosting() {
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle("Posting Directory");

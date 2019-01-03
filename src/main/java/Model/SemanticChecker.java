@@ -29,7 +29,7 @@ class SemanticChecker {
             JSONArray result = jsonDetails.getJSONArray("result");
             int i = 0;
             for (Object obj : result) {
-                if (i >= 10)
+                if (i >= 3)
                     break;
                 JSONObject data = (JSONObject) obj;
                 semanticWord = data.get("word").toString();

@@ -37,7 +37,7 @@ public class Model {
     private double totalTime;
     private Searcher searcher;
     private ArrayList<String> queryResultToWrite = new ArrayList<>();
-    private HashSet<String>  selectedCities;
+    private HashSet<String> selectedCities;
     private boolean isSemantic;
 
     /**
@@ -80,6 +80,7 @@ public class Model {
         writeTermsDictionary();
         writeDocsDictionary();
         writeCitiesDictionary();
+        writeLanguages();
         long tEnd = System.currentTimeMillis();
         long tDelta = tEnd - tStart;
         totalTime = tDelta / 1000.0;
@@ -654,7 +655,8 @@ public class Model {
 
     /**
      * Sets the query process results which will be displayed to the user and saved to the disk
-     * @param allDocuments - All the documents
+     *
+     * @param allDocuments   - All the documents
      * @param bigLetterTerms - Big letter terms
      */
     public void setQueriesResult(ListView<String> allDocuments, HashMap<String, ListView<String>> bigLetterTerms) {
@@ -742,6 +744,7 @@ public class Model {
      */
     public void setSemantic(boolean selected) {
         searcher = new Searcher(this, documentsDictionary, citiesDictionary, selectedCities);
+        isSemantic=selected;
         searcher.setSemantic(selected);
     }
 
@@ -754,13 +757,17 @@ public class Model {
         stopWords = fileReader.readStopWords(stopWordsPath);
     }
 
+    /**
+     * Writes the languages from the documents to a save file
+     *
+     */
     private void writeLanguages() {
         Object[] sortedLanguages = languages.toArray();
         Arrays.sort(sortedLanguages);
         List<String> lines = new LinkedList<>();
         int size = languages.size();
         for (int i = 0; i < size; i++) {
-            lines.add((String)sortedLanguages[i]);
+            lines.add((String) sortedLanguages[i]);
         }
         String path = postingPathDestination + "/languages.txt";
         Path file = Paths.get(path);
@@ -771,7 +778,10 @@ public class Model {
         }
     }
 
-    public void loadLanguages(){
+    /**
+     * Loads the languages dictionary from the disk
+     */
+    public void loadLanguages() {
         String path = postingPathDestination + "/languages.txt";
         File file = new File(path);
         try {
@@ -784,6 +794,10 @@ public class Model {
         }
     }
 
+    /**
+     * set the cities the user choose
+     * @param selectedCities - the cities that the user choose
+     */
     public void setSelectedCities(HashSet<String> selectedCities) {
         this.selectedCities = selectedCities;
     }

@@ -30,10 +30,7 @@ public class Searcher {
         this.cityDictionary = cityDictionary;
         this.documentsDictionary = documentsDictionary;
         ranker = new Ranker(documentsDictionary);
-        if (isSemantic) {
-            List<String> terms = new ArrayList<>(currentQuery.getTextTerms().keySet());
-            semanticChecker = new SemanticChecker(model, terms);
-        }
+
     }
 
     /**
@@ -42,8 +39,12 @@ public class Searcher {
     public void findRelevantDocs(QueryDocument queryDocument) {
         currentQuery = queryDocument;
         ranker.setQueryDocument(currentQuery);
-        if (isSemantic)
+        if (isSemantic) {
+            List<String> terms = new ArrayList<>(currentQuery.getTextTerms().keySet());
+            semanticChecker = new SemanticChecker(model, terms);
             addSemantic();
+
+        }
         retrieveData(findLinesOfTerms());
         ranker.rank();
     }
@@ -98,13 +99,12 @@ public class Searcher {
             positionAndAmount = termLine.substring(termLine.indexOf("(") + 1, termLine.indexOf(")")).split(",");
             for (int i = 0; i < documents.length; i++) {
                 documentIndex = Integer.parseInt(documents[i]);
-                if (selectedCities.size() > 0){
-                    if (selectedCities.contains(model.getDocsDictionary().get(documentIndex).get(4))){
+                if (selectedCities.size() > 0) {
+                    if (selectedCities.contains(model.getDocsDictionary().get(documentIndex).get(4))) {
                         currentQuery.getTextTerms().get(term).setInDocument(documentIndex, Integer.parseInt(positionAndAmount[i].substring(1)), positionAndAmount[i].charAt(0));
                         currentQuery.addDocument(documentIndex);
                     }
-                }
-                else {
+                } else {
                     currentQuery.getTextTerms().get(term).setInDocument(documentIndex, Integer.parseInt(positionAndAmount[i].substring(1)), positionAndAmount[i].charAt(0));
                     currentQuery.addDocument(documentIndex);
                 }

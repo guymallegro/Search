@@ -175,10 +175,18 @@ public class Term {
         this.rank = rank;
     }
 
+    /**
+     *
+     * @return true if the user interest in semantic
+     */
     boolean isSemantic() {
         return isSemantic;
     }
 
+    /**
+     * set if the user interest in semantic
+     * @param semantic - the user choice
+     */
     void setSemantic(boolean semantic) {
         isSemantic = semantic;
     }

@@ -64,7 +64,7 @@ class Ranker {
             for (Term queryTerm : queryDocument.getTextTerms().values()) {
                 if (queryTerm.getUnsortedInDocuments().containsKey(documentIndex)) {
                     if (title.contains(queryTerm.getValue()))
-                        titleRank = 1.2;
+                        titleRank = 1.1;
                     positionRank = (0.01 - (0.001 * ((int) queryTerm.getPositionInDocument().get(documentIndex) - 96)));
                     int len = getDocumentLength(documentIndex);
                     int tf = queryTerm.getUnsortedInDocuments().get(documentIndex);
@@ -76,9 +76,7 @@ class Ranker {
                     if (queryTerm.isSemantic())
                         currentRank += (queryTerm.getRank() * firstCalculation * logCalculation);
                     else
-                        currentRank += (firstCalculation * logCalculation);
-                    currentRank *= titleRank;
-                    currentRank += positionRank;
+                        currentRank += (firstCalculation * logCalculation * titleRank + positionRank);
                 }
             }
             Document currentDocument = new Document();
@@ -89,8 +87,8 @@ class Ranker {
             for (int i = 6; i < details.size(); i++) {
                 currentDocument.addEntity(details.get(i));
             }
-            currentDocument.setRank((-1) * currentRank);
-            queryDocument.getRankedQueryDocuments().add(currentDocument);
+            currentDocument.setRank(currentRank);
+            queryDocument.addRankedDocument(currentDocument);
             currentRank = 0;
         }
         System.out.println("finish ranking");
