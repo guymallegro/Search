@@ -100,8 +100,16 @@ public class ReadFile {
                 currentFile = new File(postPath + "/post" + Character.toUpperCase(firstChar) + ".txt");
             else if (firstChar == '$')
                 currentFile = new File(postPath + "/post" + "$" + ".txt");
-            else
-                currentFile = new File(postPath + "/numbers.txt");
+            else {
+                try {
+                    currentFile = new File(postPath + "/post," + ".txt");
+                }
+                catch (Exception e){
+                    currentFile = new File(postPath + "/post%" + ".txt");
+                }
+            }
+
+                //currentFile = new File(postPath + "/numbers.txt");
             try {
                 InputStream is = new FileInputStream(currentFile);
                 BufferedReader buf = new BufferedReader(new InputStreamReader(is));
