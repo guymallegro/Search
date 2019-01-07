@@ -75,8 +75,8 @@ public class ReadFile {
             Scanner scanner = new Scanner(new File(path));
             while (scanner.hasNextLine()) {
                 String stopWord = scanner.nextLine();
-                stopWords.add(stopWord);
-                stopWords.add(Character.toUpperCase(stopWord.charAt(0)) + stopWord.substring(1));
+                stopWords.add(stopWord.toLowerCase());
+                stopWords.add(stopWord.toUpperCase());
             }
             scanner.close();
         } catch (FileNotFoundException e) {
@@ -101,13 +101,13 @@ public class ReadFile {
             else if (firstChar == '$')
                 currentFile = new File(postPath + "/post" + "$" + ".txt");
             else
-                currentFile = new File(postPath + "numbers.txt");
+                currentFile = new File(postPath + "/numbers.txt");
             try {
                 InputStream is = new FileInputStream(currentFile);
                 BufferedReader buf = new BufferedReader(new InputStreamReader(is));
                 String line = buf.readLine();
                 while (line != null) {
-                    if (line.substring(1, line.indexOf(";")).equals(terms.get(i))) {
+                    if (line.substring(1, line.indexOf(";")).equals(terms.get(i))){
                         termsLines.add(line);
                         break;
                     }
@@ -148,6 +148,5 @@ public class ReadFile {
             System.out.println("Cannot open the file: " + path);
         }
         model.processQuery(sb.toString());
-        System.out.println("finish read query file");
     }
 }

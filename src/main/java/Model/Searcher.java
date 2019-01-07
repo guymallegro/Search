@@ -43,7 +43,6 @@ public class Searcher {
             List<String> terms = new ArrayList<>(currentQuery.getTextTerms().keySet());
             semanticChecker = new SemanticChecker(model, terms);
             addSemantic();
-
         }
         retrieveData(findLinesOfTerms());
         ranker.rank();
@@ -68,7 +67,13 @@ public class Searcher {
      * @return - The posting lines of the terms
      */
     private ArrayList<String> findLinesOfTerms() {
-        System.out.println("start to find lines of terms - searcher");
+        if (selectedCities.size() > 0){
+            Iterator iterator = selectedCities.iterator();
+            while (iterator.hasNext()) {
+                String me = (String) iterator.next();
+                currentQuery.addTermToText(new Term(me));
+            }
+        }
         HashMap<String, Term> terms = currentQuery.getTextTerms();
         ArrayList<String> termsToFind = new ArrayList<>();
         ArrayList<String> allLines = new ArrayList<>();
@@ -100,7 +105,7 @@ public class Searcher {
             for (int i = 0; i < documents.length; i++) {
                 documentIndex = Integer.parseInt(documents[i]);
                 if (selectedCities.size() > 0) {
-                    if (selectedCities.contains(model.getDocsDictionary().get(documentIndex).get(4))) {
+                    if (selectedCities.contains(term.toUpperCase()) || selectedCities.contains(model.getDocsDictionary().get(documentIndex).get(4))) {
                         currentQuery.getTextTerms().get(term).setInDocument(documentIndex, Integer.parseInt(positionAndAmount[i].substring(1)), positionAndAmount[i].charAt(0));
                         currentQuery.addDocument(documentIndex);
                     }

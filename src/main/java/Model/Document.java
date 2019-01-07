@@ -10,7 +10,7 @@ public class Document extends ADocument {
     private HashMap<String, String> cities;
     private double rank;
     private String date;
-    private String title="";
+    private String title;
     private HashSet<Term> bigLetterTerms;
     private ArrayList<String> topFiveEntites;
     private HashMap<Term, Integer> titleTerms;
@@ -21,6 +21,7 @@ public class Document extends ADocument {
      * The default document constructor
      */
     public Document() {
+        title = "";
         rank = 0;
         titleTerms = new HashMap<>();
         dateTerms = new HashMap<>();

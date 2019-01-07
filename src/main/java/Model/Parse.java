@@ -55,11 +55,6 @@ class Parse {
                     currentDocument.increaseLength();
                     checkNumberName(i);
                     checkCity(i);
-                    if (doStemming) {
-                        stemmer.setTerm(tokens.get(i));
-                        stemmer.stem();
-                        tokens.set(i, stemmer.getTerm());
-                    }
                     if (checkIfContainsIllegalSymbols(tokens.get(i))) {
                         continue;
                     } else if (checkRange(i)) {
@@ -419,6 +414,11 @@ class Parse {
      */
     private void addTerm(String term, int i) {
         if (term.length() > 1 || (term.length() == 1 && Character.isDigit(term.charAt(0)))) {
+            if (doStemming) {
+                stemmer.setTerm(tokens.get(i));
+                stemmer.stem();
+                tokens.set(i, stemmer.getTerm());
+            }
             if (allTerms.containsKey(term)) {
                 allTerms.get(term).increaseAmount();
                 allTerms.get(term).addInDocument(currentDocument.getIndexId(), ((double) i) / tokens.size());

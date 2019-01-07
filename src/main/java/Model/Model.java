@@ -185,7 +185,7 @@ public class Model {
         for (int query = 0; query < allQueries.length; query++) {
             allQuery = allQueries[query];
             if (allQueries[query].length() > 1) {
-                QueryDocument currentQuery = new QueryDocument();
+                QueryDocument currentQuery = new QueryDocument(this);
                 int startTagIndex = allQuery.indexOf("<num>");
                 int endTagIndex = allQuery.indexOf("<title>");
                 if (startTagIndex != -1 && endTagIndex != -1)
@@ -194,6 +194,17 @@ public class Model {
                 endTagIndex = allQuery.indexOf("<de");
                 if (startTagIndex != -1 && endTagIndex != -1)
                     currentQuery.setContent(allQuery.substring(startTagIndex + 8, endTagIndex));
+                startTagIndex = allQuery.indexOf(":",endTagIndex) + 1;
+                endTagIndex = allQuery.indexOf("<nar");
+                if (startTagIndex != -1 && endTagIndex != -1) {
+                    String description = allQuery.substring(startTagIndex, endTagIndex);
+                    description = description.replaceAll("document", "");
+                    description = description.replaceAll("documents", "");
+                    description = description.replaceAll("Document", "");
+                    description = description.replaceAll("Documents", "");
+                    description = description.replaceAll("information", "");
+                    currentQuery.setContent(currentQuery.getContent() + " " + description);
+                }
                 queriesDocuments.add(currentQuery);
             }
         }
@@ -237,7 +248,7 @@ public class Model {
      */
     public void addQueryDocument(String query) {
         queriesDocuments.clear();
-        QueryDocument queryDocument = new QueryDocument(query);
+        QueryDocument queryDocument = new QueryDocument(this, query);
         queryDocument.setId(Integer.toString(queryIndex));
         queryIndex++;
         queriesDocuments.add(queryDocument);
@@ -329,7 +340,7 @@ public class Model {
         int size = sortedCities.length;
         for (int i = 1; i < size; i++) {
             dictionaryLine.append("<");
-            dictionaryLine.append(sortedCities[i]).append(":");
+            dictionaryLine.append(sortedCities[i].toString().toUpperCase()).append(":");
             dictionaryLine.append(citiesDictionary.get(sortedCities[i]));
             dictionaryLines.add(dictionaryLine.toString());
             dictionaryLine.setLength(0);
@@ -407,10 +418,16 @@ public class Model {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
                 int docIndex = Integer.parseInt(line.substring(1, line.indexOf(":")));
+                if (docIndex == 345146){
+                    int m = 5;
+                }
                 String[] info = line.substring(line.indexOf(":") + 1).split(",");
                 ArrayList<String> attributes = new ArrayList<>();
                 for (int i = 0; i < info.length; i++) {
                     attributes.add(i, info[i]);
+                }
+                for (int j = info.length; j < 11; j++){
+                    attributes.add(j, "");
                 }
                 documentsDictionary.put(docIndex, attributes);
             }
@@ -801,4 +818,6 @@ public class Model {
     public void setSelectedCities(HashSet<String> selectedCities) {
         this.selectedCities = selectedCities;
     }
+
+    public HashSet<String> getStopWords () {return stopWords;}
 }

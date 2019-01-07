@@ -5,13 +5,15 @@ import java.util.*;
  * The QueryDocument class which holds all of its required information for query
  */
 public class QueryDocument extends ADocument {
+    private Model model;
     private HashSet<Integer> termsDocuments;
     private PriorityQueue<Document> rankDocuments;
 
     /**
      * constructor
      */
-    public QueryDocument() {
+    public QueryDocument(Model model) {
+        this.model = model;
         termsDocuments = new HashSet<>();
         rankDocuments = new PriorityQueue<Document>((Comparator.comparingDouble(o -> o.getRank())));
     }
@@ -20,7 +22,8 @@ public class QueryDocument extends ADocument {
      * constructor
      * @param content - the content of the query
      */
-    public QueryDocument(String content) {
+    public QueryDocument(Model model, String content) {
+        this.model = model;
         this.content = content;
         termsDocuments = new HashSet<>();
         rankDocuments = new PriorityQueue<Document>(Comparator.comparingDouble(o -> o.getRank()));
@@ -31,11 +34,16 @@ public class QueryDocument extends ADocument {
      * @param term - The term to be added
      */
     void addTermToText(Term term) {
+        if (model.getStopWords().contains(term.getValue().toLowerCase()) ||
+                model.getStopWords().contains(term.getValue().toUpperCase()))
+            return;
         if (!textTerms.containsKey(term)) {
-            textTerms.put(term.getValue(), term);
+            if (model.getTermsDictionary().containsKey(term.getValue().toUpperCase()))
+                textTerms.put(term.getValue().toUpperCase(), term);
+            else if (model.getTermsDictionary().containsKey(term.getValue().toLowerCase()))
+                textTerms.put(term.getValue().toLowerCase(), term);
         } else {
             term.setAmount(term.getAmount() + 1);
-            textTerms.put(term.getValue(), term);
         }
     }
 
