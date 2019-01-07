@@ -71,7 +71,7 @@ class Ranker {
                     positionRank = (0.01 - (0.001 * ((int) queryTerm.getPositionInDocument().get(documentIndex) - 96)));
                     int len = getDocumentLength(documentIndex);
                     int tf = queryTerm.getUnsortedInDocuments().get(documentIndex);
-                    int nqi = queryTerm.getInDocuments().length - 1;
+                    int nqi = queryTerm.getUnsortedInDocuments().size() - 1;
                     double top = (K + 1) * tf;
                     double bottom = (tf + (K * ((1 - B) + B * (len / avgDocLength))));
                     firstCalculation = top / bottom;
