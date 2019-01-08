@@ -6,8 +6,8 @@ import java.util.*;
  * The ranker class
  */
 class Ranker {
-    private final double K = 1.2;
-    private final double B = 0.75;
+    private final double K = 1.05;
+    private final double B = 0.5;
     private double titleRank;
     private double positionRank;
     private double avgDocLength;
@@ -79,9 +79,11 @@ class Ranker {
                     if (queryTerm.isSemantic())
                         currentRank += (queryTerm.getRank() * firstCalculation * logCalculation);
                     else
-                        currentRank += (firstCalculation * logCalculation * titleRank + positionRank);
+                        currentRank += (firstCalculation * logCalculation + positionRank);
+                        //currentRank += (firstCalculation * logCalculation * titleRank + positionRank);
                 }
             }
+            currentRank *= titleRank;
             Document currentDocument = new Document();
             currentDocument.setId(documentsDictionary.get(documentIndex).get(1));
             if (documentsDictionary.get(documentIndex).size() > 4) {
