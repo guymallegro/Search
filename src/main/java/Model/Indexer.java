@@ -81,12 +81,11 @@ class Indexer {
      * Merges all the temporary posting files into one sorted posting file
      */
     void mergeAllPostFiles() {
-        Scanner[] scanners = new Scanner[currentAmountTempPostFiles];
-        String[] currentLine = new String[currentAmountTempPostFiles];
+        BufferedReader[] readers = new BufferedReader[currentAmountTempPostFiles];
+        PriorityQueue<String> lines = new PriorityQueue<String>((o1, o2) -> o1.substring(1, o1.indexOf("^")).compareTo(o2.substring(1, o2.indexOf("^"))));
+        HashMap<String, Integer> postNumber = new HashMap<>();
         fw = null;
         StringBuilder toWrite;
-        int currentIndex = 0;
-        boolean isChanged = true;
         String lastPosting = "/termsPosting.txt";
         if (isStemming)
             lastPosting = "/termsPostingWithStemming.txt";
@@ -99,77 +98,94 @@ class Indexer {
         out = new PrintWriter(bw);
         for (int i = 0; i < currentAmountTempPostFiles; i++) {
             try {
-                scanners[i] = new Scanner(new File(postingPath + "/post" + i + ".txt"));
+                readers[i] = new BufferedReader(new FileReader(postingPath + "/post" + i + ".txt"));
             } catch (Exception e) {
                 System.out.println("Failed to create a scanner");
             }
             try {
-                currentLine[i] = scanners[i].nextLine();
+                String tempLine = readers[i].readLine();
+                lines.add(tempLine);
+                postNumber.put(tempLine, i);
             } catch (Exception e) {
                 currentAmountTempPostFiles--;
             }
         }
+        toWrite = new StringBuilder();
+        int currentFile;
+        String next;
+        int toAdd;
+        int amount;
+        StringBuilder sb = new StringBuilder();
+        String fromCompare;
+        String current;
         while (true) {
-            toWrite = new StringBuilder("~");
-            String fromCompare = "";
-            for (int i = 0; i < currentAmountTempPostFiles; i++) {
-                if (!currentLine[i].equals("~")) {
-                    if (isChanged) {
-                        if (!toWrite.toString().equals("~"))
-                            fromCompare = toWrite.substring(1, toWrite.toString().indexOf('^'));
-                        else
-                            fromCompare = "~";
-                        isChanged = false;
-                    }
-                    String toCompare = currentLine[i].substring(1, currentLine[i].indexOf('^'));
-                    double compare = fromCompare.compareTo(toCompare);
-                    if (compare > 0) {
-                        toWrite = new StringBuilder(currentLine[i]);
-                        currentIndex = i;
-                        isChanged = true;
-                    } else if (compare == 0) {
-                        toWrite = combineLines(toWrite.toString(), currentLine[i]);
-                        if (scanners[i].hasNext())
-                            currentLine[i] = scanners[i].nextLine();
-                        else {
-                            currentLine[i] = "~";
-                            scanners[i].close();
-                        }
-                    }
-                }
-            }
-            if (scanners[currentIndex].hasNext())
-                currentLine[currentIndex] = scanners[currentIndex].nextLine();
-            else {
-                currentLine[currentIndex] = "~";
-            }
-            if (!toWrite.toString().equals("~")) {
-                if (!Character.isDigit(toWrite.charAt(1)) && toWrite.charAt(1) != currentPartOfPostFile.charAt(0)) {
-                    changePostFile("" + toWrite.toString().charAt(1));
-                }
-                String current = toWrite.toString().substring(1, toWrite.toString().indexOf('^'));
-                if (Character.isUpperCase(current.charAt(0))) {
-                    if (termsDictionary.containsKey(current.toLowerCase())) {
-                        capitalLetters.put(current.toLowerCase(), toWrite.toString().toLowerCase());
-                        int toAdd = termsDictionary.get(current).getAmount();
-                        int amount = termsDictionary.get(current.toLowerCase()).getAmount();
-                        termsDictionary.get(current.toLowerCase()).setAmount(amount + toAdd);
-                        termsDictionary.remove(current.toUpperCase());
-                        toWrite.setLength(0);
-                    }
-                } else if (Character.isLowerCase(current.charAt(0))) {
-                    if (capitalLetters.containsKey(current))
-                        toWrite = combineLines(capitalLetters.get(current), toWrite.toString());
-                }
-                toWrite = lastLineVersion(toWrite.toString());
-                if (toWrite.length() != 0)
-                    out.println(toWrite.toString());
-                isChanged = true;
-            } else
+            try {
+                toWrite.append(lines.peek());
+                currentFile = postNumber.get(lines.peek());
+                postNumber.remove(lines.peek());
+            } catch (Exception e) {
                 break;
+            }
+            try {
+                next = readers[currentFile].readLine();
+                postNumber.put(next, currentFile);
+                lines.add(next);
+            } catch (Exception e) {
+                System.out.println("ee");
+            }
+            try {
+                lines.poll();
+            } catch (Exception e) {
+                break;
+            }
+            fromCompare = toWrite.substring(1, toWrite.toString().indexOf('^'));
+            while (true) {
+                if (lines.size() > 0 && lines.peek().substring(1, lines.peek().indexOf('^')).equals(fromCompare)) {
+                    try {
+                        currentFile = postNumber.get(lines.peek());
+                        postNumber.remove(lines.peek());
+                        next = readers[currentFile].readLine();
+                        lines.add(next);
+                        postNumber.put(next, currentFile);
+                        toWrite = combineLines(toWrite.toString(), lines.poll(), sb);
+                    } catch (Exception e) {
+                        System.out.println("End of file");
+                        break;
+                    }
+                } else
+                    break;
+            }
+            if (!Character.isDigit(toWrite.charAt(1)) && toWrite.charAt(1) != currentPartOfPostFile.charAt(0)) {
+                changePostFile("" + toWrite.toString().charAt(1));
+            }
+            current = toWrite.toString().substring(1, toWrite.toString().indexOf('^'));
+            if (Character.isUpperCase(current.charAt(0))) {
+                if (termsDictionary.containsKey(current.toLowerCase())) {
+                    capitalLetters.put(current.toLowerCase(), toWrite.toString().toLowerCase());
+                    toAdd = termsDictionary.get(current).getAmount();
+                    amount = termsDictionary.get(current.toLowerCase()).getAmount();
+                    termsDictionary.get(current.toLowerCase()).setAmount(amount + toAdd);
+                    toWrite.setLength(0);
+                }
+            } else if (Character.isLowerCase(current.charAt(0))) {
+                if (capitalLetters.containsKey(current)) {
+                    toWrite = combineLines(capitalLetters.get(current), toWrite.toString(), sb);
+                    if (termsDictionary.containsKey(current.toUpperCase()))
+                        termsDictionary.remove(current.toUpperCase());
+                }
+            }
+            toWrite = lastLineVersion(toWrite.toString(), sb);
+            if (toWrite.length() != 0) {
+                out.println(toWrite.toString());
+                toWrite.setLength(0);
+            }
         }
-        for (int i = 0; i < scanners.length; i++) {
-            scanners[i].close();
+        for (int i = 0; i < readers.length; i++) {
+            try {
+                readers[i].close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         removeTempPostFiles();
         out.close();
@@ -182,8 +198,8 @@ class Indexer {
      * @param second - The second line
      * @return - The combined line
      */
-    private StringBuilder combineLines(String first, String second) {
-        StringBuilder sb = new StringBuilder();
+    private StringBuilder combineLines(String first, String second, StringBuilder sb) {
+        sb.setLength(0);
         sb.append(first.substring(first.indexOf('<'), first.indexOf('!')));
         sb.append(",");
         sb.append(second.substring(second.indexOf('^') + 1, second.indexOf('!')));
@@ -210,17 +226,18 @@ class Indexer {
      * @param line - The line before the new format
      * @return - The line after the new format
      */
-    private StringBuilder lastLineVersion(String line) {
-        StringBuilder ans = new StringBuilder();
+    private StringBuilder lastLineVersion(String line, StringBuilder sb) {
+        sb.setLength(0);
         if (line.length() == 0)
-            return ans;
-        ans.append(line.substring(0, line.indexOf("^")));
-        ans.append(";");
-        ans.append(line.substring(line.indexOf('^') + 1, line.indexOf("!")));
-        ans.append(" (");
-        ans.append(line.substring(line.indexOf("!") + 1)).append(")");
-        return ans;
+            return sb;
+        sb.append(line.substring(0, line.indexOf("^")));
+        sb.append(";");
+        sb.append(line.substring(line.indexOf('^') + 1, line.indexOf("!")));
+        sb.append(" (");
+        sb.append(line.substring(line.indexOf("!") + 1)).append(")");
+        return sb;
     }
+
 
     /**
      * Changes the current temporary post file the application is writing to

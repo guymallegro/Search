@@ -23,7 +23,7 @@ public class Model {
     private Indexer indexer;
     private CityChecker cityChecker;
     private String postingPathDestination;
-    private int nomOfDocs = 8000;
+    private int nomOfDocs = 10000;
     private HashSet<String> languages;
     private ArrayList<Document> documents;
     private ArrayList<QueryDocument> queriesDocuments;
@@ -138,7 +138,7 @@ public class Model {
                 for (int i = 0; i < size; i++)
                     parse.parseDocument(documents.get(i));
                 index();
-                nomOfDocs = 8000;
+                nomOfDocs = 10000;
             }
         }
     }
