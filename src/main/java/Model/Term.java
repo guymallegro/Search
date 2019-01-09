@@ -115,9 +115,9 @@ public class Term {
      * @return - The documents the term was found at sorted
      */
     Object[] getInDocuments() {
-        Object[] sortedterms = inDocuments.keySet().toArray();
-        Arrays.sort(sortedterms);
-        return sortedterms;
+        Object[] sortedTerms = inDocuments.keySet().toArray();
+        Arrays.sort(sortedTerms);
+        return sortedTerms;
     }
 
     /**
