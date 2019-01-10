@@ -196,14 +196,32 @@ public class Model {
                     currentQuery.setContent(allQuery.substring(startTagIndex + 8, endTagIndex));
                 startTagIndex = allQuery.indexOf(":",endTagIndex) + 1;
                 endTagIndex = allQuery.indexOf("<nar");
+                String description = "";
                 if (startTagIndex != -1 && endTagIndex != -1) {
-                    String description = allQuery.substring(startTagIndex, endTagIndex);
+                    description = allQuery.substring(startTagIndex, endTagIndex).toLowerCase();
                     description = description.replaceAll("document", "");
                     description = description.replaceAll("documents", "");
-                    description = description.replaceAll("Document", "");
-                    description = description.replaceAll("Documents", "");
                     description = description.replaceAll("information", "");
                     currentQuery.setContent(currentQuery.getContent() + " " + description);
+                }
+                startTagIndex = allQuery.indexOf(":",endTagIndex) + 1;
+                endTagIndex = allQuery.indexOf("</");
+                if (startTagIndex != -1 && endTagIndex != -1) {
+                    String narrative = allQuery.substring(startTagIndex, endTagIndex).toLowerCase();
+                    narrative = narrative.replaceAll("documents", "");
+                    narrative = narrative.replaceAll("document", "");
+                    narrative = narrative.replaceAll("relevant", "");
+                    String [] narrativeArray = narrative.split(" ");
+                    for (int n = 0; n < narrativeArray.length; n++){
+                        if (stopWords.contains(narrativeArray[n]))
+                            narrative = narrative.replaceAll(narrativeArray[n], "");
+                    }
+                    String [] content = currentQuery.getContent().split(" ");
+                    for (int d = 0; d < content.length; d ++){
+                        if (narrative.contains(" " + content[d] + " ".toLowerCase()))
+                            narrative = narrative.replaceAll(content[d], "");
+                    }
+                    currentQuery.setNarrative(narrative);
                 }
                 queriesDocuments.add(currentQuery);
             }
@@ -291,7 +309,7 @@ public class Model {
         try {
             Files.write(file, lines, Charset.forName("UTF-8"));
         } catch (Exception e) {
-            System.out.println("cannot write to dictionary");
+            System.out.println("cannot write to dictionary terms");
         }
     }
 
@@ -322,7 +340,7 @@ public class Model {
         try {
             Files.write(file, lines, Charset.forName("UTF-8"));
         } catch (Exception e) {
-            System.out.println("cannot write to dictionary");
+            System.out.println("cannot write to dictionary documents");
         }
     }
 
@@ -372,15 +390,15 @@ public class Model {
         } catch (Exception e) {
             System.out.println("cannot write to dictionary");
         }
-        path = postingPathDestination + "/postCities.txt";
-        if (isStemming)
-            path += "/postCitiesWithStemming.txt";
-        Path postingFile = Paths.get(path);
-        try {
-            Files.write(postingFile, postingLines, Charset.forName("UTF-8"));
-        } catch (Exception e) {
-            System.out.println("cannot write to dictionary");
-        }
+//        path = postingPathDestination + "/postCities.txt";
+//        if (isStemming)
+//            path += "/postCitiesWithStemming.txt";
+//        Path postingFile = Paths.get(path);
+//        try {
+//            Files.write(postingFile, postingLines, Charset.forName("UTF-8"));
+//        } catch (Exception e) {
+//            System.out.println("cannot write to dictionary");
+//        }
     }
 
     /**
@@ -418,13 +436,10 @@ public class Model {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
                 int docIndex = Integer.parseInt(line.substring(1, line.indexOf(":")));
-                if (docIndex == 345146){
-                    int m = 5;
-                }
                 String[] info = line.substring(line.indexOf(":") + 1).split(",");
                 ArrayList<String> attributes = new ArrayList<>();
                 for (int i = 0; i < info.length; i++) {
-                    attributes.add(i, info[i]);
+                    attributes.add(i, info[i].toUpperCase());
                 }
                 for (int j = info.length; j < 11; j++){
                     attributes.add(j, "");

@@ -63,11 +63,14 @@ class Ranker {
             if (documentsDictionary.get(documentIndex).size() > 5) {
                 title = documentsDictionary.get(documentIndex).get(5);
             }
-            titleRank = 1;
             for (Term queryTerm : queryDocument.getTextTerms().values()) {
+                titleRank = 0;
+                if (queryDocument.getNarrative().contains(queryTerm.getValue().toLowerCase())){
+                    currentRank = 0;
+                }
                 if (queryTerm.getUnsortedInDocuments().containsKey(documentIndex)) {
-                    if (title.contains(queryTerm.getValue()))
-                        titleRank = 1.1;
+                    if (title.contains(queryTerm.getValue().toUpperCase()))
+                        titleRank = 1;
                     positionRank = (0.01 - (0.001 * ((int) queryTerm.getPositionInDocument().get(documentIndex) - 96)));
                     int len = getDocumentLength(documentIndex);
                     int tf = queryTerm.getUnsortedInDocuments().get(documentIndex);
@@ -79,11 +82,9 @@ class Ranker {
                     if (queryTerm.isSemantic())
                         currentRank += (queryTerm.getRank() * firstCalculation * logCalculation);
                     else
-                        currentRank += (firstCalculation * logCalculation + positionRank);
-                        //currentRank += (firstCalculation * logCalculation * titleRank + positionRank);
+                        currentRank += (firstCalculation * logCalculation + titleRank +  positionRank);
                 }
             }
-            currentRank *= titleRank;
             Document currentDocument = new Document();
             currentDocument.setId(documentsDictionary.get(documentIndex).get(1));
             if (documentsDictionary.get(documentIndex).size() > 4) {

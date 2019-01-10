@@ -96,17 +96,10 @@ public class ReadFile {
         ArrayList<String> termsLines = new ArrayList<>();
         for (int i = 0; i < terms.size(); i++) {
             char firstChar = terms.get(i).charAt(0);
-            if (Character.isLetter(firstChar))
+            if (!Character.isDigit(firstChar))
                 currentFile = new File(postPath + "/post" + Character.toUpperCase(firstChar) + ".txt");
-            else if (firstChar == '$')
-                currentFile = new File(postPath + "/post" + "$" + ".txt");
-            else {
-                try {
-                    currentFile = new File(postPath + "/post,.txt");
-                }catch (Exception e){
-                    currentFile = new File(postPath + "/post%.txt");
-                }
-            }
+            else
+                currentFile = new File(postPath + "/post" + ",.txt");
             try {
                 InputStream is = new FileInputStream(currentFile);
                 BufferedReader buf = new BufferedReader(new InputStreamReader(is));

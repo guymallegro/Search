@@ -220,6 +220,8 @@ public class View {
     }
 
     private void showBigLetterTerms(String docId) {
+        if (!bigLetterTerms.containsKey(docId))
+            return;
         Stage stage = new Stage();
         stage.setTitle("top Five");
         Scene scene = new Scene(new Group());

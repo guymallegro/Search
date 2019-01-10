@@ -7,6 +7,7 @@ import java.util.*;
 public class QueryDocument extends ADocument {
     private Model model;
     private HashSet<Integer> termsDocuments;
+    private String narrative;
     private PriorityQueue<Document> rankDocuments;
 
     /**
@@ -15,6 +16,7 @@ public class QueryDocument extends ADocument {
     public QueryDocument(Model model) {
         this.model = model;
         termsDocuments = new HashSet<>();
+        narrative = "";
         rankDocuments = new PriorityQueue<Document>((Comparator.comparingDouble(o -> o.getRank())));
     }
 
@@ -97,5 +99,11 @@ public class QueryDocument extends ADocument {
         while (!rankDocuments.isEmpty())
             rankedDocuments.add(0, rankDocuments.poll());
         return rankedDocuments;
+    }
+
+    public String getNarrative () {return narrative;}
+
+    public void setNarrative(String narrative) {
+        this.narrative = narrative;
     }
 }
